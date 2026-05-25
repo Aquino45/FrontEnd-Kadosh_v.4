@@ -1,0 +1,47 @@
+<div class="page">
+    <div class="list-container" *ngIf="!verDetalle">
+        <div class="toolbar">
+            <h1 class="title">Historiales de Atención</h1>
+            <button type="button" class="back-link" (click)="volver.emit()">Regresar</button>
+        </div>
+        <span class="accent"></span>
+
+        <div *ngIf="loading" class="loading-state">
+            <i class="fa-solid fa-spinner fa-spin"></i> Buscando expedientes...
+        </div>
+
+        <div class="grid-cards" *ngIf="!loading">
+            <div class="card-item" *ngFor="let h of historiales">
+                <div class="card-header">
+                    <span class="date-label">FECHA</span>
+                    <p class="date-value">{{ h.fecha }}</p>
+                </div>
+
+                <div class="card-body">
+                    <div class="info-group">
+                        <span class="lbl">EVALUADOR</span>
+                        <p class="txt">{{ h.evaluador || 'No asignado' }}</p>
+                    </div>
+                    <div class="info-group">
+                        <span class="lbl">RECOMENDACIONES</span>
+                        <p class="txt-recom">{{ h.recomendaciones || 'Sin observaciones' }}</p>
+                    </div>
+                </div>
+                
+                <button class="btn-detail" (click)="onVerDetalleCompleto(h)">
+                    Ver Medidas Técnicas
+                </button>
+            </div>
+        </div>
+
+        <div *ngIf="!loading && historiales.length === 0" class="empty-state">
+            <p>No hay historiales para mostrar.</p>
+        </div>
+    </div>
+
+    <app-ver-completo-historial-optico 
+        *ngIf="verDetalle && historialSeleccionado" 
+        [historial]="historialSeleccionado"
+        (close)="onCerrarDetalle()">
+    </app-ver-completo-historial-optico>
+</div>

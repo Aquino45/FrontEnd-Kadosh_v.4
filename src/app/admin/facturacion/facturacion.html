@@ -1,0 +1,204 @@
+<div class="fact-page">
+
+  <!-- ===== VISTA FORMULARIO ===== -->
+  <ng-container *ngIf="showForm">
+    <app-new-factura (close)="onFacturaCreada($event)"></app-new-factura>
+  </ng-container>
+
+  <!-- ===== VISTA LISTA ===== -->
+  <ng-container *ngIf="!showForm">
+
+    <div class="toolbar">
+      <div class="title-wrap">
+        <h1 class="title">Facturas</h1>
+        <span class="accent"></span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <div class="top-actions">
+        <button type="button" class="btn-primary" (click)="openForm()">
+          <i class="fa-solid fa-file-invoice"></i>
+          <span>Nueva Factura</span>
+        </button>
+
+        <form class="filters-inline" (ngSubmit)="onSearch()" #filterForm="ngForm">
+          <input type="text" name="nombre" [(ngModel)]="filterNombre" placeholder="Nombre cliente..." />
+          <input type="text" name="dni" [(ngModel)]="filterDni" placeholder="DNI..." maxlength="8" />
+          <select name="estado" [(ngModel)]="filterEstado">
+            <option value="">Todos los estados</option>
+            <option value="EMITIDA">EMITIDA</option>
+            <option value="ANULADA">ANULADA</option>
+          </select>
+          <input type="date" name="desde" [(ngModel)]="filterDesde" title="Desde" />
+          <input type="date" name="hasta" [(ngModel)]="filterHasta" title="Hasta" />
+          <button type="submit" class="btn-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+          <button type="button" class="btn-clear" (click)="onClear()">Limpiar</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div *ngIf="loading" class="loading">
+        <i class="fa-solid fa-spinner fa-spin"></i> Cargando facturas...
+      </div>
+
+      <div *ngIf="!loading && loadError" class="error-msg">
+        <i class="fa-solid fa-triangle-exclamation"></i> {{ loadError }}
+      </div>
+
+      <table class="fact-table" *ngIf="!loading && !loadError && facturas.length > 0">
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>N° Factura</th>
+            <th>Cliente</th>
+            <th>DNI</th>
+            <th>Fecha</th>
+            <th class="text-right">Subtotal</th>
+            <th class="text-right">IGV</th>
+            <th class="text-right">Total</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let f of facturas; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td class="numero-cell">{{ f.numero }}</td>
+            <td>{{ f.clienteNombre }}</td>
+            <td>{{ f.clienteDni }}</td>
+            <td>{{ formatFecha(f.fechaEmision) }}</td>
+            <td class="text-right">S/ {{ f.subtotal | number:'1.2-2' }}</td>
+            <td class="text-right">S/ {{ f.igv | number:'1.2-2' }}</td>
+            <td class="text-right font-bold">S/ {{ f.total | number:'1.2-2' }}</td>
+            <td>
+              <span class="estado-badge" [ngClass]="f.estado === 'EMITIDA' ? 'emitida' : 'anulada'">
+                {{ f.estado }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <button type="button" class="btn-preview" (click)="openPreview(f)" title="Ver detalle">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+              <button type="button" class="btn-pdf" (click)="descargarPDF(f)" title="Descargar PDF">
+                <i class="fa-solid fa-file-pdf"></i>
+              </button>
+              <button
+                type="button"
+                class="btn-anular"
+                (click)="confirmarAnular(f)"
+                [disabled]="f.estado === 'ANULADA'"
+                title="Anular factura"
+              >
+                <i class="fa-solid fa-ban"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="empty" *ngIf="!loading && !loadError && facturas.length === 0">
+        <i class="fa-solid fa-file-invoice"></i>
+        <p>No hay facturas registradas.</p>
+      </div>
+
+    </div>
+
+  </ng-container>
+
+  <!-- Modal confirmar anulación -->
+  <div class="modal-overlay" *ngIf="facturaAAnular" (click)="cancelarAnulacion()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <h3>Anular Factura</h3>
+      <p>¿Estás seguro de anular la factura <strong>{{ facturaAAnular.numero }}</strong>?</p>
+      <p class="modal-warn">Esta acción no se puede deshacer.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" (click)="cancelarAnulacion()">Cancelar</button>
+        <button type="button" class="btn-confirm-anular" (click)="anularFactura()" [disabled]="!!anulandoId">
+          <i class="fa-solid" [ngClass]="anulandoId ? 'fa-spinner fa-spin' : 'fa-ban'"></i>
+          {{ anulandoId ? 'Anulando...' : 'Sí, anular' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL PREVIEW ===== -->
+  <div class="modal-overlay" *ngIf="facturaPreview" (click)="closePreview()">
+    <div class="preview-box" (click)="$event.stopPropagation()">
+
+      <!-- Encabezado del recibo -->
+      <div class="preview-header">
+        <div class="preview-brand">
+          <span class="brand-name">KADOSH</span>
+          <span class="brand-sub">Óptica</span>
+        </div>
+        <div class="preview-num-block">
+          <span class="preview-label">FACTURA</span>
+          <span class="preview-numero">{{ facturaPreview.numero }}</span>
+          <span class="preview-estado" [ngClass]="facturaPreview.estado === 'EMITIDA' ? 'emitida' : 'anulada'">
+            {{ facturaPreview.estado }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Datos cliente + fecha -->
+      <div class="preview-meta">
+        <div class="meta-group">
+          <span class="meta-label">Cliente</span>
+          <span class="meta-val bold">{{ facturaPreview.clienteNombre }}</span>
+        </div>
+        <div class="meta-group">
+          <span class="meta-label">DNI</span>
+          <span class="meta-val">{{ facturaPreview.clienteDni }}</span>
+        </div>
+        <div class="meta-group">
+          <span class="meta-label">Fecha de emisión</span>
+          <span class="meta-val">{{ formatFecha(facturaPreview.fechaEmision) }}</span>
+        </div>
+      </div>
+
+      <!-- Tabla de detalles -->
+      <table class="preview-table">
+        <thead>
+          <tr>
+            <th>Descripción</th>
+            <th class="col-center">Cant.</th>
+            <th class="col-right">P. Unit.</th>
+            <th class="col-right">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of facturaPreview.detalles">
+            <td>{{ d.productoNombre }}</td>
+            <td class="col-center">{{ d.cantidad }}</td>
+            <td class="col-right">S/ {{ d.precioUnitario | number:'1.2-2' }}</td>
+            <td class="col-right">S/ {{ d.subtotal | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Totales -->
+      <div class="preview-totales">
+        <div class="ptotal-row"><span>Subtotal</span><span>S/ {{ facturaPreview.subtotal | number:'1.2-2' }}</span></div>
+        <div class="ptotal-row"><span>IGV (18%)</span><span>S/ {{ facturaPreview.igv | number:'1.2-2' }}</span></div>
+        <div class="ptotal-row ptotal-final"><span>TOTAL</span><span>S/ {{ facturaPreview.total | number:'1.2-2' }}</span></div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="preview-actions">
+        <button type="button" class="btn-close-preview" (click)="closePreview()">
+          <i class="fa-solid fa-xmark"></i> Cerrar
+        </button>
+        <button type="button" class="btn-dl-pdf" (click)="descargarPDF(facturaPreview)">
+          <i class="fa-solid fa-file-pdf"></i> Descargar PDF
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

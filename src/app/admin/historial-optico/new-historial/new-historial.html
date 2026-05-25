@@ -1,0 +1,299 @@
+<div class="hist-page">
+  <div class="toolbar">
+    <h1 class="title">Registrar nuevo historial</h1>
+    <button class="back-link" (click)="cancel()" [disabled]="loading">Regresar</button>
+  </div>
+  <span class="accent"></span>
+
+
+  <div class="search-row">
+    <input type="text" class="search-input" placeholder="DNI..." [(ngModel)]="search.dni" name="searchDni"
+      (ngModelChange)="onSearchChange()" (keydown.enter)="onSearchEnter()" />
+
+    <input type="text" class="search-input" placeholder="Nombre..." [(ngModel)]="search.nombre" name="searchNombre"
+      (ngModelChange)="onSearchChange()" (keydown.enter)="onSearchEnter()" />
+
+    <button type="button" class="btn-search" (click)="onSearchClick()">
+      <i class="fa-solid fa-magnifying-glass"></i>
+    </button>
+
+    <button type="button" class="btn-clear" (click)="onClearSearch()">
+      Limpiar
+    </button>
+  </div>
+
+
+  <!-- SUGERENCIAS (opcional, si quieres autocompletar) -->
+  <div class="search-suggestions" *ngIf="suggestions?.length">
+    <button type="button" class="suggestion-item" *ngFor="let u of suggestions" (click)="onSelectUser(u)">
+      <span class="sug-name">{{ u.nombre }} {{ u.apellido }}</span>
+      <span class="sug-meta">DNI: {{ u.dni }}</span>
+    </button>
+  </div>
+
+  <form class="hist-grid" [formGroup]="form" (ngSubmit)="submit()">
+
+    <!-- CABECERA -->
+    <section class="card head">
+      <div class="row">
+        <label>
+          <span class="lbl">Fecha</span>
+          <input type="date" formControlName="fecha" [value]="form.get('fecha')?.value" />
+        </label>
+        <label class="grow">
+          <span class="lbl">Paciente</span>
+          <input type="text" placeholder="Nombre y apellidos" formControlName="paciente" />
+        </label>
+      </div>
+
+      <div class="row">
+        <label>
+          <span class="lbl">Teléfono</span>
+          <input type="tel" placeholder="Ej. 987 654 321" formControlName="telefono" />
+        </label>
+        <label>
+          <span class="lbl">Edad</span>
+          <input type="number" min="0" placeholder="Ej. 28" formControlName="edad" />
+        </label>
+        <label>
+          <span class="lbl">DNI</span>
+          <input type="text" placeholder="Documento" formControlName="dni" />
+        </label>
+      </div>
+    </section>
+
+    <!-- VISIÓN DE LEJOS -->
+    <section class="card">
+      <h3 class="sec-title">Visión de lejos</h3>
+      <div class="table-wrap">
+        <table class="rx-table">
+          <thead>
+            <tr>
+              <th class="ojo">OJO</th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('ESF_VL', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('ESF_VL', $event)" (touchstart)="onHeaderTouchStart('ESF_VL', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                ESF
+              </th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('CIL_VL', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('CIL_VL', $event)" (touchstart)="onHeaderTouchStart('CIL_VL', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                CIL
+              </th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('EJE_VL', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('EJE_VL', $event)" (touchstart)="onHeaderTouchStart('EJE_VL', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                EJE
+              </th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('DIP_VL', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('DIP_VL', $event)" (touchstart)="onHeaderTouchStart('DIP_VL', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                DIP
+              </th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('AV_VL', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('AV_VL', $event)" (touchstart)="onHeaderTouchStart('AV_VL', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                AV
+              </th>
+            </tr>
+          </thead>
+
+          <tbody formArrayName="lejos">
+            <tr [formGroupName]="0">
+              <td class="ojo">
+                <input class="eye" formControlName="ojo" placeholder="OD" />
+              </td>
+              <td><input type="text" formControlName="esf" placeholder="0.00" /></td>
+              <td><input type="text" formControlName="cil" placeholder="0.00" /></td>
+              <td><input type="text" formControlName="eje" placeholder="0°" /></td>
+              <td><input type="text" formControlName="dip" placeholder="--" /></td>
+              <td><input type="text" formControlName="av" placeholder="20/20" /></td>
+            </tr>
+
+            <tr [formGroupName]="1">
+              <td class="ojo">
+                <input class="eye" formControlName="ojo" placeholder="OI" />
+              </td>
+              <td><input type="text" formControlName="esf" placeholder="0.00" /></td>
+              <td><input type="text" formControlName="cil" placeholder="0.00" /></td>
+              <td><input type="text" formControlName="eje" placeholder="0°" /></td>
+              <td><input type="text" formControlName="dip" placeholder="--" /></td>
+              <td><input type="text" formControlName="av" placeholder="20/20" /></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- VISIÓN DE CERCA -->
+    <section class="card">
+      <h3 class="sec-title">Visión de cerca</h3>
+      <div class="table-wrap">
+        <table class="rx-table">
+          <thead>
+            <tr>
+              <th class="ojo">OJO</th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('ESF_VC', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('ESF_VC', $event)" (touchstart)="onHeaderTouchStart('ESF_VC', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                ESF
+              </th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('CIL_VC', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('CIL_VC', $event)" (touchstart)="onHeaderTouchStart('CIL_VC', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                CIL
+              </th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('EJE_VC', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('EJE_VC', $event)" (touchstart)="onHeaderTouchStart('EJE_VC', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                EJE
+              </th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('DIP_VC', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('DIP_VC', $event)" (touchstart)="onHeaderTouchStart('DIP_VC', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                DIP
+              </th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('AV_VC', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('AV_VC', $event)" (touchstart)="onHeaderTouchStart('AV_VC', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                AV
+              </th>
+            </tr>
+          </thead>
+
+          <tbody formArrayName="cerca">
+            <tr [formGroupName]="0">
+              <td class="ojo">
+                <input class="eye" formControlName="ojo" placeholder="OD" />
+              </td>
+              <td><input type="text" formControlName="esf" placeholder="0.00" /></td>
+              <td><input type="text" formControlName="cil" placeholder="0.00" /></td>
+              <td><input type="text" formControlName="eje" placeholder="0°" /></td>
+              <td><input type="text" formControlName="dip" placeholder="--" /></td>
+              <td><input type="text" formControlName="av" placeholder="20/20" /></td>
+            </tr>
+
+            <tr [formGroupName]="1">
+              <td class="ojo">
+                <input class="eye" formControlName="ojo" placeholder="OI" />
+              </td>
+              <td><input type="text" formControlName="esf" placeholder="0.00" /></td>
+              <td><input type="text" formControlName="cil" placeholder="0.00" /></td>
+              <td><input type="text" formControlName="eje" placeholder="0°" /></td>
+              <td><input type="text" formControlName="dip" placeholder="--" /></td>
+              <td><input type="text" formControlName="av" placeholder="20/20" /></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card analysis-section">
+      <div class="analysis-header">
+        <h3 class="sec-title">Interpretación de Resultados</h3>
+        <button type="button" class="btn-analyze" (click)="analizarDatosCompletos()">
+          <i class="fa-solid fa-layer-group"></i> Analizar 4 Cuadrantes
+        </button>
+      </div>
+
+      <div class="analysis-content" *ngIf="analisisResultados">
+        <h4 class="sub-title-analysis">VISIÓN DE LEJOS</h4>
+        <div class="analysis-grid">
+          <div class="analysis-box od-color">
+            <span class="eye-label">OJO DERECHO (OD)</span>
+            <p class="res-text">{{ analisisResultados.odLejos }}</p>
+          </div>
+          <div class="analysis-box oi-color">
+            <span class="eye-label">OJO IZQUIERDO (OI)</span>
+            <p class="res-text">{{ analisisResultados.oiLejos }}</p>
+          </div>
+        </div>
+
+        <h4 class="sub-title-analysis" style="margin-top: 20px;">VISIÓN DE CERCA</h4>
+        <div class="analysis-grid">
+          <div class="analysis-box od-color">
+            <span class="eye-label">OJO DERECHO (OD)</span>
+            <p class="res-text">{{ analisisResultados.odCerca }}</p>
+          </div>
+          <div class="analysis-box oi-color">
+            <span class="eye-label">OJO IZQUIERDO (OI)</span>
+            <p class="res-text">{{ analisisResultados.oiCerca }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUBIDA DE IMÁGENES -->
+    <section class="card">
+      <h3 class="sec-title">Imágenes del Historial</h3>
+
+      <div class="img-row">
+        <div class="img-col">
+          <label class="lbl">Imagen de refracción</label>
+          <button type="button" class="img-btn" (click)="refInput.click()" [disabled]="loading">
+            <i class="fa-solid fa-upload"></i> Subir imagen
+          </button>
+          <input type="file" #refInput accept="image/*" hidden (change)="onImageSelect($event, 'refraccion')" />
+          <img *ngIf="preview.refraccion" [src]="preview.refraccion" class="preview-img"
+            (click)="openViewer(preview.refraccion!)" />
+        </div>
+
+        <div class="img-col">
+          <label class="lbl">Lenzometría</label>
+          <button type="button" class="img-btn" (click)="lenzoInput.click()" [disabled]="loading">
+            <i class="fa-solid fa-upload"></i> Subir imagen
+          </button>
+          <input type="file" #lenzoInput accept="image/*" hidden (change)="onImageSelect($event, 'lenzometria')" />
+          <img *ngIf="preview.lenzometria" [src]="preview.lenzometria" class="preview-img"
+            (click)="openViewer(preview.lenzometria!)" />
+        </div>
+
+        <div class="img-col">
+          <label class="lbl">Keratometría</label>
+          <button type="button" class="img-btn" (click)="keraInput.click()" [disabled]="loading">
+            <i class="fa-solid fa-upload"></i> Subir imagen
+          </button>
+          <input type="file" #keraInput accept="image/*" hidden (change)="onImageSelect($event, 'keratometria')" />
+          <img *ngIf="preview.keratometria" [src]="preview.keratometria" class="preview-img"
+            (click)="openViewer(preview.keratometria!)" />
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3 class="sec-title">Recomendaciones</h3>
+      <textarea class="notes" rows="4" formControlName="recomendaciones"
+        placeholder="Indicaciones, control, tipo de lente, etc."></textarea>
+    </section>
+
+    <div class="form-actions">
+      <!-- antes 
+      <button class="btn-primary" type="submit" [disabled]="loading || form.invalid"> -->
+
+      <button class="btn-primary" type="submit" [disabled]="loading">
+        {{ loading ? 'Guardando…' : 'Confirmar' }}
+      </button>
+      <button class="btn-ghost" type="button" (click)="cancel()" [disabled]="loading">
+        Cancelar
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<!-- VISOR DE IMAGEN EN CUADRADO -->
+<div class="img-viewer" *ngIf="viewer.open">
+  <button class="viewer-close" (click)="closeViewer()">✕</button>
+  <div class="viewer-box" (wheel)="zoom($event)" (pointerdown)="onViewerPointerDown($event)"
+    (pointermove)="onViewerPointerMove($event)" (pointerup)="onViewerPointerUp($event)"
+    (pointercancel)="onViewerPointerUp($event)" (pointerleave)="onViewerPointerUp($event)"
+    (contextmenu)="onViewerContextMenu($event)">
+    <img [src]="viewer.src" alt="" class="viewer-img" draggable="false" (dragstart)="$event.preventDefault()"
+      [style.transform]="'translate(' + viewer.posX + 'px,' + viewer.posY + 'px) scale(' + viewer.scale + ')'" />
+  </div>
+</div>
+
+<div class="rx-tooltip" *ngIf="tooltip.visible" [style.left.px]="tooltip.x" [style.top.px]="tooltip.y">
+  <div class="rx-tooltip-title">{{ tooltip.title }}</div>
+  <div class="rx-tooltip-body">{{ tooltip.description }}</div>
+</div>

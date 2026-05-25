@@ -1,0 +1,15 @@
+<button
+  class="icon-btn notif-btn"
+  type="button"
+  (click)="handleClick()"
+  [attr.aria-label]="ariaLabel"
+  [title]="title">
+  <i class="fa-solid fa-bell"></i>
+
+  <span
+    *ngIf="badge > 0"
+    class="badge"
+    [attr.aria-label]="badgeAria">
+    {{ badgeText }}
+  </span>
+</button>

@@ -1,0 +1,239 @@
+<div class="modal-overlay" *ngIf="open" role="dialog" aria-modal="true" (keydown.escape)="onClose()">
+
+  <div class="modal">
+
+    <div class="modal-header">
+      <h3 id="edit-title">
+        <i class="fa-solid fa-user-pen"></i>
+        Editar Cliente
+      </h3>
+      <button class="icon-close" (click)="onClose()" aria-label="Cerrar">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body" [formGroup]="form">
+
+      <div class="profile-section">
+        <div class="avatar-large" style="cursor: pointer; position: relative;" (click)="fileInput.click()">
+          <img *ngIf="previewUrl" [src]="previewUrl" alt="Foto" class="img-fit" />
+          <div *ngIf="!previewUrl" class="img-placeholder">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div class="avatar-overlay">
+            <i class="fa-solid fa-camera"></i>
+          </div>
+        </div>
+        <input #fileInput type="file" (change)="onPhotoSelected($event)" style="display: none;" accept="image/*">
+
+        <div class="main-info full-width">
+          <div class="input-group-row">
+            <div class="full-width">
+              <input type="text" class="input-edit title-input" placeholder="Nombres" formControlName="nombre">
+              <small class="error-msg" *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched">
+                Nombre es requerido.
+              </small>
+            </div>
+            <div class="full-width">
+              <input type="text" class="input-edit title-input" placeholder="Apellidos" formControlName="apellido">
+              <small class="error-msg" *ngIf="form.get('apellido')?.invalid && form.get('apellido')?.touched">
+                Apellido es requerido.
+              </small>
+            </div>
+          </div>
+          <div class="status-control">
+            <span class="label-status">Estado:</span>
+            <select class="input-edit select-estado" formControlName="estado">
+              <option value="ACTIVO">✅ ACTIVO</option>
+              <option value="LOBANANEE">⛔ BANEADO</option>
+              <option value="SEFUE">👻 SE FUE</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h4 class="section-title"><i class="fa-solid fa-user-tag"></i> Datos Personales</h4>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <label class="label">DNI / Documento</label>
+          <input type="text" class="input-edit" formControlName="dni" maxlength="8">
+          <small class="error-msg" *ngIf="form.get('dni')?.hasError('required') && form.get('dni')?.touched">
+            DNI es requerido.
+          </small>
+          <small class="error-msg" *ngIf="form.get('dni')?.hasError('pattern') && form.get('dni')?.touched">
+            Debe tener 8 dígitos.
+          </small>
+        </div>
+
+        <div class="info-item">
+          <label class="label">Correo Electrónico</label>
+          <input type="email" class="input-edit" formControlName="email">
+
+          <small class="error-msg" *ngIf="form.get('email')?.hasError('required') && form.get('email')?.touched">
+            El correo es obligatorio.
+          </small>
+
+          <small class="error-msg" *ngIf="form.get('email')?.hasError('email') && form.get('email')?.touched">
+            Correo inválido.
+          </small>
+        </div>
+
+        <div class="info-item">
+          <label class="label">Teléfono</label>
+          <input type="text" class="input-edit" formControlName="telefono" maxlength="9">
+
+          <small class="error-msg" *ngIf="form.get('telefono')?.hasError('required') && form.get('telefono')?.touched">
+            El teléfono es obligatorio.
+          </small>
+
+          <small class="error-msg" *ngIf="form.get('telefono')?.hasError('pattern') && form.get('telefono')?.touched">
+            Debe tener 9 dígitos.
+          </small>
+        </div>
+
+        <div class="info-item">
+          <label class="label">Fecha de Nacimiento</label>
+
+          <div class="fecha-custom-wrapper"
+            [class.error-border]="form.get('fechaNacimiento')?.invalid && form.get('fechaNacimiento')?.touched">
+
+            <input type="text" class="fecha-input w-day" placeholder="DD" maxlength="2" inputmode="numeric"
+              [value]="dia" (input)="onDiaInput($event, mesInput)" (keypress)="onlyNumbers($event)" #diaInput>
+
+            <span class="fecha-separator">/</span>
+
+            <input type="text" class="fecha-input w-month" placeholder="MM" maxlength="2" inputmode="numeric"
+              [value]="mes" (input)="onMesInput($event, anioInput)" (keypress)="onlyNumbers($event)" #mesInput>
+
+            <span class="fecha-separator">/</span>
+
+            <input type="text" class="fecha-input w-year" placeholder="AAAA" maxlength="4" inputmode="numeric"
+              [value]="anio" (input)="onAnioInput($event)" (keypress)="onlyNumbers($event)" #anioInput>
+          </div>
+
+          <small class="error-msg" *ngIf="form.get('fechaNacimiento')?.touched && form.get('fechaNacimiento')?.errors">
+
+            <ng-container *ngIf="form.get('fechaNacimiento')?.hasError('required')">
+              Fecha requerida.
+            </ng-container>
+
+            <ng-container *ngIf="form.get('fechaNacimiento')?.hasError('invalidDate')">
+              Año no válido (1800 - Actual).
+            </ng-container>
+
+          </small>
+        </div>
+
+        <div class="info-item disabled">
+          <label class="label">Edad (Calculada)</label>
+          <input type="text" class="input-edit" [value]="edadCalculada + ' años'" disabled>
+        </div>
+
+        <div class="info-item full-width">
+          <label class="label">Cambiar contraseña de usuario (Admin Bypass)</label>
+          <div style="position: relative;">
+            <input type="password" class="input-edit" placeholder="Dejar vacío para mantener actual"
+              formControlName="newPassword" style="border-color: #dad3ff; background-color: #fdfbff;">
+            <i class="fa-solid fa-shield-halved"
+              style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #9b87f5;"></i>
+          </div>
+          <small class="info-text" style="color: #666; font-size: 0.75rem; margin-top: 4px; display: block;">
+            * El administrador puede resetear la clave directamente sin la contraseña anterior.
+          </small>
+          <small class="error-msg"
+            *ngIf="form.get('newPassword')?.hasError('minlength') && form.get('newPassword')?.touched">
+            La contraseña debe tener al menos 6 caracteres.
+          </small>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="header-row">
+        <h4 class="section-title"><i class="fa-solid fa-user-shield"></i> Apoderado</h4>
+        <button *ngIf="hasApoderado" class="btn-text-danger" (click)="toggleApoderado(false)">
+          <i class="fa-solid fa-trash"></i> Eliminar Apoderado
+        </button>
+      </div>
+
+      <div *ngIf="hasApoderado" class="apoderado-card edit-mode">
+        <div class="apo-edit-grid">
+
+          <div class="apo-field">
+            <label>Nombre</label>
+            <input type="text" class="input-edit green" formControlName="nombreApoderado">
+            <small class="error-msg"
+              *ngIf="form.get('nombreApoderado')?.invalid && form.get('nombreApoderado')?.touched">
+              Requerido.
+            </small>
+          </div>
+
+          <div class="apo-field">
+            <label>Apellido</label>
+            <input type="text" class="input-edit green" formControlName="apellidoApoderado">
+            <small class="error-msg"
+              *ngIf="form.get('apellidoApoderado')?.invalid && form.get('apellidoApoderado')?.touched">
+              Requerido.
+            </small>
+          </div>
+
+          <div class="apo-field">
+            <label>Parentesco</label>
+
+            <input type="text" class="input-edit green" formControlName="parentesco"
+              placeholder="Ej: Madre, Tío, Hermana...">
+
+            <small class="error-msg" *ngIf="form.get('parentesco')?.invalid && form.get('parentesco')?.touched">
+              Requerido.
+            </small>
+          </div>
+
+          <div class="apo-field">
+            <label>DNI</label>
+            <input type="text" class="input-edit green" formControlName="dniApoderado" maxlength="8">
+            <small class="error-msg"
+              *ngIf="form.get('dniApoderado')?.hasError('required') && form.get('dniApoderado')?.touched">
+              Requerido.
+            </small>
+            <small class="error-msg"
+              *ngIf="form.get('dniApoderado')?.hasError('pattern') && form.get('dniApoderado')?.touched">
+              8 dígitos.
+            </small>
+          </div>
+
+          <div class="apo-field">
+            <label>Teléfono</label>
+            <input type="text" class="input-edit green" formControlName="telefonoApoderado" maxlength="9">
+            <small class="error-msg"
+              *ngIf="form.get('telefonoApoderado')?.hasError('required') && form.get('telefonoApoderado')?.touched">
+              Requerido.
+            </small>
+            <small class="error-msg"
+              *ngIf="form.get('telefonoApoderado')?.hasError('pattern') && form.get('telefonoApoderado')?.touched">
+              9 dígitos.
+            </small>
+          </div>
+
+        </div>
+      </div>
+
+      <div *ngIf="!hasApoderado" class="no-apoderado" (click)="toggleApoderado(true)" style="cursor: pointer;">
+        <i class="fa-solid fa-plus-circle"></i>
+        <span>Agregar Responsable / Apoderado</span>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-ghost" (click)="onClose()">Cancelar</button>
+      <button class="btn-primary" (click)="onSave()" [disabled]="form.invalid || loading || saving || !hasChanges()">
+        <i *ngIf="loading || saving" class="fa-solid fa-spinner fa-spin"></i>
+        {{ (loading || saving) ? 'Guardando...' : 'Guardar Cambios' }}
+      </button>
+    </div>
+
+  </div>
+</div>

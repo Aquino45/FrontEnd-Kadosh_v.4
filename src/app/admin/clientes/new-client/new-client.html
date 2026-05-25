@@ -1,0 +1,241 @@
+<div class="page">
+  <div class="toolbar">
+    <h1 class="title">Registrar nuevo cliente</h1>
+  </div>
+  <span class="accent"></span>
+
+  <form class="form-layout" [formGroup]="form" (ngSubmit)="onSubmit()">
+
+    <!-- ===== LEFT: Sections ===== -->
+    <div class="form-sections">
+
+      <!-- Section 1: Datos Personales -->
+      <section class="form-section">
+        <div class="sec-header">
+          <i class="fa-solid fa-user sec-icon"></i>
+          <h3 class="sec-title">Datos Personales</h3>
+        </div>
+        <div class="fields-grid">
+
+          <label class="form-field" [class.invalid]="f['nombre'].touched && f['nombre'].invalid">
+            <span class="lbl required">Nombres</span>
+            <input type="text" formControlName="nombre" placeholder="Ingresa los nombres" />
+            <small class="err" *ngIf="f['nombre'].touched && f['nombre'].errors">
+              <ng-container *ngIf="f['nombre'].errors['required']">Este campo es obligatorio.</ng-container>
+              <ng-container *ngIf="f['nombre'].errors['minlength']">Mínimo 2 caracteres.</ng-container>
+            </small>
+          </label>
+
+          <label class="form-field" [class.invalid]="f['apellido'].touched && f['apellido'].invalid">
+            <span class="lbl required">Apellidos</span>
+            <input type="text" formControlName="apellido" placeholder="Ingresa los apellidos" />
+            <small class="err" *ngIf="f['apellido'].touched && f['apellido'].errors">
+              <ng-container *ngIf="f['apellido'].errors['required']">Este campo es obligatorio.</ng-container>
+              <ng-container *ngIf="f['apellido'].errors['minlength']">Mínimo 2 caracteres.</ng-container>
+            </small>
+          </label>
+
+          <label class="form-field" [class.invalid]="f['dni'].touched && f['dni'].invalid">
+            <span class="lbl required">DNI</span>
+            <input type="text" formControlName="dni" inputmode="numeric" placeholder="8 dígitos" />
+            <small class="err" *ngIf="f['dni'].touched && f['dni'].errors">
+              <ng-container *ngIf="f['dni'].errors['required']">Este campo es obligatorio.</ng-container>
+              <ng-container *ngIf="f['dni'].errors['pattern']">Debe tener exactamente 8 dígitos.</ng-container>
+            </small>
+          </label>
+
+          <label class="form-field" [class.invalid]="f['telefono'].touched && f['telefono'].invalid">
+            <span class="lbl required">Teléfono</span>
+            <input type="tel" formControlName="telefono" inputmode="numeric" placeholder="9 dígitos" />
+            <small class="err" *ngIf="f['telefono'].touched && f['telefono'].errors">
+              <ng-container *ngIf="f['telefono'].errors['required']">Este campo es obligatorio.</ng-container>
+              <ng-container *ngIf="f['telefono'].errors['pattern']">Debe tener exactamente 9 dígitos.</ng-container>
+            </small>
+          </label>
+
+          <label class="form-field fecha-group" [class.invalid]="f['fechaNacimiento'].touched && f['fechaNacimiento'].invalid">
+            <span class="lbl required">Fecha de Nacimiento</span>
+            <div class="fecha-inputs">
+              <input type="text" #diaInput placeholder="DD" maxlength="2" inputmode="numeric"
+                (input)="onDiaInput($event, mesInput)" (keypress)="onlyNumbers($event)" />
+              <span class="separator">/</span>
+              <input type="text" #mesInput placeholder="MM" maxlength="2" inputmode="numeric"
+                (input)="onMesInput($event, anioInput)" (keypress)="onlyNumbers($event)" />
+              <span class="separator">/</span>
+              <input type="text" #anioInput placeholder="AAAA" maxlength="4" inputmode="numeric"
+                (input)="onAnioInput($event)" (keypress)="onlyNumbers($event)" />
+            </div>
+            <small class="err" *ngIf="f['fechaNacimiento'].touched && f['fechaNacimiento'].errors">
+              <ng-container *ngIf="f['fechaNacimiento'].errors['required']">Este campo es obligatorio.</ng-container>
+              <ng-container *ngIf="f['fechaNacimiento'].errors['invalidDate']">Año no válido (1800–año actual).</ng-container>
+            </small>
+          </label>
+
+          <label class="form-field" [class.invalid]="f['edad'].touched && f['edad'].invalid">
+            <span class="lbl">Edad</span>
+            <div class="edad-display">
+              <input type="number" formControlName="edad" placeholder="Auto" readonly />
+              <span class="edad-tag" *ngIf="form.get('edad')?.value">
+                {{ form.get('edad')?.value }} años
+              </span>
+            </div>
+          </label>
+
+          <label class="form-field col-span-2" [class.invalid]="f['email'].touched && f['email'].invalid">
+            <span class="lbl">Email <span class="opt-label">(opcional)</span></span>
+            <input type="email" formControlName="email" placeholder="correo@ejemplo.com" />
+            <small class="err" *ngIf="f['email'].touched && f['email'].errors">
+              <ng-container *ngIf="f['email'].errors['required']">Este campo es obligatorio.</ng-container>
+              <ng-container *ngIf="f['email'].errors['email']">Email inválido.</ng-container>
+            </small>
+          </label>
+
+        </div>
+      </section>
+
+      <!-- Section 2: Acceso -->
+      <section class="form-section">
+        <div class="sec-header">
+          <i class="fa-solid fa-lock sec-icon"></i>
+          <h3 class="sec-title">Acceso al Sistema</h3>
+        </div>
+        <div class="fields-grid">
+
+          <label class="form-field col-span-2" [class.invalid]="f['password'].touched && f['password'].invalid">
+            <span class="lbl required">Contraseña</span>
+            <input type="password" formControlName="password" placeholder="Mínimo 6 caracteres" />
+            <small class="err" *ngIf="f['password'].touched && f['password'].errors">
+              <ng-container *ngIf="f['password'].errors['required']">Este campo es obligatorio.</ng-container>
+              <ng-container *ngIf="f['password'].errors['minlength']">Mínimo 6 caracteres.</ng-container>
+            </small>
+          </label>
+
+        </div>
+      </section>
+
+      <!-- Section 3: Apoderado -->
+      <section class="form-section apoderado-section">
+        <div class="sec-header-toggle">
+          <div class="sec-header">
+            <i class="fa-solid fa-users sec-icon"></i>
+            <h3 class="sec-title">Apoderado <span class="opt-label">(opcional)</span></h3>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" title="Activar sección de apoderado" (change)="toggleApoderado()" [checked]="showApoderado" />
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+
+        <div class="apoderado-fields" *ngIf="showApoderado">
+          <div class="fields-grid">
+
+            <label class="form-field" [class.invalid]="f['nombreApoderado'].touched && f['nombreApoderado'].invalid">
+              <span class="lbl required">Nombre</span>
+              <input type="text" formControlName="nombreApoderado" />
+              <small class="err" *ngIf="f['nombreApoderado'].touched && f['nombreApoderado'].errors?.['required']">
+                Este campo es obligatorio.
+              </small>
+            </label>
+
+            <label class="form-field" [class.invalid]="f['apellidoApoderado'].touched && f['apellidoApoderado'].invalid">
+              <span class="lbl required">Apellido</span>
+              <input type="text" formControlName="apellidoApoderado" />
+              <small class="err" *ngIf="f['apellidoApoderado'].touched && f['apellidoApoderado'].errors?.['required']">
+                Este campo es obligatorio.
+              </small>
+            </label>
+
+            <label class="form-field" [class.invalid]="f['dniApoderado'].touched && f['dniApoderado'].invalid">
+              <span class="lbl required">DNI</span>
+              <input type="text" formControlName="dniApoderado" inputmode="numeric" placeholder="8 dígitos" />
+              <small class="err" *ngIf="f['dniApoderado'].touched && f['dniApoderado'].errors">
+                <ng-container *ngIf="f['dniApoderado'].errors!['required']">Este campo es obligatorio.</ng-container>
+                <ng-container *ngIf="f['dniApoderado'].errors!['pattern']">Debe tener 8 dígitos.</ng-container>
+              </small>
+            </label>
+
+            <label class="form-field" [class.invalid]="f['telefonoApoderado'].touched && f['telefonoApoderado'].invalid">
+              <span class="lbl required">Teléfono</span>
+              <input type="tel" formControlName="telefonoApoderado" inputmode="numeric" placeholder="9 dígitos" />
+              <small class="err" *ngIf="f['telefonoApoderado'].touched && f['telefonoApoderado'].errors">
+                <ng-container *ngIf="f['telefonoApoderado'].errors!['required']">Este campo es obligatorio.</ng-container>
+                <ng-container *ngIf="f['telefonoApoderado'].errors!['pattern']">Debe tener 9 dígitos.</ng-container>
+              </small>
+            </label>
+
+            <label class="form-field col-span-2" [class.invalid]="f['parentesco'].touched && f['parentesco'].invalid">
+              <span class="lbl required">Parentesco</span>
+              <input type="text" formControlName="parentesco" placeholder="Ej: Padre, Madre, Tutor" />
+              <small class="err" *ngIf="f['parentesco'].touched && f['parentesco'].errors?.['required']">
+                Este campo es obligatorio.
+              </small>
+            </label>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="submit" class="btn-primary" [disabled]="loading || form.invalid">
+          <i class="fa-solid fa-check" *ngIf="!loading"></i>
+          <i class="fa-solid fa-spinner fa-spin" *ngIf="loading"></i>
+          {{ loading ? 'Guardando…' : 'Confirmar registro' }}
+        </button>
+        <button type="button" class="btn-ghost" (click)="cancel()" [disabled]="loading">Cancelar</button>
+      </div>
+
+    </div>
+
+    <!-- ===== RIGHT: Photo ===== -->
+    <div class="photo-col">
+      <div class="photo-card">
+        <p class="photo-label">Foto del cliente</p>
+
+        <div class="photo-wrap">
+          <img [src]="previewUrl" alt="Foto del cliente" title="Foto del cliente" />
+          <div class="overlay">
+            <button type="button" class="pick" (click)="onPickPhoto(fileInput)">
+              <i class="fa-solid fa-camera"></i> Subir archivo
+            </button>
+            <button type="button" class="remove" (click)="removePhoto()" *ngIf="previewUrl !== defaultAvatar">
+              <i class="fa-solid fa-trash"></i> Quitar
+            </button>
+          </div>
+          <input #fileInput type="file" class="hidden-input" accept="image/*" title="Seleccionar foto del cliente" (change)="onPhotoSelected($event)" />
+        </div>
+
+        <small class="hint">JPG / PNG / WebP — máx. 5 MB</small>
+
+        <div class="url-section">
+          <p class="url-label">
+            <i class="fa-solid fa-link"></i> O pega una URL de imagen
+          </p>
+          <input
+            type="url"
+            class="url-input"
+            placeholder="https://ejemplo.com/foto.jpg"
+            title="URL de imagen externa"
+            [value]="imagenUrlManual"
+            (input)="onImageUrlInput($event)"
+          />
+          <small class="hint" *ngIf="imagenUrlManual">Vista previa actualizada</small>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<!-- Modal sin foto -->
+<div class="modal-overlay" *ngIf="showPhotoModal">
+  <div class="modal-card">
+    <div class="modal-icon"><i class="fas fa-user-circle"></i></div>
+    <h3>¿Registrar sin foto?</h3>
+    <p>Se asignará una imagen por defecto. Puede cambiarla después.</p>
+    <div class="modal-buttons">
+      <button type="button" class="btn-confirm" (click)="procederConGuardado(true)">Sí, continuar</button>
+      <button type="button" class="btn-cancel" (click)="cancelarModal()">No, elegir foto</button>
+    </div>
+  </div>
+</div>

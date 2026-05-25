@@ -1,0 +1,151 @@
+:host {
+  --p700: #582865;
+  --p600: #5b2b88;
+  --p500: #7c3aed;
+  --p100: #f0ebfb;
+  font-family: "Inter", sans-serif;
+}
+
+/* ===== Header shell ===== */
+.hdr {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 32px;
+  height: 75px;
+  background: #fff;
+  box-shadow: 0 2px 20px rgba(91,43,136,0.09);
+  z-index: 1;
+}
+
+/* Gradient accent line at the bottom */
+.hdr::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--p700) 0%, var(--p600) 30%, var(--p500) 65%, transparent 100%);
+}
+
+/* ===== Brand ===== */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.brand img {
+  height: 44px;
+  object-fit: contain;
+  display: block;
+}
+
+.brand-name {
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, var(--p700) 0%, var(--p600) 50%, var(--p500) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== Search ===== */
+.search-bar-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+app-search-bar {
+  width: 100%;
+  max-width: 520px;
+  min-width: 200px;
+}
+
+/* ===== Actions ===== */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* ===== Date chip (calendar + date fused into one button) ===== */
+.date-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: var(--p100);
+  border: 1px solid #ddd6f3;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  transition: background 0.15s, border-color 0.15s, transform 0.08s, box-shadow 0.2s;
+}
+
+.date-chip:hover {
+  background: #e5ddf7;
+  border-color: #c4aee8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(91,43,136,0.15);
+}
+
+.date-chip:active {
+  transform: translateY(0);
+}
+
+.chip-icon {
+  font-size: 16px;
+  color: var(--p600);
+  flex-shrink: 0;
+}
+
+.date-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: left;
+}
+
+.date-text .day {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--p600);
+  text-transform: capitalize;
+  line-height: 1.2;
+}
+
+.date-text .full-date {
+  font-size: 13px;
+  font-weight: 500;
+  color: #8a7aa1;
+  line-height: 1.2;
+}
+
+/* ===== Hidden date input ===== */
+.date-input-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+  .hdr { padding: 0 16px; gap: 12px; }
+  .brand-name { display: none; }
+}
+
+@media (max-width: 640px) {
+  .date-text .day { display: none; }
+  .date-chip { padding: 8px 12px; }
+}

@@ -1,0 +1,132 @@
+:host {
+  --purple-600: #5b2b88;
+  --ink: #2b2140;
+  --line: #deddea;
+  --surface: #fff;
+  font-family: "Inter", sans-serif;
+}
+
+.page {
+  display: grid;
+  gap: 12px;
+  padding: 0px 0;
+}
+
+/* Estilo de cabecera solicitado */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.back-link {
+  background: none;
+  border: none;
+  text-decoration: underline;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.accent {
+  display: block;
+  width: 120px;
+  height: 4px;
+  background: var(--purple-600);
+  border-radius: 2px;
+}
+
+/* Estilo de las Cartitas */
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.card-item {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+  border-color: #a78bfa;
+}
+
+.card-header {
+  padding: 16px;
+  background: #f9f8ff;
+  border-bottom: 1px solid var(--line);
+}
+
+.date-label, .lbl {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b6480;
+  letter-spacing: 0.5px;
+}
+
+.date-value {
+  margin: 4px 0 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--purple-600);
+}
+
+.card-body {
+  padding: 16px;
+  flex-grow: 1;
+  display: grid;
+  gap: 12px;
+}
+
+.txt {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.txt-recom {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.btn-detail {
+  appearance: none;
+  border: none;
+  background: #f3f0fa;
+  color: var(--purple-600);
+  padding: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-detail:hover {
+  background: var(--purple-600);
+  color: #fff;
+}
+
+.loading-wrap, .empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #6b6480;
+}

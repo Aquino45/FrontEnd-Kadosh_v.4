@@ -1,0 +1,200 @@
+<div class="register-container">
+  <div class="register-box">
+    <div class="logo">
+      <img src="/assets/Images/logo_Kadosh.png" alt="Logo de Ópticas KADOSH">
+    </div>
+
+    <h2>Registro</h2>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="photo-section">
+        <div class="avatar-wrapper">
+          <img [src]="previewUrl" alt="Preview" class="avatar-img" (click)="onPickPhoto(fileInput)">
+          <button type="button" class="btn-remove-photo" (click)="removePhoto()" *ngIf="previewUrl !== defaultAvatar">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <input type="file" #fileInput (change)="onPhotoSelected($event)" accept="image/*" hidden>
+        <p class="photo-label">Foto de perfil (opcional)</p>
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-user icon"></i>
+        <input type="text" formControlName="nombre" placeholder="Nombres">
+        <small class="err" *ngIf="f['nombre'].touched && f['nombre'].errors">
+          <ng-container *ngIf="f['nombre'].errors['required']">Este campo es obligatorio.</ng-container>
+        </small>
+
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-user icon"></i>
+        <input type="text" formControlName="apellido" placeholder="Apellidos">
+        <small class="err" *ngIf="f['apellido'].touched && f['apellido'].errors">
+          <ng-container *ngIf="f['apellido'].errors['required']">Este campo es obligatorio.</ng-container>
+        </small>
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-envelope icon"></i>
+        <input type="email" formControlName="email" placeholder="Email">
+        <small class="err" *ngIf="f['email'].touched && f['email'].errors">
+          <ng-container *ngIf="f['email'].errors['required']">Este campo es obligatorio.</ng-container>
+          <ng-container *ngIf="f['email'].errors['email']">Email inválido.</ng-container>
+        </small>
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-phone icon"></i>
+        <input type="text" formControlName="telefono" placeholder="Número de Contacto" inputmode="numeric">
+        <small class="err" *ngIf="f['telefono'].touched && f['telefono'].errors">
+          <ng-container *ngIf="f['telefono'].errors['required']">Este campo es obligatorio.</ng-container>
+          <ng-container *ngIf="f['telefono'].errors['pattern']">Debe tener 9 dígitos.</ng-container>
+        </small>
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-address-card icon"></i>
+        <input type="text" formControlName="dni" placeholder="DNI del Cliente" inputmode="numeric">
+        <small class="err" *ngIf="f['dni'].touched && f['dni'].errors">
+          <ng-container *ngIf="f['dni'].errors['required']">Este campo es obligatorio.</ng-container>
+          <ng-container *ngIf="f['dni'].errors['pattern']">Debe tener 8 dígitos.</ng-container>
+        </small>
+      </div>
+
+      <div class="input-group fecha-group"
+        [class.invalid]="f['fechaNacimiento'].touched && f['fechaNacimiento'].invalid">
+        <i class="fa-solid fa-calendar-days icon"></i>
+
+        <div class="fecha-inputs-container">
+          <input type="text" #diaInput placeholder="DD" maxlength="2" inputmode="numeric"
+            (input)="onDiaInput($event, mesInput)" (keypress)="onlyNumbers($event)" class="input-mini">
+          <span class="separator">/</span>
+
+          <input type="text" #mesInput placeholder="MM" maxlength="2" inputmode="numeric"
+            (input)="onMesInput($event, anioInput)" (keypress)="onlyNumbers($event)" class="input-mini">
+          <span class="separator">/</span>
+
+          <input type="text" #anioInput placeholder="AAAA" maxlength="4" inputmode="numeric"
+            (input)="onAnioInput($event)" (keypress)="onlyNumbers($event)" class="input-anio">
+        </div>
+
+        <small class="err" *ngIf="f['fechaNacimiento'].touched && f['fechaNacimiento'].errors">
+          <ng-container *ngIf="f['fechaNacimiento'].errors['required']">Este campo es obligatorio.</ng-container>
+          <ng-container *ngIf="f['fechaNacimiento'].errors['invalidDate']">Año no valido (1800-Año
+            actual).</ng-container>
+        </small>
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-clock icon"></i>
+        <input type="text" formControlName="edad" placeholder="Edad (Automático)" readonly>
+      </div>
+
+      <div class="apo-toggle-container">
+        <label class="switch">
+          <input type="checkbox" formControlName="tieneApoderado">
+          <span class="slider round"></span>
+        </label>
+        <span class="toggle-label">¿Requiere apoderado o responsable?</span>
+      </div>
+
+      <div class="apoderado-section" [class.show]="form.get('tieneApoderado')?.value">
+        <h4 class="apo-title">Datos del Apoderado</h4>
+
+        <div class="input-group">
+          <i class="fa-solid fa-user-shield icon"></i>
+          <input type="text" formControlName="nombreApoderado" placeholder="Nombres del Apoderado">
+          <small class="err" *ngIf="f['nombreApoderado'].touched && f['nombreApoderado'].errors?.['required']">
+            El nombre del responsable es obligatorio.
+          </small>
+        </div>
+
+        <div class="input-group">
+          <i class="fa-solid fa-user-shield icon"></i>
+          <input type="text" formControlName="apellidoApoderado" placeholder="Apellidos del Apoderado">
+          <small class="err" *ngIf="f['apellidoApoderado'].touched && f['apellidoApoderado'].errors?.['required']">
+            El apellido del responsable es obligatorio.
+          </small>
+        </div>
+
+        <div class="input-group">
+          <i class="fa-solid fa-id-card-clip icon"></i>
+          <input type="text" formControlName="dniApoderado" placeholder="DNI del Apoderado" inputmode="numeric">
+          <small class="err" *ngIf="f['dniApoderado'].touched && f['dniApoderado'].errors">
+            <ng-container *ngIf="f['dniApoderado'].errors?.['required']">El DNI es obligatorio.</ng-container>
+            <ng-container *ngIf="f['dniApoderado'].errors?.['pattern']">Debe tener 8 dígitos.</ng-container>
+          </small>
+        </div>
+
+        <div class="input-group">
+          <i class="fa-solid fa-phone-flip icon"></i>
+          <input type="text" formControlName="telefonoApoderado" placeholder="Teléfono del Apoderado"
+            inputmode="numeric">
+          <small class="err" *ngIf="f['telefonoApoderado'].touched && f['telefonoApoderado'].errors">
+            <ng-container *ngIf="f['telefonoApoderado'].errors?.['required']">El teléfono es obligatorio.</ng-container>
+            <ng-container *ngIf="f['telefonoApoderado'].errors?.['pattern']">Debe tener 9 dígitos.</ng-container>
+          </small>
+        </div>
+
+        <div class="input-group">
+          <i class="fa-solid fa-people-arrows-left-right icon"></i>
+          <input type="text" formControlName="parentesco" placeholder="Parentesco (Ej: Padre, Madre, Tutor)">
+          <small class="err" *ngIf="f['parentesco'].touched && f['parentesco'].errors?.['required']">
+            Indica el parentesco o relación.
+          </small>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock icon"></i>
+          <input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Contraseña">
+          <i class="fa-solid eye-icon" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+            (click)="togglePassword()"></i>
+        </div>
+
+        <small class="err" *ngIf="f['password'].touched && f['password'].errors">
+          <ng-container *ngIf="f['password'].errors['required']">Este campo es obligatorio.</ng-container>
+          <ng-container *ngIf="f['password'].errors['minlength']">Mínimo 6 caracteres.</ng-container>
+        </small>
+      </div>
+
+      <div class="input-group">
+        <div class="input-wrapper">
+          <i class="fa-solid fa-shield-halved icon"></i>
+          <input [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword"
+            placeholder="Confirmar Contraseña">
+          <i class="fa-solid eye-icon" [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"
+            (click)="toggleConfirmPassword()"></i>
+        </div>
+
+        <small class="err" *ngIf="f['confirmPassword'].touched">
+          <ng-container *ngIf="f['confirmPassword'].errors?.['required']">Debes confirmar tu contraseña.</ng-container>
+          <ng-container *ngIf="form.errors?.['mismatch']">Las contraseñas no coinciden.</ng-container>
+        </small>
+      </div>
+
+      <button type="submit" [disabled]="loading || form.invalid">
+        {{ loading ? 'Registrando...' : 'Registrarme' }}
+      </button>
+
+      <button type="button" class="btn-back-login" (click)="irALogin()">
+        Ya tengo cuenta, quiero iniciar sesión
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showPhotoModal">
+  <div class="modal-card">
+    <div class="modal-icon"><i class="fas fa-user-circle"></i></div>
+    <h3>¿Registrar sin foto?</h3>
+    <p>Se asignará una imagen por defecto. Puede cambiarla después</p>
+    <div class="modal-buttons">
+      <button class="btn-confirm" (click)="procederConRegistro(true)">Sí, continuar</button>
+      <button class="btn-cancel" (click)="cancelarModal()">No</button>
+    </div>
+  </div>
+</div>

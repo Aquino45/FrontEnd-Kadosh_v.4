@@ -1,0 +1,149 @@
+<div class="page">
+
+  <div class="toolbar">
+    <div>
+      <h1 class="title">Mis Facturas</h1>
+      <span class="accent"></span>
+    </div>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-card">
+    <div class="filter-row">
+      <div class="filter-field">
+        <span class="filter-lbl">Estado</span>
+        <select class="filter-select" title="Filtrar por estado" [(ngModel)]="filterEstado" (change)="filtrar()">
+          <option value="">Todos</option>
+          <option value="EMITIDA">Emitida</option>
+          <option value="ANULADA">Anulada</option>
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <span class="filter-lbl">Desde</span>
+        <input type="date" class="filter-input" title="Fecha desde" placeholder="dd/mm/aaaa"
+               [(ngModel)]="filterDesde" (change)="filtrar()" />
+      </div>
+
+      <div class="filter-field">
+        <span class="filter-lbl">Hasta</span>
+        <input type="date" class="filter-input" title="Fecha hasta" placeholder="dd/mm/aaaa"
+               [(ngModel)]="filterHasta" (change)="filtrar()" />
+      </div>
+
+      <button class="btn-limpiar" type="button" (click)="limpiar()">
+        <i class="fa-solid fa-rotate-left"></i> Limpiar
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="state-box" *ngIf="loading">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <p>Cargando tus facturas...</p>
+  </div>
+
+  <!-- Empty -->
+  <div class="state-box" *ngIf="!loading && facturas.length === 0">
+    <i class="fa-regular fa-file-lines empty-icon"></i>
+    <p>No tienes facturas registradas aún.</p>
+  </div>
+
+  <!-- Facturas list -->
+  <div class="facturas-list" *ngIf="!loading && facturas.length > 0">
+
+    <div class="factura-card"
+         *ngFor="let f of facturas"
+         [class.is-open]="facturaDetalle?.facturaId === f.facturaId"
+         [class.anulada]="f.estado === 'ANULADA'"
+         [class.emitida-card]="f.estado === 'EMITIDA'"
+         [class.anulada-card]="f.estado === 'ANULADA'">
+
+      <!-- Row: expand button + pdf button side-by-side (NOT nested) -->
+      <div class="factura-row">
+        <button type="button" class="factura-main"
+                [attr.aria-expanded]="facturaDetalle?.facturaId === f.facturaId"
+                (click)="toggleDetalle(f)">
+
+          <div class="factura-num-wrap">
+            <span class="num-label">N°</span>
+            <span class="num-value">{{ f.numero }}</span>
+          </div>
+
+          <div class="factura-fecha">
+            <i class="fa-regular fa-calendar"></i>
+            {{ f.fechaEmision | date:'dd/MM/yyyy · HH:mm' }}
+          </div>
+
+          <span class="estado-badge"
+                [class.emitida]="f.estado === 'EMITIDA'"
+                [class.anulada-badge]="f.estado === 'ANULADA'">
+            {{ f.estado }}
+          </span>
+
+          <div class="factura-total">
+            S/ {{ f.total | number:'1.2-2' }}
+          </div>
+
+          <i class="fa-solid fa-chevron-down expand-icon"
+             [class.rotated]="facturaDetalle?.facturaId === f.facturaId"></i>
+        </button>
+
+        <button type="button" class="btn-pdf"
+                title="Descargar PDF"
+                [disabled]="descargando === f.facturaId"
+                (click)="descargarPDF(f)">
+          <i class="fa-solid"
+             [class.fa-file-pdf]="descargando !== f.facturaId"
+             [class.fa-spinner]="descargando === f.facturaId"
+             [class.fa-spin]="descargando === f.facturaId"></i>
+        </button>
+      </div>
+
+      <!-- Detail panel (expanded) -->
+      <div class="factura-detail" *ngIf="facturaDetalle?.facturaId === f.facturaId">
+        <div class="detail-inner">
+          <h4 class="detail-title">Productos y servicios incluidos</h4>
+
+          <div class="detail-table-wrap">
+            <table class="detail-table">
+              <thead>
+                <tr>
+                  <th>Descripción</th>
+                  <th class="col-qty">Cant.</th>
+                  <th class="col-price">Precio Unit.</th>
+                  <th class="col-price">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let d of f.detalles">
+                  <td class="det-name">{{ d.productoNombre }}</td>
+                  <td class="col-qty">{{ d.cantidad }}</td>
+                  <td class="col-price">S/ {{ d.precioUnitario | number:'1.2-2' }}</td>
+                  <td class="col-price">S/ {{ d.subtotal | number:'1.2-2' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="totals-block">
+            <div class="total-row-sm">
+              <span>Subtotal</span>
+              <span>S/ {{ f.subtotal | number:'1.2-2' }}</span>
+            </div>
+            <div class="total-row-sm">
+              <span>IGV (18%)</span>
+              <span>S/ {{ f.igv | number:'1.2-2' }}</span>
+            </div>
+            <div class="total-row-final">
+              <span>TOTAL PAGADO</span>
+              <span>S/ {{ f.total | number:'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

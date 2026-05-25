@@ -1,0 +1,24 @@
+<div class="admin-shell" [class.sidebar-collapsed]="sidebarCollapsed">
+  
+  <header class="area-header">
+    <app-header-client></app-header-client>
+  </header>
+
+
+<aside class="area-sidebar">
+  <div class="force-fit">
+  <app-sidebar-client>
+  </app-sidebar-client>
+  <!-- app-sidebar-admin
+    [collapsed]="sidebarCollapsed"
+    (sidebarToggle)="toggleSidebar($event)">
+  </app-sidebar-admin-->
+  </div>
+</aside>
+
+<main class="main-area">
+  <div class="content-card">
+    <router-outlet></router-outlet>
+  </div>
+</main>
+</div>

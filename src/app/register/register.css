@@ -1,0 +1,570 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* --- CONTENEDOR PRINCIPAL (Fondo intacto) --- */
+.register-container {
+  position: relative;
+  background-color: #f5f6fa;
+  min-height: 100vh; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url('/assets/Images/bg_login.jpg');
+  background-size: 550px 550px;
+  background-repeat: repeat;
+  background-position: top left;
+  padding: 40px 20px;
+}
+
+/* Capa morada de Wimiline */
+.register-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(84, 43, 99, 0.90);
+  z-index: 1;
+}
+
+/* --- CAJA DEL FORMULARIO --- */
+.register-box {
+  position: relative;
+  z-index: 2;
+  background-color: white;
+  padding: 30px;
+  box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+}
+
+.logo img {
+  max-width: 150px;
+  height: auto;
+  display: block;
+  margin: 0 auto 0px;
+}
+
+h2 {
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+/* --- SECCIÓN DE FOTO DE PERFIL --- */
+.photo-section {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-wrapper {
+  width: 95px;
+  height: 95px;
+  border-radius: 50%;
+  overflow: visible; /* Permitir que la 'X' sobresalga si es necesario */
+  position: relative;
+  border: 3px solid #6a4c9c;
+  background-color: #c6c6c6;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  cursor: pointer;
+  display: block;
+}
+
+.overlay-icon {
+  position: absolute;
+  bottom: 0;
+  background: rgba(106, 76, 156, 0.7);
+  width: 100%;
+  color: white;
+  font-size: 11px;
+  padding: 3px 0;
+  border-radius: 0 0 50px 50px;
+  pointer-events: none; /* Deja pasar el click al wrapper/img */
+}
+
+/* Botón 'Quitar' foto (Igual a New Client) */
+.btn-remove-photo {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 3;
+}
+
+.photo-label {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+}
+
+
+
+/* Esto arregla los cuadrados. 
+   Le dice a los iconos: "Ustedes ignoren a Montserrat" */
+.icon, i, [class^="fa-"], [class*=" fa-"] {
+  font-family: "Font Awesome 6 Free" !important;
+  font-weight: 900; /* Requerido para iconos solid */
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* El resto de tu CSS se mantiene igual, 
+   pero asegúrate de que .input-group .icon NO tenga font-family */
+.input-group .icon {
+  position: absolute;
+  left: 12px;
+  
+  /* 📌 CAMBIO CLAVE: Usa píxeles fijos, no porcentajes */
+  top: 20.5px; 
+  transform: translateY(-50%); 
+
+  color: #6a4c9c;
+  z-index: 3;
+  /* Evita que el texto del error afecte la posición */
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px 10px 10px 35px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  transition: 0.3s;
+}
+
+.input-group input:focus {
+  border-color: #6a4c9c;
+  box-shadow: 0 0 5px rgba(106, 76, 156, 0.3);
+}
+/* --- INPUTS Y VALIDACIONES --- */
+.input-group {
+  margin-bottom: 15px;
+  position: relative;
+  text-align: left;
+}
+
+/* =========================================
+   ESTILOS PARA FECHA DE NACIMIENTO (TRIPLE INPUT)
+   ========================================= */
+
+/* Contenedor que simula el cuerpo del input */
+.fecha-inputs-container {
+  display: flex;
+  align-items: center;
+  flex: 1; 
+  padding: 0 5px;
+  height: 100%; /* Para alinearse con el icono */
+}
+
+/* Inputs individuales sin bordes internos */
+.fecha-inputs-container input {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  text-align: center;
+  padding: 0 !important;
+  font-size: 15px;
+  color: #333;
+}
+
+/* Ancho específico para cada bloque */
+.input-mini {
+  width: 30px !important; /* Para DD y MM */
+}
+
+.input-anio {
+  width: 55px !important; /* Para AAAA */
+}
+
+/* El separador "/" */
+.separator {
+  color: #6a4c9c;
+  font-weight: 600;
+  margin: 0 2px;
+  user-select: none; /* Evita que el usuario lo seleccione */
+}
+
+/* Ajuste general para el grupo de fecha */
+.input-group.fecha-group {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding-left: 35px; /* Espacio para el icono de calendario */
+  min-height: 40px;
+}
+
+/* Asegura que el borde cambie cuando el formulario detecte error */
+.fecha-group.invalid {
+  border-color: #ff4d4d;
+}
+
+/* Si el grupo tiene el foco (haciendo click en cualquier input) */
+.fecha-group:focus-within {
+  border-color: #6a4c9c;
+  box-shadow: 0 0 5px rgba(106, 76, 156, 0.3);
+}
+
+
+/* 1. Aseguramos que el contenedor de fecha tenga la misma altura que los demás */
+.input-group.fecha-group {
+  display: flex;
+  align-items: center; /* Centra verticalmente el contenido */
+  height: 45px; /* Ajusta este valor según la altura de tus otros inputs */
+  padding-left: 0; /* Quitamos el padding para manejarlo interno */
+  position: relative;
+}
+
+/* 2. Reposicionamos el icono SOLO para el grupo de fecha */
+.fecha-group .icon {
+  position: absolute;
+  left: 12px;
+  top: 50% !important; /* Forzamos el centro exacto */
+  transform: translateY(-50%) !important;
+  margin: 0;
+}
+
+/* 3. El contenedor de los 3 inputs debe empujar el texto para no chocar con el icono */
+.fecha-inputs-container {
+  margin-left: 35px; /* Deja el espacio exacto para el icono */
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+
+
+
+
+
+
+/* Mensajes de error en rojo */
+.err {
+  color: #ff4d4d;
+  font-size: 11px;
+  display: block;
+  margin-top: 3px;
+  font-weight: 500;
+  padding-left: 5px;
+}
+
+.terms-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 15px;
+  color: #444;
+}
+
+/* --- BOTONES --- */
+button[type="submit"] {
+  background-color: #6a4c9c;
+  color: white;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+button[type="submit"]:hover {
+  background-color: #563b80;
+}
+
+button[type="submit"]:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Botón 'Ya tengo cuenta' (Borde morado) */
+.btn-back-login {
+  background-color: white !important;
+  color: #6a4c9c !important;
+  border: 2px solid #6a4c9c !important;
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 15px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btn-back-login:hover {
+  background-color: #f3f0f7 !important;
+  color: #563b80 !important;
+  border-color: #563b80 !important;
+}
+
+/* --- RESPONSIVO --- */
+@media (max-width: 500px) {
+  .register-box {
+    width: 95%;
+    padding: 20px;
+  }
+}
+
+
+/* --- EFECTO DE DESENFOQUE --- */
+/* Esta clase se aplica al contenedor principal cuando el modal está abierto */
+.blur-content {
+  filter: blur(5px);
+  pointer-events: none; /* Bloquea clicks en el formulario de atrás */
+  transition: filter 0.3s ease;
+}
+
+/* --- ESTILOS DEL MODAL --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* Fondo oscuro semitransparente */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999; /* Siempre por encima de todo */
+  backdrop-filter: blur(4px); /* Refuerzo del desenfoque para navegadores modernos */
+}
+
+.modal-card {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease-out; /* Animación de entrada suave */
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-icon {
+  font-size: 50px;
+  color: #6a4c9c; /* Color morado corporativo de Kadosh */
+  margin-bottom: 15px;
+}
+
+.modal-card h3 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 1.4rem;
+}
+
+.modal-card p {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 25px;
+}
+
+/* --- BOTONES DEL MODAL --- */
+.modal-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.btn-confirm {
+  flex: 1;
+  background: #6a4c9c;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-confirm:hover {
+  background: #563b80;
+}
+
+.btn-cancel {
+  flex: 1;
+  background: white;
+  color: #6a4c9c;
+  border: 2px solid #6a4c9c;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+  background: #f3f0f7;
+}
+
+
+/* =========================================
+   ESTILOS PARA EL TOGGLE (SWITCH)
+   ========================================= */
+.apo-toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 15px 0;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
+}
+
+.toggle-label {
+  font-size: 0.9rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 22px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px; width: 16px;
+  left: 3px; bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #16a34a; /* Color azul para Wimiline */
+}
+
+input:checked + .slider:before {
+  transform: translateX(22px);
+}
+
+/* =========================================
+   SECCIÓN ANIMADA DEL APODERADO
+   ========================================= */
+.apoderado-section {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* Animación fluida */
+  transform: translateY(-10px);
+  pointer-events: none; /* Evita que se clickee mientras está oculto */
+}
+
+.apoderado-section.show {
+  max-height: 800px; /* Suficiente para todos los campos */
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  margin-bottom: 20px;
+  padding: 15px 5px;
+  border-top: 1px dashed #ddd;
+  border-bottom: 1px dashed #ddd;
+}
+
+.apo-title {
+  color: #16a34a;
+  font-size: 0.95rem;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+/* Ajuste para que los iconos de apoderado se vean distintos */
+.apoderado-section .icon {
+  color: #16a34a; 
+}
+
+
+
+
+
+/* NUEVOS AJUSTES PARA EL OJO Y EL ERROR */
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* El ojito dentro del input */
+.eye-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6a4c9c; /* El morado que ya usas */
+  z-index: 4;
+  font-size: 14px;
+}
+
+.err {
+  margin-top: 4px; /* Espacio pequeño entre input y error */
+  align-self: center; /* Alineado a la izquierda */
+}

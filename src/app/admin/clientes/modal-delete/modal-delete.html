@@ -1,0 +1,35 @@
+<div
+  class="modal-overlay"
+  *ngIf="open"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="confirm-title"
+  aria-describedby="confirm-desc"
+  (keydown.escape)="onClose()"
+>
+  <div class="modal">
+    
+    <div class="modal-header">
+      <h3 id="confirm-title">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        Confirmar eliminación
+      </h3>
+      <button class="icon-close" (click)="onClose()" aria-label="Cerrar">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    
+    <div class="modal-body" id="confirm-desc">
+      <p style="margin:0">
+        ¿Está seguro de eliminar este usuario?
+      </p>
+    </div>
+
+  
+    <div class="modal-footer">
+      <button class="btn-ghost" type="button" (click)="onClose()">Cancelar</button>
+      <button class="btn-danger" type="button" (click)="onConfirm()">Confirmar</button>
+    </div>
+  </div>
+</div>

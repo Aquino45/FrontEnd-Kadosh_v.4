@@ -1,0 +1,96 @@
+
+<div class="clientes-page">
+  <ng-container *ngIf="!showForm; else formView">
+
+    <div class="toolbar">
+      <div class="title-wrap">
+        <h1 class="title">Lista de clientes</h1>
+        <span class="accent"></span>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button type="button" class="btn-primary" (click)="newClient()">
+        <i class="fa-solid fa-user-plus"></i>
+        Nuevo cliente
+      </button>
+
+      <form class="filters-inline" (ngSubmit)="onSearch()" #filterForm="ngForm">
+        <input type="text" name="dni" [(ngModel)]="filterDni" placeholder="DNI..." maxlength="8" />
+        <input type="text" name="nombre" [(ngModel)]="filterNombre" placeholder="Nombre..." />
+        <button type="submit" class="btn-search" title="Buscar">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <button type="button" class="btn-clear" (click)="onClear()">Limpiar</button>
+      </form>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="state-center">
+      <i class="fa-solid fa-spinner fa-spin"></i> Cargando clientes...
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="!loading && loadError" class="state-center error-text">
+      <i class="fa-solid fa-triangle-exclamation"></i> {{ loadError }}
+    </div>
+
+    <!-- Cards grid -->
+    <div class="clients-grid" *ngIf="!loading && !loadError && clients.length > 0">
+      <div class="client-card" *ngFor="let client of clients">
+
+        <div class="card-avatar">
+          <img *ngIf="client.imagenUrl" [src]="client.imagenUrl" [alt]="client.nombre + ' ' + client.apellido" [title]="client.nombre + ' ' + client.apellido" />
+          <span *ngIf="!client.imagenUrl" class="avatar-initials">
+            {{ (client.nombre[0] || '') }}{{ (client.apellido[0] || '') }}
+          </span>
+        </div>
+
+        <div class="card-body">
+          <p class="client-name">{{ client.nombre }} {{ client.apellido }}</p>
+          <div class="client-meta">
+            <span><i class="fa-solid fa-id-card"></i> {{ client.dni }}</span>
+            <span *ngIf="client.telefono"><i class="fa-solid fa-phone"></i> {{ client.telefono }}</span>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <button type="button" class="btn-action btn-view" title="Ver detalle" (click)="openInfo(client)">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+          <button type="button" class="btn-action btn-edit" title="Editar" (click)="editClient(client)">
+            <i class="fa-solid fa-pen-to-square"></i>
+          </button>
+          <button type="button" class="btn-action btn-delete" title="Eliminar" (click)="openDeleteConfirm(client)">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Empty -->
+    <div class="state-center empty" *ngIf="!loading && !loadError && clients.length === 0">
+      <i class="fa-solid fa-user-slash"></i>
+      <p>No hay clientes registrados.</p>
+    </div>
+
+  </ng-container>
+</div>
+
+<app-modal-info
+  [open]="isInfoOpen"
+  [client]="clientToView"
+  (close)="closeInfo()"
+></app-modal-info>
+
+<app-modal-delete
+  [open]="isDeleteOpen"
+  [client]="clientToDelete"
+  (close)="closeDeleteModal()"
+  (confirm)="deleteClientConfirm()"
+></app-modal-delete>
+
+<ng-template #formView>
+  <app-new-client (close)="closeForm()"></app-new-client>
+</ng-template>

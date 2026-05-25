@@ -1,0 +1,119 @@
+:host {
+  
+  --header-h: 75px;
+  --sidebar-w: 261px;
+  --sidebar-w-collapsed: 84px;
+  
+  --content-min-h: 100dvh;
+  
+  --content-gap: 0px;
+  --bg: #f6f5fa;
+  --content-px: 120px;
+  
+  --content-py: 40px;
+  
+  --container-max: 100%;
+ 
+  --container-pad: 40px;
+ 
+  --container-radius: 16px;
+ 
+}
+
+
+.admin-shell {
+  display: grid;
+  grid-template-rows: var(--header-h) minmax(0, 1fr);
+  
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+  
+  grid-template-areas:
+    "header header"
+    "sidebar content";
+  min-height: var(--content-min-h);
+  background: var(--bg);
+  gap: var(--content-gap);
+  
+}
+
+.area-header {
+  grid-area: header;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+}
+
+.area-sidebar {
+  grid-area: sidebar;
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100dvh - var(--header-h));
+  overflow: auto;
+  background: transparent;
+  z-index: 50;
+}
+
+.main-area {
+  grid-area: content;
+  padding: var(--content-py) var(--content-px);
+  overflow: auto;
+  border-top-left-radius: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+
+.content-card {
+  width: 100%;
+  margin-top: 20px;
+  max-width: var(--container-max);
+  background: #ffffff;
+  border: 1px solid #e2e6f3;
+  border-radius: var(--container-radius);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, .04),
+    0 8px 24px rgba(0, 0, 0, .06);
+  padding: var(--container-pad);
+  min-height: 68vh;
+}
+
+
+.admin-shell.sidebar-collapsed {
+  grid-template-columns: var(--sidebar-w-collapsed) 1fr;
+}
+
+@media (max-width: 900px) {
+  :host {
+    --header-h: 72px;
+    --sidebar-w: 220px;
+    --content-px: 16px;
+    --content-py: 16px;
+    --container-pad: 16px;
+  }
+
+  .admin-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: var(--header-h) 1fr;
+    grid-template-areas:
+      "header"
+      "content";
+  }
+
+  .area-sidebar {
+    position: fixed;
+    inset: var(--header-h) auto 0 0;
+    width: var(--sidebar-w);
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+  }
+
+  .admin-shell.sidebar-collapsed .area-sidebar {
+    transform: translateX(0);
+  }
+
+  .area-content {
+    padding: 20px;
+  }
+}

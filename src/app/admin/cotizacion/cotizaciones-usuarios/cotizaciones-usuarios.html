@@ -1,0 +1,45 @@
+<div class="page">
+    <div class="list-container" *ngIf="!verDetalle">
+        <div class="toolbar">
+            <h1 class="title">Historial de Cotizaciones</h1>
+            <button type="button" class="back-link" (click)="volver.emit()">Regresar</button>
+        </div>
+        <span class="accent"></span>
+
+        <div *ngIf="loading" class="loading-state">
+            <i class="fa-solid fa-spinner fa-spin"></i> Cargando...
+        </div>
+
+        <div class="grid-cards" *ngIf="!loading">
+            <div class="card-item" *ngFor="let c of cotizaciones" [class.pagado]="c.estadoPago === true || c.estadoPago === 'PAGADO'">
+                <div class="card-header">
+                    <span class="date-label">FECHA</span>
+                    <p class="date-value">{{ c.fechaCreacion }}</p>
+                </div>
+
+                <div class="card-body">
+                    <div class="info-group">
+                        <span class="lbl">TOTAL</span>
+                        <p class="txt total-txt">S/ {{ c.total | number:'1.2-2' }}</p>
+                    </div>
+                    <div class="info-group">
+                        <span class="lbl">ESTADO</span>
+                        <p class="status-pill" [class.paid]="c.estadoPago === true || c.estadoPago === 'PAGADO'">
+                            {{ (c.estadoPago === true || c.estadoPago === 'PAGADO') ? 'PAGADO' : 'No pagado' }}
+                        </p>
+                    </div>
+                </div>
+                
+                <button class="btn-detail" (click)="onVerDetalleCompleto(c)">
+                    Ver Detalle
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <app-ver-completo-cotizacion 
+        *ngIf="verDetalle && cotizacionSeleccionada" 
+        [cotizacionId]="cotizacionSeleccionada.cotizacionId"
+        (close)="onCerrarDetalle()">
+    </app-ver-completo-cotizacion>
+</div>

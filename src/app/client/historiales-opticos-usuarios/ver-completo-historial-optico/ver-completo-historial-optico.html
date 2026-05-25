@@ -1,0 +1,287 @@
+<div class="hist-page">
+  
+  <div class="toolbar">
+    <h1 class="title">{{ modoEdicion ? 'Editar Historial' : 'Ver Historial' }}</h1>
+    
+     <div class="actions-top" style="display: flex; gap: 12px; align-items: center;">
+      <!--
+      <button *ngIf="!modoEdicion" type="button" class="btn-edit" (click)="activarEdicion()"
+        style="background: #f7f5ff; border: 1px solid #dad3ff; color: #5b2b88; padding: 8px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+        <i class="fa-solid fa-pen-to-square"></i> Editar
+      </button> -->
+
+      <button class="back-link" (click)="close.emit()" [disabled]="loading">Regresar</button>
+    </div> 
+    
+  </div> 
+  <span class="accent"></span>
+  <!--
+  <div class="search-row" *ngIf="modoEdicion">
+    <input type="text" class="search-input" placeholder="DNI..." [(ngModel)]="search.dni" name="searchDni"
+      (ngModelChange)="onSearchChange()" (keydown.enter)="onSearchClick()" />
+
+    <input type="text" class="search-input" placeholder="Nombre..." [(ngModel)]="search.nombre" name="searchNombre"
+      (ngModelChange)="onSearchChange()" (keydown.enter)="onSearchClick()" />
+
+    <button type="button" class="btn-search" (click)="onSearchClick()">
+      <i class="fa-solid fa-magnifying-glass"></i>
+    </button>
+
+    <button type="button" class="btn-clear" (click)="onClearSearch()">
+      Limpiar
+    </button>
+  </div> -->
+  <!--
+  <div class="search-suggestions" *ngIf="suggestions?.length && modoEdicion">
+    <button type="button" class="suggestion-item" *ngFor="let u of suggestions" (click)="onSelectUser(u)">
+      <span class="sug-name">{{ u.nombre }} {{ u.apellido }}</span>
+      <span class="sug-meta">DNI: {{ u.dni }}</span>
+    </button>
+  </div>
+  -->
+
+  <form class="hist-grid" [formGroup]="form">
+
+    <section class="card head">
+      <div class="row">
+        <label>
+          <span class="lbl">Fecha</span>
+          <input type="date" formControlName="fecha" />
+        </label>
+        <label class="grow">
+          <span class="lbl">Paciente</span>
+          <input type="text" placeholder="Nombre y apellidos" formControlName="paciente" />
+        </label>
+      </div>
+
+      <div class="row">
+        <label>
+          <span class="lbl">Teléfono</span>
+          <input type="tel" placeholder="Ej. 987 654 321" formControlName="telefono" />
+        </label>
+        <label>
+          <span class="lbl">Edad</span>
+          <input type="number" min="0" placeholder="Ej. 28" formControlName="edad" />
+        </label>
+        <label>
+          <span class="lbl">DNI</span>
+          <input type="text" placeholder="Documento" formControlName="dni" />
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3 class="sec-title">Visión de lejos</h3>
+      <div class="table-wrap">
+        <table class="rx-table">
+          <thead>
+            <tr>
+              <th class="ojo">OJO</th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('ESF_VL', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('ESF_VL', $event)" (touchstart)="onHeaderTouchStart('ESF_VL', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                ESF
+              </th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('CIL_VL', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('CIL_VL', $event)" (touchstart)="onHeaderTouchStart('CIL_VL', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                CIL
+              </th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('EJE_VL', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('EJE_VL', $event)" (touchstart)="onHeaderTouchStart('EJE_VL', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                EJE
+              </th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('DIP_VL', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('DIP_VL', $event)" (touchstart)="onHeaderTouchStart('DIP_VL', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                DIP
+              </th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('AV_VL', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('AV_VL', $event)" (touchstart)="onHeaderTouchStart('AV_VL', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                AV
+              </th>
+            </tr>
+          </thead>
+
+          <tbody formArrayName="lejos">
+            <tr *ngFor="let row of lejosFA.controls; let i = index" [formGroupName]="i">
+              <td class="ojo">
+                <input class="eye" formControlName="ojo" />
+              </td>
+              <td><input type="text" formControlName="esf" placeholder="0.00" /></td>
+              <td><input type="text" formControlName="cil" placeholder="0.00" /></td>
+              <td><input type="text" formControlName="eje" placeholder="0°" /></td>
+              <td><input type="text" formControlName="dip" placeholder="--" /></td>
+              <td><input type="text" formControlName="av" placeholder="20/20" /></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3 class="sec-title">Visión de cerca</h3>
+      <div class="table-wrap">
+        <table class="rx-table">
+          <thead>
+            <tr>
+              <th class="ojo">OJO</th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('ESF_VC', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('ESF_VC', $event)" (touchstart)="onHeaderTouchStart('ESF_VC', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                ESF
+              </th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('CIL_VC', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('CIL_VC', $event)" (touchstart)="onHeaderTouchStart('CIL_VC', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                CIL
+              </th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('EJE_VC', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('EJE_VC', $event)" (touchstart)="onHeaderTouchStart('EJE_VC', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                EJE
+              </th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('DIP_VC', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('DIP_VC', $event)" (touchstart)="onHeaderTouchStart('DIP_VC', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                DIP
+              </th>
+              <th class="rx-header" (mouseenter)="onHeaderEnter('AV_VC', $event)" (mouseleave)="onHeaderLeave()"
+                (click)="onHeaderClick('AV_VC', $event)" (touchstart)="onHeaderTouchStart('AV_VC', $event)"
+                (touchend)="onHeaderTouchEnd($event)">
+                AV
+              </th>
+            </tr>
+          </thead>
+
+          <tbody formArrayName="cerca">
+            <tr *ngFor="let row of cercaFA.controls; let i = index" [formGroupName]="i">
+              <td class="ojo">
+                <input class="eye" formControlName="ojo" />
+              </td>
+              <td><input type="text" formControlName="esf" placeholder="0.00" /></td>
+              <td><input type="text" formControlName="cil" placeholder="0.00" /></td>
+              <td><input type="text" formControlName="eje" placeholder="0°" /></td>
+              <td><input type="text" formControlName="dip" placeholder="--" /></td>
+              <td><input type="text" formControlName="av" placeholder="20/20" /></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card analysis-section">
+      <div class="analysis-header">
+        <h3 class="sec-title">Interpretación de Resultados</h3>
+        <button *ngIf="modoEdicion" type="button" class="btn-analyze" (click)="analizarDatosCompletos()">
+          <i class="fa-solid fa-layer-group"></i> {{ modoEdicion ? 'Recalcular Análisis' : 'Analizar 4 Cuadrantes' }}
+        </button>
+      </div>
+
+      <div class="analysis-content" *ngIf="analisisResultados">
+        <h4 class="sub-title-analysis">VISIÓN DE LEJOS</h4>
+        <div class="analysis-grid">
+          <div class="analysis-box od-color">
+            <span class="eye-label">OJO DERECHO (OD)</span>
+            <p class="res-text">{{ analisisResultados.odLejos }}</p>
+          </div>
+          <div class="analysis-box oi-color">
+            <span class="eye-label">OJO IZQUIERDO (OI)</span>
+            <p class="res-text">{{ analisisResultados.oiLejos }}</p>
+          </div>
+        </div>
+
+        <h4 class="sub-title-analysis" style="margin-top: 20px;">VISIÓN DE CERCA</h4>
+        <div class="analysis-grid">
+          <div class="analysis-box od-color">
+            <span class="eye-label">OJO DERECHO (OD)</span>
+            <p class="res-text">{{ analisisResultados.odCerca }}</p>
+          </div>
+          <div class="analysis-box oi-color">
+            <span class="eye-label">OJO IZQUIERDO (OI)</span>
+            <p class="res-text">{{ analisisResultados.oiCerca }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3 class="sec-title">Imágenes del Historial</h3>
+
+      <div class="img-row">
+        <div class="img-col">
+          <label class="lbl">Imagen de refracción</label>
+          <button *ngIf="modoEdicion" type="button" class="img-btn" (click)="refInput.click()" [disabled]="loading">
+            <i class="fa-solid fa-upload"></i> Subir imagen
+          </button>
+          <input type="file" #refInput accept="image/*" hidden (change)="onImageSelect($event, 'refraccion')" />
+          <img *ngIf="preview.refraccion" [src]="preview.refraccion" class="preview-img"
+            (click)="openViewer(preview.refraccion!)" />
+        </div>
+
+        <div class="img-col">
+          <label class="lbl">Lenzometría</label>
+          <button *ngIf="modoEdicion" type="button" class="img-btn" (click)="lenzoInput.click()" [disabled]="loading">
+            <i class="fa-solid fa-upload"></i> Subir imagen
+          </button>
+          <input type="file" #lenzoInput accept="image/*" hidden (change)="onImageSelect($event, 'lenzometria')" />
+          <img *ngIf="preview.lenzometria" [src]="preview.lenzometria" class="preview-img"
+            (click)="openViewer(preview.lenzometria!)" />
+        </div>
+
+        <div class="img-col">
+          <label class="lbl">Keratometría</label>
+          <button *ngIf="modoEdicion" type="button" class="img-btn" (click)="keraInput.click()" [disabled]="loading">
+            <i class="fa-solid fa-upload"></i> Subir imagen
+          </button>
+          <input type="file" #keraInput accept="image/*" hidden (change)="onImageSelect($event, 'keratometria')" />
+          <img *ngIf="preview.keratometria" [src]="preview.keratometria" class="preview-img"
+            (click)="openViewer(preview.keratometria!)" />
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3 class="sec-title">Recomendaciones</h3>
+      <textarea class="notes" rows="4" formControlName="recomendaciones"
+        placeholder="Indicaciones, control, tipo de lente, etc."></textarea>
+
+      <div class="evaluador-info" *ngIf="!modoEdicion"
+        style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9e7f3;">
+        <span class="lbl" style="font-size: 10px; color: #7d7693;">ATENDIDO POR:</span>
+        <p style="font-weight: 700; color: #582865; margin-top: 4px;">
+          <i class="fa-solid fa-user-doctor"></i> {{ historial.evaluador }}
+        </p>
+      </div>
+    </section>
+
+    <div class="form-actions" *ngIf="modoEdicion">
+      <button class="btn-primary" type="button" (click)="guardarCambios()"
+        [disabled]="loading || form.invalid || !hayCambiosReales"> {{ loading ? 'Guardando…' : 'Confirmar Cambios' }}
+      </button>
+
+      <button class="btn-ghost" type="button" (click)="cancelarEdicion()" [disabled]="loading">
+        Cancelar
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<div class="img-viewer" *ngIf="viewer.open">
+  <button class="viewer-close" (click)="closeViewer()">✕</button>
+  <div class="viewer-box" (wheel)="zoom($event)" (pointerdown)="onViewerPointerDown($event)"
+    (pointermove)="onViewerPointerMove($event)" (pointerup)="onViewerPointerUp($event)"
+    (pointercancel)="onViewerPointerUp($event)" (pointerleave)="onViewerPointerUp($event)"
+    (contextmenu)="onViewerContextMenu($event)">
+    <img [src]="viewer.src" alt="" class="viewer-img" draggable="false" (dragstart)="$event.preventDefault()"
+      [style.transform]="'translate(' + viewer.posX + 'px,' + viewer.posY + 'px) scale(' + viewer.scale + ')'" />
+  </div>
+</div>
+
+<div class="rx-tooltip" *ngIf="tooltip.visible" [style.left.px]="tooltip.x" [style.top.px]="tooltip.y">
+  <div class="rx-tooltip-title">{{ tooltip.title }}</div>
+  <div class="rx-tooltip-body">{{ tooltip.description }}</div>
+</div>

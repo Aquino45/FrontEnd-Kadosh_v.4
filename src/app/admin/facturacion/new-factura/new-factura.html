@@ -1,0 +1,197 @@
+<div class="nf-page">
+
+  <!-- HEADER -->
+  <div class="nf-header">
+    <div>
+      <h1 class="nf-title">Emitir Nueva Factura</h1>
+      <p class="nf-subtitle">Selecciona una cotización pagada para generar su factura.</p>
+    </div>
+    <button type="button" class="btn-cancel-top" (click)="cancelar()">
+      <i class="fa-solid fa-arrow-left"></i> Volver
+    </button>
+  </div>
+
+  <!-- PASO 1: Buscar cliente -->
+  <section class="nf-section">
+    <div class="nf-section-title">
+      <span class="step-num">1</span> Buscar Cliente
+    </div>
+    <div class="nf-section-body">
+
+      <!-- Fila de búsqueda estilo cotizaciones -->
+      <div class="search-row">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="DNI del cliente..."
+          [(ngModel)]="buscarDni"
+          (keydown)="onKeydown($event)"
+        />
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Nombre del cliente..."
+          [(ngModel)]="buscarNombre"
+          (keydown)="onKeydown($event)"
+        />
+        <button type="button" class="btn-search" title="Buscar cliente" (click)="buscarCliente()" [disabled]="buscandoCliente || (!buscarDni.trim() && !buscarNombre.trim())">
+          <i class="fa-solid" [ngClass]="buscandoCliente ? 'fa-spinner fa-spin' : 'fa-magnifying-glass'"></i>
+        </button>
+        <button type="button" class="btn-clear" (click)="limpiarBusqueda()">Limpiar</button>
+      </div>
+
+      <!-- Lista de sugerencias -->
+      <div class="search-suggestions" *ngIf="suggestions.length > 0">
+        <button type="button" class="suggestion-item" *ngFor="let u of suggestions" (click)="seleccionarCliente(u)">
+          <span class="sug-name">{{ u.nombre }} {{ u.apellido }}</span>
+          <span class="sug-meta">DNI: {{ u.dni }} | {{ u.email ?? 'Sin email' }}</span>
+        </button>
+      </div>
+
+      <!-- Card cliente seleccionado -->
+      <div class="cliente-card" *ngIf="cliente">
+        <div class="cliente-avatar">{{ (cliente.nombre ?? 'C')[0] }}{{ (cliente.apellido ?? '')[0] }}</div>
+        <div class="cliente-info">
+          <strong>{{ cliente.nombre }} {{ cliente.apellido }}</strong>
+          <span>DNI: {{ cliente.dni }} · {{ cliente.email ?? 'Sin email' }}</span>
+        </div>
+        <span class="badge-ok"><i class="fa-solid fa-check-circle"></i> Seleccionado</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PASO 2: Cotizaciones pagadas -->
+  <section class="nf-section" *ngIf="cliente">
+    <div class="nf-section-title">
+      <span class="step-num">2</span> Cotizaciones Pagadas — Pendientes de Facturar
+    </div>
+    <div class="nf-section-body">
+
+      <div class="loading-row" *ngIf="loadingCotizaciones">
+        <i class="fa-solid fa-spinner fa-spin"></i> Cargando cotizaciones...
+      </div>
+
+      <div class="empty-cot" *ngIf="!loadingCotizaciones && cotizaciones.length === 0">
+        <i class="fa-solid fa-file-circle-xmark"></i>
+        <p>No hay cotizaciones pagadas pendientes de facturar para este cliente.</p>
+      </div>
+
+      <!-- Split: lista + preview -->
+      <div class="cot-split" *ngIf="!loadingCotizaciones && cotizaciones.length > 0">
+
+        <div class="cot-list">
+          <div
+            class="cot-card"
+            *ngFor="let cot of cotizaciones"
+            [class.selected]="cotizacionSel?.cotizacionId === cot.cotizacionId"
+            (click)="seleccionarCotizacion(cot)"
+          >
+            <div class="cot-check">
+              <i class="fa-solid" [ngClass]="cotizacionSel?.cotizacionId === cot.cotizacionId ? 'fa-circle-check' : 'fa-circle'"></i>
+            </div>
+            <div class="cot-info">
+              <div class="cot-id">#{{ truncId(cot.cotizacionId) }}</div>
+              <div class="cot-fecha">
+                <i class="fa-regular fa-calendar"></i>
+                {{ formatFecha(cot.fechaCreacion ?? cot.fecha) }}
+              </div>
+              <div class="cot-items" *ngIf="cot.detalles?.length || cot.items?.length">
+                {{ (cot.detalles ?? cot.items)?.length }} ítem(s)
+              </div>
+            </div>
+            <div class="cot-total">
+              <span class="badge-pagado"><i class="fa-solid fa-check"></i> Pagada</span>
+              <div class="cot-monto" *ngIf="cot.total">S/ {{ cot.total | number:'1.2-2' }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel de previsualización -->
+        <div class="cot-preview-wrap">
+
+          <div class="cot-preview-empty" *ngIf="!cotizacionSel">
+            <i class="fa-regular fa-file-lines"></i>
+            <p>Selecciona una cotización<br>para ver el detalle</p>
+          </div>
+
+          <div class="prev-loading" *ngIf="cotizacionSel && loadingDetalle">
+            <i class="fa-solid fa-spinner fa-spin"></i> Cargando detalle...
+          </div>
+
+          <div class="cot-preview-card" *ngIf="cotizacionSel && !loadingDetalle && cotizacionDetalle">
+            <div class="prev-header">
+              <div>
+                <div class="prev-brand-name">KADOSH</div>
+                <div class="prev-brand-sub">Óptica</div>
+              </div>
+              <div class="prev-header-right">
+                <div class="prev-num">COTIZACIÓN</div>
+                <div class="prev-id">#{{ truncId(cotizacionSel.cotizacionId) }}</div>
+              </div>
+            </div>
+
+            <div class="prev-client">
+              <div class="prev-client-name">{{ cotizacionDetalle.cliente }}</div>
+              <div class="prev-client-meta">{{ formatFecha(cotizacionDetalle.fechaCreacion) }}</div>
+            </div>
+
+            <table class="prev-table" *ngIf="cotizacionDetalle.productos?.length">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th class="prev-col-r">Cant.</th>
+                  <th class="prev-col-r">P. Unit.</th>
+                  <th class="prev-col-r">Sub.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let p of cotizacionDetalle.productos">
+                  <td>{{ p.producto }}</td>
+                  <td class="prev-col-r">{{ p.cantidad }}</td>
+                  <td class="prev-col-r">S/ {{ p.precioUnitario | number:'1.2-2' }}</td>
+                  <td class="prev-col-r">S/ {{ p.subtotal | number:'1.2-2' }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="prev-no-items" *ngIf="!cotizacionDetalle.productos?.length">
+              Sin detalle de productos disponible.
+            </div>
+
+            <div class="prev-totales">
+              <div class="prev-total-row"><span>Subtotal</span><span>S/ {{ prevSubtotal | number:'1.2-2' }}</span></div>
+              <div class="prev-total-row"><span>IGV (18%)</span><span>S/ {{ prevIgv | number:'1.2-2' }}</span></div>
+              <div class="prev-total-final"><span>TOTAL</span><span>S/ {{ prevTotal | number:'1.2-2' }}</span></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PASO 3: Emitir -->
+  <section class="nf-section nf-section-emit" *ngIf="cotizacionSel">
+    <div class="nf-section-title">
+      <span class="step-num">3</span> Emitir Factura
+    </div>
+    <div class="nf-section-body emit-body">
+      <div class="emit-info">
+        <i class="fa-solid fa-circle-info"></i>
+        Se emitirá la factura para la cotización <strong>#{{ truncId(cotizacionSel.cotizacionId) }}</strong>
+        del cliente <strong>{{ cliente?.nombre }} {{ cliente?.apellido }}</strong>.
+        El número correlativo se asignará automáticamente.
+      </div>
+      <div class="emit-actions">
+        <button type="button" class="btn-cancel" (click)="cancelar()" [disabled]="emitiendo">Cancelar</button>
+        <button type="button" class="btn-emit" (click)="emitirFactura()" [disabled]="emitiendo">
+          <i class="fa-solid" [ngClass]="emitiendo ? 'fa-spinner fa-spin' : 'fa-file-invoice-dollar'"></i>
+          {{ emitiendo ? 'Emitiendo...' : 'Emitir Factura' }}
+        </button>
+      </div>
+    </div>
+  </section>
+
+</div>

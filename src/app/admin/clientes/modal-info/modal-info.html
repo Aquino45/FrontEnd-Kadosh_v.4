@@ -1,0 +1,132 @@
+<div class="modal-overlay" *ngIf="open" role="dialog" aria-modal="true" aria-labelledby="info-title"
+  (keydown.escape)="onClose()">
+  
+  <div class="modal">
+    
+    <div class="modal-header">
+      <h3 id="info-title">
+        <i class="fa-solid fa-address-card"></i>
+        Información del Cliente
+      </h3>
+      <button class="icon-close" (click)="onClose()" aria-label="Cerrar">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      
+      <div class="profile-section">
+        <div class="avatar-large">
+          <img *ngIf="client?.foto" [src]="client?.foto" alt="Foto del cliente" class="img-fit" />
+          <div *ngIf="!client?.foto" class="img-placeholder">
+            <i class="fa-solid fa-user"></i>
+          </div>
+        </div>
+        
+        <div class="main-info">
+          <h2 class="client-name">{{ client?.nombre }} {{ client?.apellido }}</h2>
+          
+          <div class="badges-row"> 
+            
+            <span class="badge-rol">
+              <i class="fa-solid fa-user-tag"></i> {{ client?.rol || 'Cliente' }}
+            </span>
+
+            <span class="badge-estado" 
+                  [ngClass]="{
+                    'estado-activo': client?.estado === 'ACTIVO',
+                    'estado-ban': client?.estado === 'LOBANANEE',
+                    'estado-sefue': client?.estado === 'SEFUE'
+                  }">
+              <i class="fa-solid" 
+                 [ngClass]="{
+                   'fa-circle-check': client?.estado === 'ACTIVO',
+                   'fa-ban': client?.estado === 'LOBANANEE',
+                   'fa-user-xmark': client?.estado === 'SEFUE'
+                 }"></i>
+              {{ client?.estado }}
+            </span>
+
+          </div>
+
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h4 class="section-title"><i class="fa-solid fa-user-tag"></i> Datos Personales</h4>
+      
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">DNI / Documento</span>
+          <span class="value">{{ client?.dni || '---' }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Correo Electrónico</span>
+          <span class="value">{{ client?.email || '---' }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Teléfono</span>
+          <span class="value">{{ client?.telefono || '---' }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Edad</span>
+          <span class="value">{{ client?.edad ? client?.edad + ' años' : '---' }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Fecha de Nacimiento</span>
+          <span class="value">{{ client?.fechaNacimiento || '---' }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Fecha de Registro</span>
+          <span class="value">
+            {{ client?.created_at ? (client?.created_at | date:'dd/MM/yyyy') : '---' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h4 class="section-title"><i class="fa-solid fa-user-shield"></i> Datos del Responsable / Apoderado</h4>
+
+      <div *ngIf="tieneApoderado(client)" class="apoderado-card">
+        <div class="apo-row">
+          <div class="apo-icon">
+            <i class="fa-solid fa-user-shield"></i>
+          </div>
+          <div class="apo-details">
+            <div class="apo-name">{{ client?.nombreApoderado }} {{ client?.apellidoApoderado }}</div>
+            <div class="apo-relation">{{ client?.parentesco || 'Apoderado' }}</div>
+          </div>
+        </div>
+        
+        <div class="apo-meta-grid">
+          <div class="apo-meta">
+            <span class="lbl">DNI:</span>
+            <span class="val">{{ client?.dniApoderado || '---' }}</span>
+          </div>
+          <div class="apo-meta">
+            <span class="lbl">Teléfono:</span>
+            <span class="val">{{ client?.telefonoApoderado || '---' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!tieneApoderado(client)" class="no-apoderado">
+        <i class="fa-solid fa-user-slash"></i>
+        <span>Ninguno (Cliente independiente o sin responsable registrado).</span>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-primary" (click)="onClose()">Cerrar</button>
+    </div>
+
+  </div>
+</div>

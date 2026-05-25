@@ -1,0 +1,288 @@
+<div class="hist-page">
+  <div class="toolbar">
+    <h1 class="title">Nueva Cotización</h1>
+    <button class="back-link" (click)="cancel()" [disabled]="loading">Regresar</button>
+  </div>
+  <span class="accent"></span>
+
+  <div class="search-container">
+    <div class="search-row">
+      <input type="text" class="search-input" placeholder="DNI del paciente..." [(ngModel)]="search.dni"
+        name="searchDni" (ngModelChange)="onSearchChange()" (keydown.enter)="onSearchEnter()" />
+
+      <input type="text" class="search-input" placeholder="Nombre del paciente..." [(ngModel)]="search.nombre"
+        name="searchNombre" (ngModelChange)="onSearchChange()" (keydown.enter)="onSearchEnter()" />
+
+      <button type="button" class="btn-search" (click)="onSearchClick()">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+
+      <button type="button" class="btn-clear" (click)="onClearSearch()">
+        Limpiar
+      </button>
+    </div>
+
+    <div class="search-suggestions" *ngIf="suggestions?.length">
+      <button type="button" class="suggestion-item" *ngFor="let u of suggestions" (click)="onSelectUser(u)">
+        <span class="sug-name">{{ u.nombre }} {{ u.apellido }}</span>
+        <span class="sug-meta">DNI: {{ u.dni }} | Tel: {{ u.telefono }}</span>
+      </button>
+    </div>
+  </div>
+
+  <form class="hist-grid" [formGroup]="form" (ngSubmit)="submit()">
+
+    <section class="card head">
+      <h3 class="sec-title">Información del Paciente</h3>
+      <div class="row row-main">
+        <label class="col-date">
+          <span class="lbl">Fecha</span>
+          <input type="date" formControlName="fecha" />
+        </label>
+        <label class="grow">
+          <span class="lbl">Nombres del Paciente</span>
+          <input type="text" placeholder="-" formControlName="paciente" readonly />
+        </label>
+      </div>
+
+      <div class="row row-apoderado">
+        <label class="grow">
+          <span class="lbl">Nombre del Apoderado</span>
+          <input type="text" placeholder="-" formControlName="nombreApoderado" readonly />
+        </label>
+        <label class="col-dni">
+          <span class="lbl">DNI</span>
+          <input type="text" placeholder="-" formControlName="dni" readonly />
+        </label>
+      </div>
+
+      <div class="row row-contact">
+        <label class="col-age">
+          <span class="lbl">Edad</span>
+          <input type="number" placeholder="-" formControlName="edad" />
+        </label>
+        <label class="col-tel">
+          <span class="lbl">Teléfono</span>
+          <input type="tel" placeholder="-" formControlName="telefono" readonly />
+        </label>
+        <label class="grow">
+          <span class="lbl">Correo Electrónico</span>
+          <input type="email" placeholder="-" formControlName="correo" readonly />
+        </label>
+      </div>
+    </section>
+
+    <section class="card" *ngIf="idUsuarioSeleccionado">
+      <h3 class="sec-title">Historiales de Atención (Seleccione medidas técnicas)</h3>
+
+      <div *ngIf="loadingHistoriales" class="loading-state">
+        <i class="fa-solid fa-spinner fa-spin"></i> Buscando expedientes de Wimiline...
+      </div>
+
+      <div class="grid-cards" *ngIf="!loadingHistoriales">
+        <div class="card-item" *ngFor="let h of historiales"
+          [class.selected-card]="historialSeleccionadoId === h.historialOpticoId" (click)="onSelectHistorial(h)">
+
+          <div class="card-header">
+            <span class="date-label">FECHA DE ATENCIÓN</span>
+            <p class="date-value">{{ h.fecha }}</p>
+          </div>
+
+          <div class="card-body">
+            <div class="info-group">
+              <span class="lbl">EVALUADOR</span>
+              <p class="txt">{{ h.evaluador || 'No asignado' }}</p>
+            </div>
+            <div class="info-group">
+              <span class="lbl">OBSERVACIONES TÉCNICAS</span>
+              <p class="txt-recom">{{ h.recomendaciones || 'Sin observaciones' }}</p>
+            </div>
+          </div>
+
+          <div class="selection-indicator" *ngIf="historialSeleccionadoId === h.historialOpticoId">
+            <i class="fa-solid fa-circle-check"></i> SELECCIONADO
+          </div>
+
+          <button type="button" class="btn-detail" (click)="$event.stopPropagation(); onVerDetalleCompleto(h)">
+            Ver Medidas Completas
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="!loadingHistoriales && historiales.length === 0" class="empty-state">
+        <p>Este paciente no cuenta con historiales ópticos previos.</p>
+      </div>
+    </section>
+
+    <section class="card product-selector" *ngIf="idUsuarioSeleccionado">
+      <h3 class="sec-title">Selección Técnica de Productos</h3>
+
+      <div class="product-thread">
+        <div class="thread-step">
+          <span class="step-label">1. Seleccione Categoría</span>
+          <div class="pill-group">
+            <button type="button" class="pill" *ngFor="let cat of categorias"
+              [class.active]="categoriaSel?.categoriaId === cat.categoriaId" (click)="onSelectCategoria(cat)">
+              {{ cat.nombre }}
+            </button>
+          </div>
+        </div>
+
+        <div class="thread-step" *ngIf="categoriaSel">
+          <span class="step-label">2. Seleccione Tipo ({{ categoriaSel.nombre }})</span>
+          <div class="pill-group">
+            <button type="button" class="pill subpill" *ngFor="let sub of subcategorias"
+              [class.active]="subcategoriaSel?.subCategoriaId === sub.subCategoriaId"
+              (click)="onSelectSubcategoria(sub)">
+              {{ sub.nombre }}
+            </button>
+          </div>
+        </div>
+
+        <div class="thread-step" *ngIf="subcategoriaSel">
+          <span class="step-label">3. PRODUCTOS DISPONIBLES</span>
+          <div class="product-grid">
+            <div class="product-card" *ngFor="let prod of productos">
+              <div class="prod-info">
+                <span class="prod-name">{{ prod.nombre }}</span>
+                <span class="prod-price">S/ {{ prod.precioActual }}</span>
+                <span class="prod-stock" [class.low]="prod.stock <= 5">
+                  Stock: {{ prod.stock }}
+                </span>
+              </div>
+              <button type="button" class="btn-add-prod" (click)="agregarProducto(prod)" [disabled]="prod.stock <= 0">
+                <i class="fa-solid fa-plus"></i> Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECCIÓN SERVICIOS ADICIONALES ===== -->
+    <section class="card services-card" *ngIf="idUsuarioSeleccionado">
+      <h3 class="sec-title">Servicios Adicionales <span class="sec-optional">(opcional)</span></h3>
+
+      <div class="service-add-row">
+        <input
+          type="text"
+          class="svc-input svc-desc"
+          placeholder="Descripción del servicio (ej: Fabricación lente bifocal)..."
+          [(ngModel)]="nuevoServicio.descripcion"
+          [ngModelOptions]="{standalone: true}"
+          (keydown.enter)="agregarServicio()"
+        />
+        <input
+          type="number"
+          class="svc-input svc-price"
+          placeholder="Precio S/"
+          [(ngModel)]="nuevoServicio.precio"
+          [ngModelOptions]="{standalone: true}"
+          min="0.01"
+          step="0.01"
+          (keydown.enter)="agregarServicio()"
+        />
+        <input
+          type="number"
+          class="svc-input svc-qty"
+          placeholder="Cant."
+          [(ngModel)]="nuevoServicio.cantidad"
+          [ngModelOptions]="{standalone: true}"
+          min="1"
+          (keydown.enter)="agregarServicio()"
+        />
+        <button type="button" class="btn-add-svc" (click)="agregarServicio()">
+          <i class="fa-solid fa-plus"></i> Agregar
+        </button>
+      </div>
+
+      <div class="service-list" *ngIf="serviciosAgregados.length > 0">
+        <div class="service-item" *ngFor="let s of serviciosAgregados; let i = index">
+          <span class="svc-name">{{ s.descripcion }}</span>
+          <span class="svc-meta">x{{ s.cantidad }}</span>
+          <span class="svc-meta">S/ {{ s.precio | number:'1.2-2' }}</span>
+          <span class="svc-subtotal">S/ {{ (s.precio * s.cantidad) | number:'1.2-2' }}</span>
+          <button type="button" class="btn-remove-svc" title="Eliminar servicio" (click)="eliminarServicio(i)">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      </div>
+
+      <p class="svc-empty" *ngIf="serviciosAgregados.length === 0">
+        Sin servicios adicionales. Puedes agregar fabricaciones u otros cargos libres aquí.
+      </p>
+    </section>
+
+    <!-- ===== RESUMEN DE COTIZACIÓN ===== -->
+    <section class="card summary-card" *ngIf="itemsSeleccionados.length > 0 || serviciosAgregados.length > 0">
+      <h3 class="sec-title">Resumen de Cotización</h3>
+      <div class="table-responsive">
+        <table class="selected-products-table">
+          <thead>
+            <tr>
+              <th>Descripción</th>
+              <th>Tipo</th>
+              <th class="col-qty">Cant.</th>
+              <th class="col-price">Unitario</th>
+              <th class="col-price">Subtotal</th>
+              <th class="col-actions" aria-label="Acciones"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Productos del catálogo -->
+            <tr *ngFor="let item of itemsSeleccionados; let i = index">
+              <td><span class="item-name">{{ item.nombre }}</span></td>
+              <td><span class="badge-tipo badge-producto">Producto</span></td>
+              <td class="col-qty">
+                <div class="qty-control">
+                  <button type="button" (click)="cambiarCantidad(i, -1)" [disabled]="item.cantidad <= 1">-</button>
+                  <span>{{ item.cantidad }}</span>
+                  <button type="button" (click)="cambiarCantidad(i, 1)" [disabled]="item.cantidad >= item.stockMax">+</button>
+                </div>
+              </td>
+              <td class="col-price">S/ {{ item.precio | number:'1.2-2' }}</td>
+              <td class="col-price">S/ {{ (item.precio * item.cantidad) | number:'1.2-2' }}</td>
+              <td class="col-actions">
+                <button type="button" class="btn-remove" title="Eliminar producto" (click)="eliminarItem(i)">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </td>
+            </tr>
+            <!-- Servicios adicionales -->
+            <tr *ngFor="let s of serviciosAgregados; let i = index">
+              <td><span class="item-name">{{ s.descripcion }}</span></td>
+              <td><span class="badge-tipo badge-servicio">Servicio</span></td>
+              <td class="col-qty">{{ s.cantidad }}</td>
+              <td class="col-price">S/ {{ s.precio | number:'1.2-2' }}</td>
+              <td class="col-price">S/ {{ (s.precio * s.cantidad) | number:'1.2-2' }}</td>
+              <td class="col-actions">
+                <button type="button" class="btn-remove" title="Eliminar servicio" (click)="eliminarServicio(i)">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="total-container">
+        <span class="total-lbl">TOTAL ESTIMADO:</span>
+        <span class="total-amount">S/ {{ calcularTotal() | number:'1.2-2' }}</span>
+      </div>
+    </section>
+
+    <section class="card empty-state" *ngIf="!idUsuarioSeleccionado">
+      <p class="text-muted text-center">Seleccione un paciente para comenzar la cotización técnica.</p>
+    </section>
+
+    <div class="form-actions">
+      <button class="btn-primary" type="submit" [disabled]="loading || !idUsuarioSeleccionado">
+        {{ loading ? 'Procesando…' : 'Finalizar Cotización' }}
+      </button>
+      <button class="btn-ghost" type="button" (click)="cancel()">
+        Cancelar
+      </button>
+    </div>
+
+  </form>
+</div>

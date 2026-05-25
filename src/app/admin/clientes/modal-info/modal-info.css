@@ -1,0 +1,402 @@
+/* === OVERLAY Y CONTENEDOR PRINCIPAL === */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(16, 10, 28, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+    padding: 20px;
+    /* Para que no pegue a los bordes en móviles */
+}
+
+.modal {
+    width: 100%;
+    max-width: 600px;
+    /* Un poco más ancho para que quepan los datos */
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    /* Evita que se salga de la pantalla */
+    overflow: hidden;
+    animation: zoomIn 0.2s ease-out;
+}
+
+/* === CABECERA === */
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid #f0f1f6;
+    background: #fff;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-header h3 i {
+    color: #4b1f71;
+    /* Tu color morado */
+    font-size: 1.2rem;
+}
+
+.icon-close {
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 5px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-close:hover {
+    background: #f3f4f6;
+    color: #ef4444;
+}
+
+/* === CUERPO DEL MODAL (SCROLL) === */
+.modal-body {
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* === SECCIÓN 1: PERFIL === */
+.profile-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.avatar-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #e5e7eb;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.img-fit {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.img-placeholder {
+    font-size: 2rem;
+    color: #9ca3af;
+}
+
+.main-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.client-name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0;
+    line-height: 1.2;
+}
+
+
+/* modal-info.css */
+
+.badge-rol {
+    /* ... tus colores ... */
+    align-self: flex-start;
+    background: #f3e8ff;
+    color: #6b21a8;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+
+    /* 🚨 AQUÍ ESTÁ EL CAMBIO: Todo en una sola línea y con color morado */
+    border: 1px solid #d8b4fe;
+
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Para alinear el rol y el estado en la misma línea */
+.badges-row {
+    display: flex;
+    gap: 10px;
+    /* Espacio entre las etiquetas */
+    align-items: start;
+    justify-content: start;
+    /* O flex-start si prefieres a la izquierda */
+    margin-top: 5px;
+}
+
+/* Estilo base de la etiqueta de estado */
+.badge-estado {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+}
+
+/* ✅ VERDE: Activo */
+.estado-activo {
+    background-color: #dcfce7;
+    color: #166534;
+    border-color: #86efac;
+}
+
+/* ⛔ ROJO: Baneado (LOBANANEE) */
+.estado-ban {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-color: #fca5a5;
+}
+
+/* 👻 GRIS: Se fue / Eliminado */
+.estado-sefue {
+    background-color: #f3f4f6;
+    color: #4b5563;
+    border-color: #d1d5db;
+}
+
+
+
+/* SEPARADOR VISUAL */
+.divider {
+    height: 1px;
+    background: #f0f1f6;
+    width: 100%;
+}
+
+.section-title {
+    font-size: 0.95rem;
+    color: #6b7280;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-title i {
+    color: #4b1f71;
+}
+
+/* === SECCIÓN 2: GRILLA DE DATOS === */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.value {
+    font-size: 0.95rem;
+    color: #111827;
+    font-weight: 500;
+    word-break: break-word;
+}
+
+/* === SECCIÓN 3: APODERADO (VERDE) === */
+.apoderado-card {
+    background: #f0fdf4;
+    /* Verde muy suave */
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.apo-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.apo-icon {
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #16a34a;
+    /* Verde icono */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.apo-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.apo-name {
+    font-weight: 700;
+    color: #14532d;
+    font-size: 1rem;
+}
+
+.apo-relation {
+    font-size: 0.8rem;
+    color: #16a34a;
+    font-weight: 600;
+}
+
+.apo-meta-grid {
+    display: flex;
+    gap: 20px;
+    padding-left: 52px;
+    /* Alineado con el texto */
+    flex-wrap: wrap;
+}
+
+.apo-meta {
+    display: flex;
+    gap: 6px;
+    font-size: 0.85rem;
+}
+
+.apo-meta .lbl {
+    color: #15803d;
+    font-weight: 700;
+}
+
+.apo-meta .val {
+    color: #14532d;
+}
+
+/* === SECCIÓN 3: NO APODERADO (GRIS) === */
+.no-apoderado {
+    background: #f9fafb;
+    border: 1px dashed #d1d5db;
+    border-radius: 10px;
+    padding: 16px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* === FOOTER === */
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #f0f1f6;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-primary {
+    background: #4b1f71;
+    /* Tu morado */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow: 0 2px 5px rgba(75, 31, 113, 0.3);
+}
+
+.btn-primary:hover {
+    background: #3a1859;
+    transform: translateY(-1px);
+}
+
+/* === ANIMACIONES === */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 480px) {
+    .profile-section {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .badge-rol {
+        align-self: center;
+    }
+
+    .apo-meta-grid {
+        padding-left: 0;
+        flex-direction: column;
+        gap: 5px;
+    }
+}

@@ -1,0 +1,48 @@
+:host {
+    display: block
+}
+
+.search {
+    width: min(600px, 100%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    border: 1px solid #e8e8ef;
+    border-radius: 12px;
+    padding: 0px 0px 0px 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .05);
+
+
+}
+
+.search input {
+    flex: 1;
+    border: none;
+    outline: 0;
+    font-size: 14px;
+    background: transparent;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.icon {
+    border: 0;
+    outline: 0;
+    background: #552a6f;
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    display: inline-grid;
+    place-items: center;
+}
+
+.icon.ghost {
+    background: transparent;
+    color: #582865;
+}
+
+.fa-search {
+    font-size: 18px;
+    color: inherit;
+}

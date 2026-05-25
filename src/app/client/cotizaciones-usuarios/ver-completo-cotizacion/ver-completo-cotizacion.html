@@ -1,0 +1,112 @@
+<div class="hist-page">
+  <div class="toolbar">
+    <h1 class="title">Detalle de Cotización</h1>
+    <div class="actions-top" style="display: flex; gap: 12px; align-items: center;">
+      <span class="status-pill-big" [class.paid]="detalle?.estadoPago === 'PAGADO'">
+        {{ (detalle?.estadoPago === 'PAGADO') ? 'PAGADO' : 'PENDIENTE' }}
+      </span>
+      <button class="back-link" (click)="close.emit()" [disabled]="loading">Regresar</button>
+    </div>
+  </div>
+  <span class="accent"></span>
+
+  <div *ngIf="loading && !detalle" class="loading-state">
+    <i class="fa-solid fa-spinner fa-spin"></i> Obteniendo desglose de productos...
+  </div>
+
+  <div class="hist-grid" *ngIf="detalle">
+    
+    <section class="card head">
+      <h3 class="sec-title">Información General</h3>
+      <div class="row">
+        <label class="col-date">
+          <span class="lbl">Fecha de Emisión</span>
+          <input type="text" [value]="detalle.fechaCreacion" readonly />
+        </label>
+        <label class="grow">
+          <span class="lbl">Paciente / Cliente</span>
+          <input type="text" [value]="detalle.cliente" readonly />
+        </label>
+      </div>
+
+      <div class="row">
+        <label>
+          <span class="lbl">Edad al momento</span>
+          <input type="text" [value]="detalle.edadAlMomento + ' años'" readonly />
+        </label>
+        <label class="grow">
+          <span class="lbl">Encargado Financiero (Responsable)</span>
+          <input type="text" 
+                 [value]="responsableFinanciero" 
+                 style="color: var(--purple-600); font-weight: 800; border-color: #dad3ff;" 
+                 readonly />
+        </label>
+      </div>
+
+      <div class="row">
+        <label class="grow">
+          <span class="lbl">Médico / Evaluador</span>
+          <input type="text" [value]="detalle.medicoEvaluador" readonly />
+        </label>
+      </div>
+    </section>
+
+    <section class="card product-list-section">
+      <h3 class="sec-title">Productos Seleccionados</h3>
+      <div class="table-wrap">
+        <table class="rx-table">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th class="col-qty">Cant.</th>
+              <th class="col-price">Precio Unit.</th>
+              <th class="col-price">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of detalle.productos">
+              <td class="prod-name-cell">{{ item.producto }}</td>
+              <td class="col-qty">{{ item.cantidad }}</td>
+              <td class="col-price">S/ {{ item.precioUnitario | number:'1.2-2' }}</td>
+              <td class="col-price">S/ {{ item.subtotal | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="total-detail-container">
+        <div class="total-row">
+          <span class="total-lbl">TOTAL A PAGAR:</span>
+          <span class="total-amount">S/ {{ detalle.total | number:'1.2-2' }}</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3 class="sec-title">Observaciones del Especialista</h3>
+      <div class="notes-box">
+        <p class="txt-recom">{{ detalle.recomendaciones || 'Sin observaciones adicionales registradas.' }}</p>
+      </div>
+    </section>
+
+    <div class="form-actions" *ngIf="detalle.estadoPago !== 'PAGADO'">
+      <div class="pending-info" style="flex-grow: 1; padding: 15px; background: #fff8e1; color: #856404; border: 1px dashed #ffeeba; border-radius: 12px; display: flex; align-items: center; gap: 10px; font-weight: 600;">
+        <i class="fa-solid fa-circle-info"></i> Esta cotización está pendiente de pago. Por favor, acérquese a caja para confirmar su pedido.
+      </div>
+      
+      <button class="btn-ghost" type="button" (click)="close.emit()" [disabled]="loading">
+        Cerrar
+      </button>
+    </div>
+
+    <div class="form-actions" *ngIf="detalle.estadoPago === 'PAGADO'">
+      <div class="paid-confirmation">
+        <i class="fa-solid fa-check-circle"></i> Esta cotización ya fue cancelada exitosamente.
+      </div>
+      <button class="btn-ghost" type="button" (click)="close.emit()">
+        Cerrar
+      </button>
+    </div>
+
+  </div>
+</div>

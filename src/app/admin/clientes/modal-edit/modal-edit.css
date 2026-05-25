@@ -1,0 +1,522 @@
+/* =========================================
+   1. FUENTES Y RESET GLOBAL
+   ========================================= */
+
+/* =========================================
+   1. RESET Y BASE VITAL
+   ========================================= */
+/* ESTO ES LO QUE FALTABA: Hace que el padding no engorde el input */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Forzar herencia de fuente */
+input, select, textarea, button {
+  font-family: inherit;
+}
+
+
+
+/* Aplicamos la fuente base al Modal */
+.modal {
+  font-family: 'Roboto', sans-serif;
+  /* ... resto de estilos del modal ... */
+  width: min(92vw, 620px);
+  background: #fff;
+  border: 1px solid #ebeaf3;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .18);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: zoomIn .16s ease-out;
+}
+
+/* Regla vital: Forzar a inputs y botones a heredar la fuente Roboto */
+input, select, textarea, button {
+  font-family: inherit;
+}
+
+/* Iconos FontAwesome (Tu regla original) */
+.modal i[class^="fa-"],
+.modal i[class*=" fa-"] {
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(16, 10, 28, .35);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+  animation: fadeIn .15s ease-out;
+  padding: 20px;
+}
+
+/* =========================================
+   2. CABECERA
+   ========================================= */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #f0f1f6;
+  background: #fff;
+  gap: 10px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  /* ✅ TU FUENTE EXACTA */
+  font: 800 18px/1.2 inherit; 
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-header h3 i {
+  color: #4b1f71;
+}
+
+.icon-close {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+  color: #6a6a7a; /* Tu color original */
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-close:hover {
+  color: #1e1e27;
+}
+
+/* =========================================
+   3. CUERPO Y INPUTS
+   ========================================= */
+.modal-body {
+  padding: 18px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* --- Estilo de tus Inputs --- */
+.input-edit {
+  width: 100%;
+  border: 1px solid #e6e9f5;
+  border-radius: 10px;
+  padding: 10px 12px;
+  outline: none;
+  background: #fff;
+  transition: border-color .15s ease, box-shadow .15s ease;
+  
+  /* ✅ TU FUENTE EXACTA Y COLOR */
+  font: 600 14px/1.2 inherit;
+  color: #2b2b35;
+}
+
+.input-edit:focus {
+  border-color: #4b1f71;
+  box-shadow: 0 0 0 3px rgba(75, 31, 113, .10);
+}
+
+.input-edit:disabled {
+  background: #f9fafb;
+  color: #6a6a7a;
+  cursor: not-allowed;
+}
+
+/* Inputs específicos */
+.title-input {
+  /* Un poco más grande para Nombres/Apellidos */
+  font-size: 16px; 
+}
+
+.sm {
+  font-size: 13px;
+  padding: 8px 10px;
+}
+
+.label {
+  color: #4b1f71;
+  font-weight: 700; /* Tu peso original */
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  display: block;
+}
+
+/* =========================================
+   4. PERFIL
+   ========================================= */
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.avatar-large {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #e5e7eb;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* Overlay Hover Cámara */
+.avatar-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 1.5rem;
+}
+
+.avatar-large:hover .avatar-overlay {
+  opacity: 1;
+}
+
+.img-fit {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.img-placeholder {
+  font-size: 2rem;
+  color: #9ca3af;
+}
+
+.main-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.input-group-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+/* =========================================
+   5. GRILLA DE DATOS
+   ========================================= */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.divider {
+  height: 1px;
+  background: #f0f1f6;
+  width: 100%;
+}
+
+.section-title {
+  font-size: 0.95rem;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title i {
+  color: #4b1f71;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* =========================================
+   6. APODERADO (MODO EDICIÓN)
+   ========================================= */
+.apoderado-card.edit-mode {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.apo-edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.apo-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.apo-field label {
+  font-size: 0.75rem;
+  color: #15803d;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+/* Inputs Verdes */
+.input-edit.green {
+  background: #fff;
+  border-color: #bbf7d0;
+}
+
+.input-edit.green:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+}
+
+/* Botones especiales */
+.btn-text-danger {
+  background: none;
+  border: none;
+  color: #ef4444; /* Rojo de alerta */
+  /* ✅ TU FUENTE */
+  font-weight: 700; 
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-text-danger:hover {
+  text-decoration: underline;
+}
+
+.no-apoderado {
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 10px;
+  padding: 16px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.no-apoderado:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  color: #4b5563;
+}
+
+/* =========================================
+   7. FOOTER Y BOTONES
+   ========================================= */
+.modal-footer {
+  padding: 14px 18px;
+  border-top: 1px solid #f0f1f6;
+  
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Botón Cancelar (Ghost) */
+.btn-ghost {
+  background: #f3f5fb;
+  border: 1px solid #e6e9f5;
+  color: #2b2140;
+  padding: 10px 14px;
+  border-radius: 10px;
+  /* ✅ TU FUENTE EXACTA */
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-ghost:hover {
+  background: #e9ecf8;
+}
+
+/* Botón Guardar (Primary/Save) */
+.btn-primary {
+  background: #4b1f71;
+  color: #fff;
+  border: 1px solid #4b1f71;
+  padding: 10px 14px;
+  border-radius: 10px;
+  /* ✅ TU FUENTE EXACTA */
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-primary:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   8. ANIMACIONES Y RESPONSIVE
+   ========================================= */
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
+@keyframes zoomIn {
+  from { transform: scale(.96); opacity: 0 }
+  to { transform: scale(1); opacity: 1 }
+}
+
+@media (max-width: 480px) {
+  .profile-section {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .input-group-row {
+    flex-direction: column;
+  }
+
+  .apo-edit-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.error-msg {
+  color: #ef4444;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 4px;
+  display: block;
+}
+
+
+
+
+
+
+
+
+
+/* =========================================
+   ESTILOS FECHA PERSONALIZADA (Tipo Register)
+   ========================================= */
+
+/* Contenedor que imita al 'input-edit' pero contiene 3 inputs */
+.fecha-custom-wrapper {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e6e9f5; /* Mismo borde que tus otros inputs */
+  border-radius: 10px;
+  padding: 8px 12px;
+  width: 100%;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+/* Efecto Focus (Cuando escribes dentro) */
+.fecha-custom-wrapper:focus-within {
+  border-color: #4b1f71;
+  box-shadow: 0 0 0 3px rgba(75, 31, 113, 0.1);
+}
+
+/* Estado de Error (Borde rojo) */
+.fecha-custom-wrapper.error-border {
+  border-color: #ef4444;
+  background-color: #fff; /* Opcional: #fef2f2 para fondo rojizo */
+}
+
+/* Los inputs pequeños internos */
+.fecha-input {
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  text-align: center;
+  font: 600 14px/1.2 inherit; /* Tu fuente exacta */
+  color: #2b2b35;
+  padding: 0;
+  margin: 0;
+}
+
+/* Anchos específicos */
+.w-day, .w-month { width: 25px; }
+.w-year { width: 45px; }
+
+/* Separador '/' */
+.fecha-separator {
+  color: #9ca3af;
+  font-weight: 700;
+  margin: 0 4px;
+  user-select: none;
+}
+
+
+
+
+.status-control {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.label-status {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4b1f71;
+}
+
+.select-estado {
+  flex: 1; /* Que ocupe el resto del espacio */
+  cursor: pointer;
+  font-weight: 600;
+  background-color: #f8fafc;
+}
+
+/* Colorcitos según selección (Opcional, se ve genial) */
+.select-estado option[value="ACTIVO"] { color: #166534; }
+.select-estado option[value="LOBANANEE"] { color: #991b1b; }
+.select-estado option[value="SEFUE"] { color: #4b5563; }

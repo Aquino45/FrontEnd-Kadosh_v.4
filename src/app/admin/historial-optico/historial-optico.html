@@ -1,0 +1,90 @@
+<div class="clientes-page">
+  
+  <ng-container *ngIf="!showForm && !idSeleccionado; else dynamicView">
+    
+    <div class="toolbar">
+      <div class="title-wrap">
+        <h1 class="title">Lista de Historiales Ópticos</h1>
+        <span class="accent"></span>
+      </div>
+      
+    </div>
+
+    <div class="actions">
+      <div class="top-actions">
+        <button type="button" class="btn-primary" (click)="openForm()">
+          <i class="fa-solid fa-file-medical"></i>
+          <span>Nuevo Historial</span>
+        </button>
+
+        <form class="filters-inline" (ngSubmit)="onSearch()">
+          <input type="text" name="dni" [(ngModel)]="filterDni" placeholder="DNI..." maxlength="8" />
+          <input type="text" name="nombre" [(ngModel)]="filterNombre" placeholder="Paciente..." />
+          
+          <div class="date-range">
+            <div class="date-field">
+              <span>Desde:</span>
+              <input type="date" name="desde" [(ngModel)]="filterDesde" />
+            </div>
+            <div class="date-field">
+              <span>Hasta:</span>
+              <input type="date" name="hasta" [(ngModel)]="filterHasta" />
+            </div>
+          </div>
+
+          <button type="submit" class="btn-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+          <button type="button" class="btn-clear" (click)="onClear()">Limpiar</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="content">
+      <div *ngIf="loading" class="loading">
+        <i class="fa-solid fa-spinner fa-spin"></i> Cargando expedientes...
+      </div>
+
+      <table class="client-table" *ngIf="!loading && expedientes.length > 0">
+        <thead>
+          <tr>
+            <th>N</th>
+            <th>Paciente</th>
+            <th>DNI</th>
+            <th>Fecha de Registro</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of expedientes; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td class="paciente-name">{{ item.nombre }} {{ item.apellido }}</td>
+            <td>{{ item.dni || '---' }}</td>
+            <td>{{ item.fechaPrimerHistorial | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td class="actions-cell">
+              <button class="btn-view" (click)="openHistoryDetail(item)">
+                <i class="fa-solid fa-folder-open"></i> Ver Historiales
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="empty" *ngIf="!loading && expedientes.length === 0">
+        <i class="fa-solid fa-folder-open"></i>
+        <p>No se encontraron historiales registrados.</p>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #dynamicView>
+    <app-new-historial *ngIf="showForm" (close)="closeForm()"></app-new-historial>
+
+    <app-historiales-opticos-usuarios 
+      *ngIf="idSeleccionado && !showForm" 
+      [userId]="idSeleccionado"
+      (volver)="idSeleccionado = null">
+    </app-historiales-opticos-usuarios>
+  </ng-template>
+
+</div>

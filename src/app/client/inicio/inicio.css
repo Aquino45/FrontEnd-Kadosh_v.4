@@ -1,0 +1,106 @@
+:host {
+  --p700: #582865;
+  --p600: #5b2b88;
+  --p500: #7c3aed;
+  --p100: #f0ebfb;
+  font-family: "Inter", sans-serif;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes orb {
+  0%, 100% { transform: scale(1) translateY(0); }
+  50%       { transform: scale(1.06) translateY(-6px); }
+}
+
+/* ===== Welcome card ===== */
+.welcome-container {
+  background: linear-gradient(135deg, var(--p700) 0%, var(--p600) 45%, var(--p500) 100%);
+  border-radius: 20px;
+  padding: 40px 44px;
+  color: #fff;
+  box-shadow: 0 10px 36px rgba(91,43,136,0.35);
+  position: relative;
+  overflow: hidden;
+  font-family: "Inter", sans-serif;
+  animation: fadeUp 0.5s ease both;
+}
+
+/* Top-right decorative orb */
+.welcome-container::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+  animation: orb 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Bottom-left subtle orb */
+.welcome-container::after {
+  content: '';
+  position: absolute;
+  bottom: -40px;
+  left: -40px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ===== Badge ===== */
+.welcome-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 5px 14px;
+  border-radius: 50px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+/* ===== Title ===== */
+.page-title {
+  font-size: 2.2rem;
+  margin: 0 0 10px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.3px;
+}
+
+.user-highlight {
+  color: #e9d5ff;
+}
+
+/* ===== Subtitle ===== */
+.page-subtitle {
+  margin: 0;
+  font-size: 1rem;
+  opacity: 0.82;
+  max-width: 460px;
+  line-height: 1.6;
+}
+
+/* ===== Decorative icon ===== */
+.welcome-icon {
+  position: absolute;
+  right: 44px;
+  bottom: 24px;
+  font-size: 5rem;
+  opacity: 0.12;
+  transform: rotate(-15deg);
+  pointer-events: none;
+}

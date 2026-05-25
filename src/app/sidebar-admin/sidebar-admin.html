@@ -1,0 +1,51 @@
+<aside class="sidebar-wrap">
+
+  <div class="sidebar-bg"></div>
+
+
+  <div class="sidebar-inner">
+
+    <header class="user">
+      <div class="avatar">
+        <img *ngIf="user.avatarUrl; else defaultAvatar" [src]="user.avatarUrl!" alt="User Avatar" />
+        <ng-template #defaultAvatar>
+          <i class="fa-solid fa-user-circle"></i>
+        </ng-template>
+      </div>
+
+      <div class="user-info">
+        <div class="name">
+          <span class="user-real-name">{{ user.name }}</span>
+
+          <!-- <span *ngIf="user.rol" class="rol-badge">{{ user.rol }}</span> -->
+        </div>
+        <div class="email">{{ user.email || '—' }}</div>
+      </div>
+    </header>
+
+
+    <nav class="nav">
+      <div class="nav-group">
+        <a *ngFor="let item of primaryItems" class="nav-item" [routerLink]="item.link" routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }">
+          <span class="icon-box">
+            <i class="{{ item.icon }}"></i>
+            <span *ngIf="item.label === 'Clientes'" class="notification-dot"></span>
+          </span>
+          <span class="label">{{ item.label }}</span>
+        </a>
+      </div>
+    </nav>
+
+
+    <footer class="logout-section">
+      <a class="logout" [routerLink]="bottomItem.link" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }">
+        <span class="icon-box">
+          <i class="{{ bottomItem.icon }}"></i>
+        </span>
+        <span class="label">{{ bottomItem.label }}</span>
+      </a>
+    </footer>
+  </div>
+</aside>
