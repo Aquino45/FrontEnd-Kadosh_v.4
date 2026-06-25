@@ -1,14 +1,15 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { HeaderComponent } from '../header-admin/header-admin';     
+import { HeaderComponent } from '../header-admin/header-admin';
 import { SidebarAdminComponent } from '../sidebar-admin/sidebar-admin';
+import { ChatWidgetComponent } from '../shared/chat-widget/chat-widget';
 
 
 @Component({
   selector: 'app-home-admin',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, HeaderComponent, SidebarAdminComponent],
+  imports: [CommonModule, RouterOutlet, HeaderComponent, SidebarAdminComponent, ChatWidgetComponent],
   templateUrl: './home-admin.html',
   styleUrls: ['./home-admin.css']
 })

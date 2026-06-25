@@ -26,7 +26,6 @@ export class NewClientComponent implements OnInit {
   private readonly dniRegex = /^\d{8}$/;
 
   readonly defaultAvatar = 'assets/Images/default_user_profile.png';
-  readonly remoteDefaultAvatar = 'https://png.pngtree.com/png-clipart/20250820/original/pngtree-whatsapp-default-profile-photo-vector-png-image_22204331.png';
 
   previewUrl: string = this.defaultAvatar;
   imagenUrlManual: string = '';
@@ -280,7 +279,7 @@ export class NewClientComponent implements OnInit {
 
     const val = this.form.getRawValue();
     const fechaFinal = this.buildFechaCustom(val.fechaNacimiento);
-    let finalImageUrl = usarDefault ? this.remoteDefaultAvatar : null;
+    let finalImageUrl: string | null = null;
 
     try {
       if (val.foto && !usarDefault) {
@@ -299,7 +298,7 @@ export class NewClientComponent implements OnInit {
         password: val.password,
         edad: val.edad,
         fechaNacimiento: fechaFinal,
-        imagenUrl: finalImageUrl || this.remoteDefaultAvatar,
+        imagenUrl: finalImageUrl || null,
         apoderado: null
       };
 

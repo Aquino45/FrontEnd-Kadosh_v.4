@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router'; // Importa el Router
 import { AuthService } from '../../services/auth.service'; // Cambiado a AuthService
-import { UsuariosService } from '../../services/usuarios.service'; // Añadido UsuariosService
 
 type Item = { icon: string; label: string; link: string };
 type SidebarUser = { name: string; email: string; avatarUrl?: string | null; rol?: string | null };
@@ -35,6 +34,7 @@ export class SidebarClientComponent implements OnInit {
     { icon: 'fa-solid fa-history', label: 'Historial Óptico', link: '/home-client/historial-optico' },
     { icon: 'fa-solid fa-file-invoice', label: 'Cotización',  link: '/home-client/cotizacion' },
     { icon: 'fa-solid fa-receipt', label: 'Facturación',      link: '/home-client/facturacion' },
+    { icon: 'fa-solid fa-message', label: 'Asistente',        link: '/home-client/asistente' },
     //{ icon: 'fa-solid fa-gear',    label: 'Ajustes',          link: '/home-client/ajustes' },
     //{ icon: 'fa-solid fa-circle-question', label: 'Ayuda',    link: '/home-client/ayuda' },
   ];
@@ -46,6 +46,13 @@ export class SidebarClientComponent implements OnInit {
     private router: Router // Inyecta el Router
   ) {}
   
+
+  getInitials(): string {
+    const parts = this.user.name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return '?';
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
 
   async ngOnInit() {
     try {

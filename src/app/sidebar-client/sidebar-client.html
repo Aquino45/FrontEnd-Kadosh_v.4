@@ -9,7 +9,7 @@
       <div class="avatar">
         <img *ngIf="user.avatarUrl; else defaultAvatar" [src]="user.avatarUrl!" alt="User Avatar" />
         <ng-template #defaultAvatar>
-          <i class="fa-solid fa-user-circle"></i>
+          <span class="avatar-initials">{{ getInitials() }}</span>
         </ng-template>
       </div>
 

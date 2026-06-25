@@ -15,7 +15,7 @@
     <div class="modal-body" [formGroup]="form">
 
       <div class="profile-section">
-        <div class="avatar-large" style="cursor: pointer; position: relative;" (click)="fileInput.click()">
+        <div class="avatar-large" (click)="fileInput.click()" title="Cambiar foto de perfil">
           <img *ngIf="previewUrl" [src]="previewUrl" alt="Foto" class="img-fit" />
           <div *ngIf="!previewUrl" class="img-placeholder">
             <i class="fa-solid fa-user"></i>
@@ -24,7 +24,16 @@
             <i class="fa-solid fa-camera"></i>
           </div>
         </div>
-        <input #fileInput type="file" (change)="onPhotoSelected($event)" style="display: none;" accept="image/*">
+        <input #fileInput type="file" (change)="onPhotoSelected($event)" class="file-input-hidden" accept="image/*" aria-label="Seleccionar foto de perfil" title="Seleccionar foto de perfil">
+
+        <div class="url-foto-wrapper">
+          <label class="label">URL de imagen</label>
+          <input type="url" class="input-edit" formControlName="imagenUrl"
+            placeholder="https://..." (input)="onImageUrlInput($event)">
+          <small class="error-msg" *ngIf="form.get('imagenUrl')?.hasError('maxlength') && form.get('imagenUrl')?.touched">
+            Máximo 1000 caracteres.
+          </small>
+        </div>
 
         <div class="main-info full-width">
           <div class="input-group-row">
@@ -43,7 +52,7 @@
           </div>
           <div class="status-control">
             <span class="label-status">Estado:</span>
-            <select class="input-edit select-estado" formControlName="estado">
+            <select class="input-edit select-estado" formControlName="estado" title="Estado del cliente">
               <option value="ACTIVO">✅ ACTIVO</option>
               <option value="LOBANANEE">⛔ BANEADO</option>
               <option value="SEFUE">👻 SE FUE</option>
@@ -59,7 +68,7 @@
       <div class="info-grid">
         <div class="info-item">
           <label class="label">DNI / Documento</label>
-          <input type="text" class="input-edit" formControlName="dni" maxlength="8">
+          <input type="text" class="input-edit" formControlName="dni" maxlength="8" title="DNI / Documento" placeholder="Ej: 12345678">
           <small class="error-msg" *ngIf="form.get('dni')?.hasError('required') && form.get('dni')?.touched">
             DNI es requerido.
           </small>
@@ -70,7 +79,7 @@
 
         <div class="info-item">
           <label class="label">Correo Electrónico</label>
-          <input type="email" class="input-edit" formControlName="email">
+          <input type="email" class="input-edit" formControlName="email" title="Correo Electrónico" placeholder="ejemplo@correo.com">
 
           <small class="error-msg" *ngIf="form.get('email')?.hasError('required') && form.get('email')?.touched">
             El correo es obligatorio.
@@ -83,7 +92,7 @@
 
         <div class="info-item">
           <label class="label">Teléfono</label>
-          <input type="text" class="input-edit" formControlName="telefono" maxlength="9">
+          <input type="text" class="input-edit" formControlName="telefono" maxlength="9" title="Teléfono" placeholder="Ej: 987654321">
 
           <small class="error-msg" *ngIf="form.get('telefono')?.hasError('required') && form.get('telefono')?.touched">
             El teléfono es obligatorio.
@@ -134,13 +143,12 @@
 
         <div class="info-item full-width">
           <label class="label">Cambiar contraseña de usuario (Admin Bypass)</label>
-          <div style="position: relative;">
-            <input type="password" class="input-edit" placeholder="Dejar vacío para mantener actual"
-              formControlName="newPassword" style="border-color: #dad3ff; background-color: #fdfbff;">
-            <i class="fa-solid fa-shield-halved"
-              style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #9b87f5;"></i>
+          <div class="password-wrapper">
+            <input type="password" class="input-edit input-password" placeholder="Dejar vacío para mantener actual"
+              formControlName="newPassword" title="Nueva contraseña (Admin Bypass)">
+            <i class="fa-solid fa-shield-halved password-icon"></i>
           </div>
-          <small class="info-text" style="color: #666; font-size: 0.75rem; margin-top: 4px; display: block;">
+          <small class="info-text">
             * El administrador puede resetear la clave directamente sin la contraseña anterior.
           </small>
           <small class="error-msg"
@@ -164,7 +172,7 @@
 
           <div class="apo-field">
             <label>Nombre</label>
-            <input type="text" class="input-edit green" formControlName="nombreApoderado">
+            <input type="text" class="input-edit green" formControlName="nombreApoderado" title="Nombre del apoderado" placeholder="Nombre">
             <small class="error-msg"
               *ngIf="form.get('nombreApoderado')?.invalid && form.get('nombreApoderado')?.touched">
               Requerido.
@@ -173,7 +181,7 @@
 
           <div class="apo-field">
             <label>Apellido</label>
-            <input type="text" class="input-edit green" formControlName="apellidoApoderado">
+            <input type="text" class="input-edit green" formControlName="apellidoApoderado" title="Apellido del apoderado" placeholder="Apellido">
             <small class="error-msg"
               *ngIf="form.get('apellidoApoderado')?.invalid && form.get('apellidoApoderado')?.touched">
               Requerido.
@@ -193,7 +201,7 @@
 
           <div class="apo-field">
             <label>DNI</label>
-            <input type="text" class="input-edit green" formControlName="dniApoderado" maxlength="8">
+            <input type="text" class="input-edit green" formControlName="dniApoderado" maxlength="8" title="DNI del apoderado" placeholder="Ej: 12345678">
             <small class="error-msg"
               *ngIf="form.get('dniApoderado')?.hasError('required') && form.get('dniApoderado')?.touched">
               Requerido.
@@ -206,7 +214,7 @@
 
           <div class="apo-field">
             <label>Teléfono</label>
-            <input type="text" class="input-edit green" formControlName="telefonoApoderado" maxlength="9">
+            <input type="text" class="input-edit green" formControlName="telefonoApoderado" maxlength="9" title="Teléfono del apoderado" placeholder="Ej: 987654321">
             <small class="error-msg"
               *ngIf="form.get('telefonoApoderado')?.hasError('required') && form.get('telefonoApoderado')?.touched">
               Requerido.
@@ -220,7 +228,7 @@
         </div>
       </div>
 
-      <div *ngIf="!hasApoderado" class="no-apoderado" (click)="toggleApoderado(true)" style="cursor: pointer;">
+      <div *ngIf="!hasApoderado" class="no-apoderado" (click)="toggleApoderado(true)">
         <i class="fa-solid fa-plus-circle"></i>
         <span>Agregar Responsable / Apoderado</span>
       </div>

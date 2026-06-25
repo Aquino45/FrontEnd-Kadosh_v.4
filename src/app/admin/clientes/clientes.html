@@ -40,7 +40,7 @@
       <div class="client-card" *ngFor="let client of clients">
 
         <div class="card-avatar">
-          <img *ngIf="client.imagenUrl" [src]="client.imagenUrl" [alt]="client.nombre + ' ' + client.apellido" [title]="client.nombre + ' ' + client.apellido" />
+          <img *ngIf="client.imagenUrl" [src]="client.imagenUrl" [attr.alt]="client.nombre + ' ' + client.apellido" [attr.title]="client.nombre + ' ' + client.apellido" title="Foto de cliente" />
           <span *ngIf="!client.imagenUrl" class="avatar-initials">
             {{ (client.nombre[0] || '') }}{{ (client.apellido[0] || '') }}
           </span>

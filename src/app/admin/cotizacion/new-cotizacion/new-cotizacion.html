@@ -13,7 +13,7 @@
       <input type="text" class="search-input" placeholder="Nombre del paciente..." [(ngModel)]="search.nombre"
         name="searchNombre" (ngModelChange)="onSearchChange()" (keydown.enter)="onSearchEnter()" />
 
-      <button type="button" class="btn-search" (click)="onSearchClick()">
+      <button type="button" class="btn-search" (click)="onSearchClick()" title="Buscar paciente">
         <i class="fa-solid fa-magnifying-glass"></i>
       </button>
 
@@ -22,7 +22,7 @@
       </button>
     </div>
 
-    <div class="search-suggestions" *ngIf="suggestions?.length">
+    <div class="search-suggestions" *ngIf="suggestions.length">
       <button type="button" class="suggestion-item" *ngFor="let u of suggestions" (click)="onSelectUser(u)">
         <span class="sug-name">{{ u.nombre }} {{ u.apellido }}</span>
         <span class="sug-meta">DNI: {{ u.dni }} | Tel: {{ u.telefono }}</span>
@@ -285,4 +285,110 @@
     </div>
 
   </form>
+</div>
+
+<!-- ===== MODAL DETALLE HISTORIAL ===== -->
+<div class="detalle-overlay" *ngIf="verDetalle && historialSeleccionadoParaVer" (click)="onCerrarDetalle()">
+  <div class="detalle-modal" (click)="$event.stopPropagation()">
+
+    <div class="detalle-header">
+      <h3><i class="fa-solid fa-eye"></i> Medidas Completas</h3>
+      <button type="button" class="detalle-close" (click)="onCerrarDetalle()" title="Cerrar detalle">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="detalle-body">
+      <p class="detalle-meta">
+        <strong>Fecha:</strong> {{ historialSeleccionadoParaVer.fecha }} &nbsp;|&nbsp;
+        <strong>Evaluador:</strong> {{ historialSeleccionadoParaVer.evaluador || 'No asignado' }}
+      </p>
+
+      <h4 class="detalle-section-title">Visión Lejos</h4>
+      <table class="detalle-table" *ngIf="historialSeleccionadoParaVer.visionLejos">
+        <thead><tr><th scope="col">Ojo</th><th scope="col">Esf</th><th scope="col">Cil</th><th scope="col">Eje</th><th scope="col">DIP</th><th scope="col">AV</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>OD</strong></td>
+            <td>{{ historialSeleccionadoParaVer.visionLejos.ojoDerechoEsf ?? '-' }}</td>
+            <td>{{ historialSeleccionadoParaVer.visionLejos.ojoDerechoCil ?? '-' }}</td>
+            <td>{{ historialSeleccionadoParaVer.visionLejos.ojoDerechoEje ?? '-' }}</td>
+            <td>{{ historialSeleccionadoParaVer.visionLejos.ojoDerechoDip ?? '-' }}</td>
+            <td>{{ historialSeleccionadoParaVer.visionLejos.ojoDerechoAv ?? '-' }}</td>
+          </tr>
+          <tr>
+            <td><strong>OI</strong></td>
+            <td>{{ historialSeleccionadoParaVer.visionLejos.ojoIzquierdoEsf ?? '-' }}</td>
+            <td>{{ historialSeleccionadoParaVer.visionLejos.ojoIzquierdoCil ?? '-' }}</td>
+            <td>{{ historialSeleccionadoParaVer.visionLejos.ojoIzquierdoEje ?? '-' }}</td>
+            <td>{{ historialSeleccionadoParaVer.visionLejos.ojoIzquierdoDip ?? '-' }}</td>
+            <td>{{ historialSeleccionadoParaVer.visionLejos.ojoIzquierdoAv ?? '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p *ngIf="!historialSeleccionadoParaVer.visionLejos" class="detalle-empty">Sin datos de visión lejos.</p>
+
+      <h4 class="detalle-section-title">Visión Cerca</h4>
+      <table class="detalle-table" *ngIf="historialSeleccionadoParaVer.visionCerca">
+        <thead><tr><th scope="col">Ojo</th><th scope="col">Esf</th><th scope="col">Cil</th><th scope="col">Eje</th><th scope="col">DIP</th><th scope="col">AV</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>OD</strong></td>
+            <td>{{ historialSeleccionadoParaVer.visionCerca.ojoDerechoEsf ?? '-' }}</td>
+            <td>{{ historialSeleccionadoParaVer.visionCerca.ojoDerechoCil ?? '-' }}</td>
+            <td>{{ historialSeleccionadoParaVer.visionCerca.ojoDerechoEje ?? '-' }}</td>
+            <td>{{ historialSeleccionadoParaVer.visionCerca.ojoDerechoDip ?? '-' }}</td>
+            <td>{{ historialSeleccionadoParaVer.visionCerca.ojoDerechoAv ?? '-' }}</td>
+          </tr>
+          <tr>
+            <td><strong>OI</strong></td>
+            <td>{{ historialSeleccionadoParaVer.visionCerca.ojoIzquierdoEsf ?? '-' }}</td>
+            <td>{{ historialSeleccionadoParaVer.visionCerca.ojoIzquierdoCil ?? '-' }}</td>
+            <td>{{ historialSeleccionadoParaVer.visionCerca.ojoIzquierdoEje ?? '-' }}</td>
+            <td>{{ historialSeleccionadoParaVer.visionCerca.ojoIzquierdoDip ?? '-' }}</td>
+            <td>{{ historialSeleccionadoParaVer.visionCerca.ojoIzquierdoAv ?? '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p *ngIf="!historialSeleccionadoParaVer.visionCerca" class="detalle-empty">Sin datos de visión cerca.</p>
+
+      <div *ngIf="historialSeleccionadoParaVer.analisisLejosOD || historialSeleccionadoParaVer.analisisLejosOI || historialSeleccionadoParaVer.analisisCercaOD || historialSeleccionadoParaVer.analisisCercaOI">
+        <h4 class="detalle-section-title">Análisis</h4>
+
+        <p class="detalle-analisis-sub" *ngIf="historialSeleccionadoParaVer.analisisLejosOD || historialSeleccionadoParaVer.analisisLejosOI">VISIÓN DE LEJOS</p>
+        <div class="detalle-analysis-grid" *ngIf="historialSeleccionadoParaVer.analisisLejosOD || historialSeleccionadoParaVer.analisisLejosOI">
+          <div class="detalle-analysis-box od-color" *ngIf="historialSeleccionadoParaVer.analisisLejosOD">
+            <span class="detalle-eye-label">OJO DERECHO (OD)</span>
+            <p class="detalle-res-text">{{ historialSeleccionadoParaVer.analisisLejosOD }}</p>
+          </div>
+          <div class="detalle-analysis-box oi-color" *ngIf="historialSeleccionadoParaVer.analisisLejosOI">
+            <span class="detalle-eye-label">OJO IZQUIERDO (OI)</span>
+            <p class="detalle-res-text">{{ historialSeleccionadoParaVer.analisisLejosOI }}</p>
+          </div>
+        </div>
+
+        <p class="detalle-analisis-sub" *ngIf="historialSeleccionadoParaVer.analisisCercaOD || historialSeleccionadoParaVer.analisisCercaOI">VISIÓN DE CERCA</p>
+        <div class="detalle-analysis-grid" *ngIf="historialSeleccionadoParaVer.analisisCercaOD || historialSeleccionadoParaVer.analisisCercaOI">
+          <div class="detalle-analysis-box od-color" *ngIf="historialSeleccionadoParaVer.analisisCercaOD">
+            <span class="detalle-eye-label">OJO DERECHO (OD)</span>
+            <p class="detalle-res-text">{{ historialSeleccionadoParaVer.analisisCercaOD }}</p>
+          </div>
+          <div class="detalle-analysis-box oi-color" *ngIf="historialSeleccionadoParaVer.analisisCercaOI">
+            <span class="detalle-eye-label">OJO IZQUIERDO (OI)</span>
+            <p class="detalle-res-text">{{ historialSeleccionadoParaVer.analisisCercaOI }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="historialSeleccionadoParaVer.recomendaciones">
+        <h4 class="detalle-section-title">Observaciones Técnicas</h4>
+        <p class="detalle-recom">{{ historialSeleccionadoParaVer.recomendaciones }}</p>
+      </div>
+    </div>
+
+    <div class="detalle-footer">
+      <button type="button" class="btn-ghost" (click)="onCerrarDetalle()">Cerrar</button>
+    </div>
+
+  </div>
 </div>

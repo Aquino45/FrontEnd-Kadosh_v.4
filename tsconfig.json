@@ -14,7 +14,7 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "ESNext",         // 👈 CAMBIA "preserve" por "ESNext"
-    "moduleResolution": "node", // 👈 AGREGA ESTO para que encuentre los paquetes
+    "moduleResolution": "bundler",
     "useDefineForClassFields": false,
     "lib": ["ES2022", "dom"]
   },

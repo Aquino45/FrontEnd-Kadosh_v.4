@@ -9,7 +9,7 @@
       <div class="avatar">
         <img *ngIf="user.avatarUrl; else defaultAvatar" [src]="user.avatarUrl!" alt="User Avatar" />
         <ng-template #defaultAvatar>
-          <i class="fa-solid fa-user-circle"></i>
+          <span class="avatar-initials">{{ getInitials() }}</span>
         </ng-template>
       </div>
 
@@ -26,14 +26,41 @@
 
     <nav class="nav">
       <div class="nav-group">
-        <a *ngFor="let item of primaryItems" class="nav-item" [routerLink]="item.link" routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }">
-          <span class="icon-box">
-            <i class="{{ item.icon }}"></i>
-            <span *ngIf="item.label === 'Clientes'" class="notification-dot"></span>
-          </span>
-          <span class="label">{{ item.label }}</span>
-        </a>
+        <ng-container *ngFor="let item of primaryItems">
+
+          <!-- Ítem simple -->
+          <a *ngIf="!item.children" class="nav-item" [routerLink]="item.link" routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }">
+            <span class="icon-box">
+              <i class="{{ item.icon }}"></i>
+              <span *ngIf="item.label === 'Clientes'" class="notification-dot"></span>
+            </span>
+            <span class="label">{{ item.label }}</span>
+          </a>
+
+          <!-- Ítem con submenú -->
+          <div *ngIf="item.children" class="nav-group-wrap">
+            <button type="button" class="nav-item nav-item-toggle" [class.group-active]="isGroupActive(item)"
+              (click)="toggleGroup(item.label)">
+              <span class="icon-box">
+                <i class="{{ item.icon }}"></i>
+              </span>
+              <span class="label">{{ item.label }}</span>
+              <i class="fa-solid fa-chevron-down submenu-chevron" [class.rotated]="isGroupExpanded(item.label)"></i>
+            </button>
+
+            <div class="submenu" *ngIf="isGroupExpanded(item.label)">
+              <a *ngFor="let child of item.children" class="nav-item sub-item" [routerLink]="child.link"
+                routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                <span class="icon-box sub-icon-box">
+                  <i class="{{ child.icon }}"></i>
+                </span>
+                <span class="label">{{ child.label }}</span>
+              </a>
+            </div>
+          </div>
+
+        </ng-container>
       </div>
     </nav>
 

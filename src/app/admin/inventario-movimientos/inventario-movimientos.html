@@ -1,0 +1,68 @@
+<div class="kardex-page">
+
+  <div class="toolbar">
+    <div class="title-wrap">
+      <h1 class="title">Kardex General de Inventario</h1>
+      <span class="accent"></span>
+    </div>
+  </div>
+
+  <div class="top-actions">
+    <div class="search-input-wrap">
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <input
+        type="text"
+        [(ngModel)]="searchText"
+        (input)="applyFilters()"
+        placeholder="Buscar por producto..."
+        aria-label="Buscar por producto"
+        class="filter-input"
+      />
+    </div>
+    <select [(ngModel)]="filterTipo" (change)="applyFilters()" class="filter-select" aria-label="Filtrar por tipo de movimiento">
+      <option value="">Todos los tipos</option>
+      <option value="ENTRADA">Entrada</option>
+      <option value="SALIDA">Salida</option>
+      <option value="AJUSTE">Ajuste</option>
+      <option value="VENTA">Venta</option>
+      <option value="ANULACION">Anulación</option>
+    </select>
+  </div>
+
+  <div *ngIf="loading" class="state-center">
+    <i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Cargando movimientos...
+  </div>
+
+  <div *ngIf="!loading && filtered.length === 0" class="state-center empty-state">
+    <i class="fa-solid fa-inbox fa-2x"></i>
+    <p>No hay movimientos registrados</p>
+  </div>
+
+  <div class="table-wrap" *ngIf="!loading && filtered.length > 0">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Tipo</th>
+          <th>Cantidad</th>
+          <th>Stock ant. → nuevo</th>
+          <th>Motivo</th>
+          <th>Usuario</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let m of filtered">
+          <td class="td-producto">{{ m.productoNombre || '—' }}</td>
+          <td><span class="tipo-tag" [attr.data-tipo]="m.tipo">{{ m.tipo }}</span></td>
+          <td>{{ m.cantidad }}</td>
+          <td>{{ m.stockAnterior }} → {{ m.stockNuevo }}</td>
+          <td>{{ m.motivo || '—' }}</td>
+          <td>{{ m.usuario || '—' }}</td>
+          <td>{{ m.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

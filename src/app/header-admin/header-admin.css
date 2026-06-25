@@ -13,7 +13,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 0 32px;
+  padding: 0 73px;
   height: 75px;
   background: #fff;
   box-shadow: 0 2px 20px rgba(91,43,136,0.09);
@@ -35,8 +35,9 @@
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
   flex-shrink: 0;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .brand img {
@@ -65,8 +66,8 @@
 
 app-search-bar {
   width: 100%;
-  max-width: 520px;
-  min-width: 200px;
+  max-width: 280px;
+  min-width: 160px;
 }
 
 /* ===== Actions ===== */
@@ -141,7 +142,7 @@ app-search-bar {
 
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
-  .hdr { padding: 0 16px; gap: 12px; }
+  .hdr { padding: 0 73px; gap: 12px; }
   .brand-name { display: none; }
 }
 

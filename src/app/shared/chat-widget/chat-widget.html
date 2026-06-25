@@ -1,0 +1,65 @@
+<!-- Botón flotante -->
+<button type="button" class="chat-fab" (click)="toggle()" [class.is-open]="isOpen" title="Asistente Kadosh" aria-label="Abrir asistente">
+  <i class="fa-solid fa-xmark" *ngIf="isOpen"></i>
+  <i class="fa-regular fa-comment-dots" *ngIf="!isOpen"></i>
+</button>
+
+<!-- Panel de chat -->
+<div class="chat-panel" *ngIf="isOpen">
+  <div class="panel-header">
+    <div class="bot-avatar">
+      <i class="fa-solid fa-robot"></i>
+    </div>
+    <div class="bot-info">
+      <span class="bot-name">Asistente Kadosh</span>
+      <span class="bot-status">En línea</span>
+    </div>
+    <button type="button" class="panel-close" title="Cerrar" (click)="close()" aria-label="Cerrar chat">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+
+  <div class="panel-body">
+    <div class="messages-wrap">
+      <div *ngFor="let msg of messages"
+           class="message-row"
+           [class.user-row]="msg.from === 'user'"
+           [class.bot-row]="msg.from === 'bot'">
+
+        <div *ngIf="msg.isLoading" class="bubble bubble-bot bubble-loading">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+
+        <div *ngIf="msg.from === 'bot' && !msg.isLoading" class="bubble bubble-bot">
+          <div *ngIf="msg.questionLabel" class="question-label">
+            <i class="fa-solid fa-circle-question"></i> {{ msg.questionLabel }}
+          </div>
+          <p>{{ msg.text }}</p>
+        </div>
+
+        <div *ngIf="msg.from === 'user'" class="bubble bubble-user">
+          <p>{{ msg.text }}</p>
+        </div>
+      </div>
+
+      <div #chatEnd></div>
+    </div>
+  </div>
+
+  <div class="panel-input-area">
+    <input
+      type="text"
+      [(ngModel)]="inputText"
+      (keydown)="onKeyDown($event)"
+      placeholder="Escribe tu pregunta..."
+      aria-label="Escribe tu pregunta"
+      [disabled]="isSending"
+      class="panel-input"
+    />
+    <button type="button" class="panel-send-btn" title="Enviar" aria-label="Enviar" (click)="send()" [disabled]="isSending || !inputText.trim()">
+      <i class="fa-solid fa-paper-plane"></i>
+    </button>
+  </div>
+</div>

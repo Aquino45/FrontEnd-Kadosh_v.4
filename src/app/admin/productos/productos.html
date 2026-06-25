@@ -1,0 +1,310 @@
+<div class="productos-page">
+
+  <!-- ── Toolbar (título) ── -->
+  <div class="toolbar">
+    <div class="title-wrap">
+      <h1 class="title">Catálogo de Productos</h1>
+      <span class="accent"></span>
+    </div>
+  </div>
+
+  <!-- ── Alerta de stock bajo ── -->
+  <div class="stock-alert" *ngIf="showStockAlert && stockBajo.length > 0">
+    <div class="stock-alert-header">
+      <span class="stock-alert-title">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        {{ stockBajo.length }} producto(s) con stock bajo
+      </span>
+      <button type="button" class="stock-alert-close" title="Cerrar alerta" aria-label="Cerrar alerta" (click)="dismissStockAlert()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="stock-alert-list">
+      <div class="stock-alert-item" *ngFor="let p of stockBajo">
+        <span class="sai-name">{{ p.nombre }}</span>
+        <span class="sai-stock">Stock: {{ p.stock }}</span>
+        <button type="button" class="sai-btn" (click)="openStockModal(p)">
+          <i class="fa-solid fa-box"></i> Ajustar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Top actions: filtros + nuevo producto ── -->
+  <div class="top-actions">
+    <div class="filters">
+      <div class="search-input-wrap">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input
+          type="text"
+          [(ngModel)]="searchNombre"
+          (input)="onSearchInput()"
+          placeholder="Buscar producto..."
+          aria-label="Buscar producto"
+          class="filter-input"
+        />
+      </div>
+      <select [(ngModel)]="filterCategoriaId" (change)="onFilterChange()" class="filter-select" aria-label="Filtrar por categoría">
+        <option value="">Todas las categorías</option>
+        <option *ngFor="let c of categorias" [value]="c.categoriaId">{{ c.nombre }}</option>
+      </select>
+      <select [(ngModel)]="filterActivo" (change)="onFilterChange()" class="filter-select" aria-label="Filtrar por estado">
+        <option value="">Todos los estados</option>
+        <option value="true">Activo</option>
+        <option value="false">Inactivo</option>
+      </select>
+    </div>
+    <button type="button" class="btn-primary" (click)="openCreateProduct()">
+      <i class="fa-solid fa-plus"></i> Nuevo Producto
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="state-center">
+    <i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Cargando productos...
+  </div>
+
+  <div *ngIf="!loading && productos.length === 0" class="state-center empty-state">
+    <i class="fa-solid fa-inbox fa-2x"></i>
+    <p>No hay productos registrados</p>
+  </div>
+
+  <div class="table-wrap" *ngIf="!loading && productos.length > 0">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Categoría</th>
+          <th>Subcategoría</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          <th>Estado</th>
+          <th class="col-actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of productos">
+          <td class="td-nombre">{{ p.nombre }}</td>
+          <td>{{ p.categoriaNombre || '—' }}</td>
+          <td>{{ p.subCategoriaNombre || '—' }}</td>
+          <td>S/ {{ (p.precioActual ?? 0) | number:'1.2-2' }}</td>
+          <td>
+            <span class="badge" [class.badge-inactive]="isLowStock(p)" [class.badge-active]="!isLowStock(p)">
+              {{ p.stock }}
+            </span>
+          </td>
+          <td>
+            <span class="badge" [class.badge-active]="p.activo" [class.badge-inactive]="!p.activo">
+              {{ p.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td class="td-actions">
+            <button type="button" class="btn-action btn-stock" title="Ajustar stock" (click)="openStockModal(p)">
+              <i class="fa-solid fa-box"></i>
+            </button>
+            <button type="button" class="btn-action btn-history" title="Ver historial" (click)="openHistorial(p)">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+            </button>
+            <button type="button" class="btn-action btn-edit" title="Editar" (click)="openEditProduct(p)">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button type="button" class="btn-action btn-delete" title="Eliminar" (click)="openDeleteConfirm(p)">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- ─────────────── Modal: Crear / Editar Producto ─────────────── -->
+<div class="modal-overlay" *ngIf="showProductModal" (click)="closeProductModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ isEditMode ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
+      <button type="button" class="modal-close" title="Cerrar" aria-label="Cerrar" (click)="closeProductModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="prod-nombre">Nombre <span class="required">*</span></label>
+        <input id="prod-nombre" type="text" [(ngModel)]="productForm.nombre" class="form-control" placeholder="Nombre del producto" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="prod-precio">Precio (S/) <span class="required">*</span></label>
+          <input id="prod-precio" type="number" min="0" step="0.01" [(ngModel)]="productForm.precioActual" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="prod-stock">Stock {{ isEditMode ? '' : 'inicial' }} <span class="required">*</span></label>
+          <input id="prod-stock" type="number" min="0" [(ngModel)]="productForm.stock" class="form-control" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="prod-stock-min">Stock mínimo <span class="form-hint">(alerta de stock bajo)</span></label>
+        <input id="prod-stock-min" type="number" min="0" [(ngModel)]="productForm.stockMinimo" class="form-control" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="prod-categoria">Categoría <span class="required">*</span></label>
+          <select id="prod-categoria" [(ngModel)]="productForm.categoriaId" (change)="onCategoriaFormChange()" class="form-control">
+            <option value="">Selecciona...</option>
+            <option *ngFor="let c of categorias" [value]="c.categoriaId">{{ c.nombre }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="prod-subcategoria">Subcategoría <span class="required">*</span></label>
+          <select id="prod-subcategoria" [(ngModel)]="productForm.subCategoriaId" class="form-control" [disabled]="!productForm.categoriaId">
+            <option value="">Selecciona...</option>
+            <option *ngFor="let s of subcategoriasForm" [value]="s.subCategoriaId">{{ s.nombre }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group form-check" *ngIf="isEditMode">
+        <label class="check-label">
+          <input type="checkbox" [(ngModel)]="productForm.activo" />
+          Producto activo
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeProductModal()" [disabled]="productSaving">Cancelar</button>
+      <button type="button" class="btn-primary" (click)="saveProduct()" [disabled]="productSaving">
+        <i class="fa-solid fa-spinner fa-spin" *ngIf="productSaving"></i>
+        {{ productSaving ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────── Modal: Ajustar Stock ─────────────── -->
+<div class="modal-overlay" *ngIf="showStockModal" (click)="closeStockModal()">
+  <div class="modal-card modal-sm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Ajustar Stock</h2>
+      <button type="button" class="modal-close" title="Cerrar" aria-label="Cerrar" (click)="closeStockModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="stock-product-name" *ngIf="stockTargetProduct">
+        <i class="fa-solid fa-box-open"></i>
+        {{ stockTargetProduct.nombre }}
+        <span class="stock-current">Stock actual: {{ stockTargetProduct.stock }}</span>
+      </p>
+
+      <div class="form-group">
+        <label class="form-label" for="stock-tipo">Tipo de movimiento</label>
+        <select id="stock-tipo" [(ngModel)]="stockForm.tipo" class="form-control">
+          <option value="ENTRADA">Entrada</option>
+          <option value="SALIDA">Salida</option>
+          <option value="AJUSTE">Ajuste</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="stock-cantidad">Cantidad <span class="required">*</span></label>
+        <input id="stock-cantidad" type="number" min="1" [(ngModel)]="stockForm.cantidad" class="form-control" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="stock-motivo">Motivo</label>
+        <input id="stock-motivo" type="text" [(ngModel)]="stockForm.motivo" class="form-control" placeholder="Ej: Reposición de proveedor..." />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeStockModal()" [disabled]="stockSaving">Cancelar</button>
+      <button type="button" class="btn-primary" (click)="confirmAjusteStock()" [disabled]="stockSaving">
+        <i class="fa-solid fa-spinner fa-spin" *ngIf="stockSaving"></i>
+        {{ stockSaving ? 'Guardando...' : 'Confirmar' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────── Modal: Historial de Movimientos ─────────────── -->
+<div class="modal-overlay" *ngIf="showHistorialModal" (click)="closeHistorialModal()">
+  <div class="modal-card modal-lg" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Historial de Movimientos</h2>
+      <button type="button" class="modal-close" title="Cerrar" aria-label="Cerrar" (click)="closeHistorialModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="stock-product-name" *ngIf="historialTargetProduct">
+        <i class="fa-solid fa-box-open"></i> {{ historialTargetProduct.nombre }}
+      </p>
+
+      <div *ngIf="historialLoading" class="state-center">
+        <i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Cargando historial...
+      </div>
+
+      <div *ngIf="!historialLoading && historialList.length === 0" class="state-center empty-state">
+        <i class="fa-solid fa-inbox fa-2x"></i>
+        <p>Sin movimientos registrados</p>
+      </div>
+
+      <div class="table-wrap" *ngIf="!historialLoading && historialList.length > 0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Cantidad</th>
+              <th>Stock ant. → nuevo</th>
+              <th>Motivo</th>
+              <th>Usuario</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of historialList">
+              <td><span class="tipo-tag" [attr.data-tipo]="m.tipo">{{ m.tipo }}</span></td>
+              <td>{{ m.cantidad }}</td>
+              <td>{{ m.stockAnterior }} → {{ m.stockNuevo }}</td>
+              <td>{{ m.motivo || '—' }}</td>
+              <td>{{ m.usuario || '—' }}</td>
+              <td>{{ m.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeHistorialModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────── Modal: Confirmar eliminación ─────────────── -->
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
+  <div class="modal-card modal-sm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Eliminar Producto</h2>
+      <button type="button" class="modal-close" title="Cerrar" aria-label="Cerrar" (click)="closeDeleteModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="delete-confirm-text">¿Estás seguro de que deseas eliminar este producto?</p>
+      <div class="delete-preview" *ngIf="deletingProduct">
+        <i class="fa-solid fa-box-open"></i>
+        {{ deletingProduct.nombre }}
+      </div>
+      <p class="delete-warning">Esta acción no se puede deshacer.</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeDeleteModal()" [disabled]="deleteLoading">Cancelar</button>
+      <button type="button" class="btn-danger" (click)="confirmDeleteProduct()" [disabled]="deleteLoading">
+        <i class="fa-solid fa-spinner fa-spin" *ngIf="deleteLoading"></i>
+        {{ deleteLoading ? 'Eliminando...' : 'Sí, eliminar' }}
+      </button>
+    </div>
+  </div>
+</div>

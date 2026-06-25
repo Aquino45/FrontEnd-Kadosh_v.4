@@ -25,14 +25,14 @@
         <form class="filters-inline" (ngSubmit)="onSearch()" #filterForm="ngForm">
           <input type="text" name="nombre" [(ngModel)]="filterNombre" placeholder="Nombre cliente..." />
           <input type="text" name="dni" [(ngModel)]="filterDni" placeholder="DNI..." maxlength="8" />
-          <select name="estado" [(ngModel)]="filterEstado">
+          <select name="estado" [(ngModel)]="filterEstado" aria-label="Filtrar por estado">
             <option value="">Todos los estados</option>
             <option value="EMITIDA">EMITIDA</option>
             <option value="ANULADA">ANULADA</option>
           </select>
           <input type="date" name="desde" [(ngModel)]="filterDesde" title="Desde" />
           <input type="date" name="hasta" [(ngModel)]="filterHasta" title="Hasta" />
-          <button type="submit" class="btn-search">
+          <button type="submit" class="btn-search" title="Buscar" aria-label="Buscar">
             <i class="fa-solid fa-magnifying-glass"></i>
           </button>
           <button type="button" class="btn-clear" (click)="onClear()">Limpiar</button>

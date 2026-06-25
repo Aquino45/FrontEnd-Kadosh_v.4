@@ -147,10 +147,20 @@
   display: block;
 }
 
-.avatar .fa-solid {
-  font-size: 36px;
+.avatar-initials {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 800;
   color: #fff;
-  opacity: 0.9;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, #7c3aed, #5b2b88);
+  border-radius: 50%;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* ===== User info ===== */
@@ -178,6 +188,9 @@
 /* ===== Nav ===== */
 .nav {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   overflow-y: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -281,6 +294,72 @@
 .nav-item.active .label {
   font-weight: 700;
   color: #1a1535;
+}
+
+/* ===== Submenu (Inventarios) ===== */
+.nav-group-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-item-toggle {
+  width: 100%;
+  background: none;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.nav-item-toggle.group-active {
+  background: rgba(255,255,255,0.08);
+}
+
+.nav-item-toggle.group-active .icon-box {
+  background: rgba(255,255,255,0.18);
+}
+
+.submenu-chevron {
+  margin-left: auto;
+  font-size: 11px;
+  opacity: 0.65;
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.submenu-chevron.rotated {
+  transform: rotate(180deg);
+}
+
+@keyframes submenuOpen {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 2px 0 2px;
+  padding-left: 14px;
+  border-left: 1px solid rgba(255,255,255,0.12);
+  margin-left: 18px;
+  animation: submenuOpen 0.22s ease both;
+}
+
+.sub-item {
+  padding: 8px 12px;
+  animation: slideInLeft 0.3s ease both;
+}
+
+.submenu .sub-item:nth-child(1) { animation-delay: 0.03s; }
+.submenu .sub-item:nth-child(2) { animation-delay: 0.06s; }
+.submenu .sub-item:nth-child(3) { animation-delay: 0.09s; }
+.submenu .sub-item:nth-child(4) { animation-delay: 0.12s; }
+
+.sub-icon-box {
+  width: 30px;
+  height: 30px;
+  font-size: 14px;
 }
 
 /* ===== Notification dot ===== */

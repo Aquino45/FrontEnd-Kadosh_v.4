@@ -3,7 +3,7 @@
 }
 
 .search {
-    width: min(600px, 100%);
+    width: min(280px, 100%);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -22,7 +22,7 @@
     outline: 0;
     font-size: 14px;
     background: transparent;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
 .icon {

@@ -367,6 +367,12 @@ export class ModalEditComponent implements OnChanges, OnDestroy {
   // ==========================================================
   // 5. ACCIONES
   // ==========================================================
+  onImageUrlInput(ev: Event) {
+    const url = (ev.target as HTMLInputElement).value.trim();
+    this.previewUrl = url || 'assets/Images/default_user_profile.png';
+    if (url) this.form.patchValue({ foto: null });
+  }
+
   onPhotoSelected(ev: Event) {
     const file = (ev.target as HTMLInputElement).files?.[0];
     if (file && file.type.startsWith('image/')) {

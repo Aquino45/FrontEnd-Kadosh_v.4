@@ -2,9 +2,8 @@
   <div class="toolbar">
     <h1 class="title">{{ modoEdicion ? 'Editar Historial' : 'Ver Historial' }}</h1>
 
-    <div class="actions-top" style="display: flex; gap: 12px; align-items: center;">
-      <button *ngIf="!modoEdicion" type="button" class="btn-edit" (click)="activarEdicion()"
-        style="background: #f7f5ff; border: 1px solid #dad3ff; color: #5b2b88; padding: 8px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+    <div class="actions-top">
+      <button *ngIf="!modoEdicion" type="button" class="btn-edit" (click)="activarEdicion()">
         <i class="fa-solid fa-pen-to-square"></i> Editar
       </button>
 
@@ -20,7 +19,7 @@
     <input type="text" class="search-input" placeholder="Nombre..." [(ngModel)]="search.nombre" name="searchNombre"
       (ngModelChange)="onSearchChange()" (keydown.enter)="onSearchClick()" />
 
-    <button type="button" class="btn-search" (click)="onSearchClick()">
+    <button type="button" class="btn-search" (click)="onSearchClick()" title="Buscar paciente">
       <i class="fa-solid fa-magnifying-glass"></i>
     </button>
 
@@ -29,7 +28,7 @@
     </button>
   </div>
 
-  <div class="search-suggestions" *ngIf="suggestions?.length && modoEdicion">
+  <div class="search-suggestions" *ngIf="suggestions.length && modoEdicion">
     <button type="button" class="suggestion-item" *ngFor="let u of suggestions" (click)="onSelectUser(u)">
       <span class="sug-name">{{ u.nombre }} {{ u.apellido }}</span>
       <span class="sug-meta">DNI: {{ u.dni }}</span>
@@ -104,7 +103,7 @@
           <tbody formArrayName="lejos">
             <tr *ngFor="let row of lejosFA.controls; let i = index" [formGroupName]="i">
               <td class="ojo">
-                <input class="eye" formControlName="ojo" />
+                <input class="eye" formControlName="ojo" title="Ojo (OD/OI)" placeholder="OD" />
               </td>
               <td><input type="text" formControlName="esf" placeholder="0.00" /></td>
               <td><input type="text" formControlName="cil" placeholder="0.00" /></td>
@@ -155,7 +154,7 @@
           <tbody formArrayName="cerca">
             <tr *ngFor="let row of cercaFA.controls; let i = index" [formGroupName]="i">
               <td class="ojo">
-                <input class="eye" formControlName="ojo" />
+                <input class="eye" formControlName="ojo" title="Ojo (OD/OI)" placeholder="OD" />
               </td>
               <td><input type="text" formControlName="esf" placeholder="0.00" /></td>
               <td><input type="text" formControlName="cil" placeholder="0.00" /></td>
@@ -189,7 +188,7 @@
           </div>
         </div>
 
-        <h4 class="sub-title-analysis" style="margin-top: 20px;">VISIÓN DE CERCA</h4>
+        <h4 class="sub-title-analysis sub-title-cerca">VISIÓN DE CERCA</h4>
         <div class="analysis-grid">
           <div class="analysis-box od-color">
             <span class="eye-label">OJO DERECHO (OD)</span>
@@ -214,6 +213,7 @@
           </button>
           <input type="file" #refInput accept="image/*" hidden (change)="onImageSelect($event, 'refraccion')" />
           <img *ngIf="preview.refraccion" [src]="preview.refraccion" class="preview-img"
+            alt="Imagen de refracción" title="Ver imagen de refracción"
             (click)="openViewer(preview.refraccion!)" />
         </div>
 
@@ -224,6 +224,7 @@
           </button>
           <input type="file" #lenzoInput accept="image/*" hidden (change)="onImageSelect($event, 'lenzometria')" />
           <img *ngIf="preview.lenzometria" [src]="preview.lenzometria" class="preview-img"
+            alt="Imagen de lenzometría" title="Ver imagen de lenzometría"
             (click)="openViewer(preview.lenzometria!)" />
         </div>
 
@@ -234,6 +235,7 @@
           </button>
           <input type="file" #keraInput accept="image/*" hidden (change)="onImageSelect($event, 'keratometria')" />
           <img *ngIf="preview.keratometria" [src]="preview.keratometria" class="preview-img"
+            alt="Imagen de keratometría" title="Ver imagen de keratometría"
             (click)="openViewer(preview.keratometria!)" />
         </div>
       </div>
@@ -244,10 +246,9 @@
       <textarea class="notes" rows="4" formControlName="recomendaciones"
         placeholder="Indicaciones, control, tipo de lente, etc."></textarea>
 
-      <div class="evaluador-info" *ngIf="!modoEdicion"
-        style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9e7f3;">
-        <span class="lbl" style="font-size: 10px; color: #7d7693;">ATENDIDO POR:</span>
-        <p style="font-weight: 700; color: #582865; margin-top: 4px;">
+      <div class="evaluador-info" *ngIf="!modoEdicion">
+        <span class="lbl evaluador-lbl">ATENDIDO POR:</span>
+        <p class="evaluador-nombre">
           <i class="fa-solid fa-user-doctor"></i> {{ historial.evaluador }}
         </p>
       </div>
@@ -267,7 +268,7 @@
 </div>
 
 <div class="img-viewer" *ngIf="viewer.open">
-  <button class="viewer-close" (click)="closeViewer()">✕</button>
+  <button type="button" class="viewer-close" (click)="closeViewer()" title="Cerrar visor">✕</button>
   <div class="viewer-box" (wheel)="zoom($event)" (pointerdown)="onViewerPointerDown($event)"
     (pointermove)="onViewerPointerMove($event)" (pointerup)="onViewerPointerUp($event)"
     (pointercancel)="onViewerPointerUp($event)" (pointerleave)="onViewerPointerUp($event)"

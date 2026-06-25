@@ -1,0 +1,322 @@
+<div class="chatbot-page">
+
+  <!-- ── Toolbar (título) ── -->
+  <div class="toolbar">
+    <div class="title-wrap">
+      <h1 class="title">Gestión de Chatbot</h1>
+      <span class="accent"></span>
+    </div>
+  </div>
+
+  <!-- ── Tabs ── -->
+  <div class="tabs-bar">
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'faqs'" (click)="setTab('faqs')">
+      <i class="fa-solid fa-list-ul"></i> FAQs
+    </button>
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'historial'" (click)="setTab('historial')">
+      <i class="fa-solid fa-clock-rotate-left"></i> Historial de Consultas
+    </button>
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'estadisticas'" (click)="setTab('estadisticas')">
+      <i class="fa-solid fa-chart-bar"></i> Estadísticas
+    </button>
+  </div>
+
+  <!-- ─────────────── TAB: FAQs ─────────────── -->
+  <div class="tab-content" *ngIf="activeTab === 'faqs'">
+
+    <div class="top-actions">
+      <div class="filters">
+        <div class="search-input-wrap">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input
+            type="text"
+            [(ngModel)]="searchQ"
+            (input)="onSearchInput()"
+            placeholder="Buscar pregunta..."
+            aria-label="Buscar pregunta"
+            class="filter-input"
+          />
+        </div>
+        <select [(ngModel)]="filterCategoria" (change)="onFilterChange()" class="filter-select" aria-label="Filtrar por categoría">
+          <option value="">Todas las categorías</option>
+          <option *ngFor="let c of categorias" [value]="c">{{ c }}</option>
+        </select>
+        <select [(ngModel)]="filterActivo" (change)="onFilterChange()" class="filter-select" aria-label="Filtrar por estado">
+          <option value="">Todos los estados</option>
+          <option value="true">Activa</option>
+          <option value="false">Inactiva</option>
+        </select>
+      </div>
+      <button type="button" class="btn-primary" (click)="openCreateFaq()">
+        <i class="fa-solid fa-plus"></i> Nueva FAQ
+      </button>
+    </div>
+
+    <div *ngIf="faqsLoading" class="state-center">
+      <i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Cargando FAQs...
+    </div>
+
+    <div *ngIf="!faqsLoading && faqs.length === 0" class="state-center empty-state">
+      <i class="fa-solid fa-inbox fa-2x"></i>
+      <p>No hay FAQs registradas</p>
+    </div>
+
+    <div class="table-wrap" *ngIf="!faqsLoading && faqs.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Pregunta</th>
+            <th>Categoría</th>
+            <th>Estado</th>
+            <th class="col-actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let faq of faqs">
+            <td class="td-pregunta">{{ faq.pregunta }}</td>
+            <td>{{ faq.categoria || '—' }}</td>
+            <td>
+              <span class="badge" [class.badge-active]="faq.activo" [class.badge-inactive]="!faq.activo">
+                {{ faq.activo ? 'Activa' : 'Inactiva' }}
+              </span>
+            </td>
+            <td class="td-actions">
+              <button type="button" class="btn-action btn-edit" title="Editar" (click)="openEditFaq(faq)">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button type="button" class="btn-action btn-delete" title="Eliminar" (click)="openDeleteConfirm(faq)">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─────────────── TAB: Historial ─────────────── -->
+  <div class="tab-content" *ngIf="activeTab === 'historial'">
+
+    <div class="sub-tabs">
+      <button type="button" class="sub-tab-btn" [class.active]="historialSubTab === 'all'" (click)="setHistorialSubTab('all')">
+        Todas las consultas
+      </button>
+      <button type="button" class="sub-tab-btn" [class.active]="historialSubTab === 'sinRespuesta'" (click)="setHistorialSubTab('sinRespuesta')">
+        Sin respuesta &nbsp;⚠️
+      </button>
+    </div>
+
+    <div *ngIf="historialLoading" class="state-center">
+      <i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Cargando historial...
+    </div>
+
+    <div *ngIf="!historialLoading && historial.length === 0" class="state-center empty-state">
+      <i class="fa-solid fa-inbox fa-2x"></i>
+      <p>No hay consultas registradas</p>
+    </div>
+
+    <div class="table-wrap" *ngIf="!historialLoading && historial.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Mensaje del usuario</th>
+            <th>Resultado</th>
+            <th>Coincidencias</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let h of historial">
+            <td class="td-pregunta">{{ h.mensaje }}</td>
+            <td>
+              <span *ngIf="h.encontrado"  class="badge badge-active">Respondida</span>
+              <span *ngIf="!h.encontrado" class="badge badge-inactive">Sin respuesta</span>
+            </td>
+            <td>{{ h.coincidencias }}</td>
+            <td>{{ h.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─────────────── TAB: Estadísticas ─────────────── -->
+  <div class="tab-content" *ngIf="activeTab === 'estadisticas'">
+
+    <div *ngIf="statsLoading" class="state-center">
+      <i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Cargando estadísticas...
+    </div>
+
+    <div *ngIf="!statsLoading && estadisticas">
+
+      <div class="stats-section">
+        <h3 class="stats-section-title">Base de Conocimiento</h3>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon stat-purple">
+              <i class="fa-solid fa-list-ul"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value">{{ estadisticas.totalFaqs }}</span>
+              <span class="stat-label">Total FAQs</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stat-green">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value">{{ estadisticas.faqsActivas }}</span>
+              <span class="stat-label">FAQs Activas</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stat-red">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value">{{ estadisticas.faqsInactivas }}</span>
+              <span class="stat-label">FAQs Inactivas</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-section">
+        <h3 class="stats-section-title">Consultas del Chatbot</h3>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon stat-blue">
+              <i class="fa-solid fa-comments"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value">{{ estadisticas.totalConsultas }}</span>
+              <span class="stat-label">Total Consultas</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stat-green">
+              <i class="fa-solid fa-check-double"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value">{{ estadisticas.conRespuesta }}</span>
+              <span class="stat-label">Con Respuesta</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stat-orange">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value">{{ estadisticas.sinRespuesta }}</span>
+              <span class="stat-label">Sin Respuesta</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-section" *ngIf="estadisticas.categorias?.length">
+        <h3 class="stats-section-title">Categorías Disponibles</h3>
+        <div class="categoria-tags">
+          <span *ngFor="let cat of estadisticas.categorias" class="categoria-tag">{{ cat }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ─────────────── Modal: Crear / Editar FAQ ─────────────── -->
+<div class="modal-overlay" *ngIf="showFaqModal" (click)="closeFaqModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ isEditMode ? 'Editar FAQ' : 'Nueva FAQ' }}</h2>
+      <button type="button" class="modal-close" title="Cerrar" aria-label="Cerrar" (click)="closeFaqModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="faq-pregunta">Pregunta <span class="required">*</span></label>
+        <textarea
+          id="faq-pregunta"
+          [(ngModel)]="faqForm.pregunta"
+          rows="3"
+          class="form-control"
+          placeholder="Escribe la pregunta frecuente..."
+        ></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="faq-respuesta">Respuesta <span class="required">*</span></label>
+        <textarea
+          id="faq-respuesta"
+          [(ngModel)]="faqForm.respuesta"
+          rows="4"
+          class="form-control"
+          placeholder="Escribe la respuesta detallada..."
+        ></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="faq-categoria">Categoría</label>
+        <input
+          id="faq-categoria"
+          type="text"
+          [(ngModel)]="faqForm.categoria"
+          list="categorias-list"
+          class="form-control"
+          placeholder="Ej: Precios, Horarios, Garantías..."
+        />
+        <datalist id="categorias-list">
+          <option *ngFor="let c of categorias" [value]="c"></option>
+        </datalist>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="faq-palabras-clave">
+          Palabras clave
+          <span class="form-hint">(separadas por coma)</span>
+        </label>
+        <input
+          id="faq-palabras-clave"
+          type="text"
+          [(ngModel)]="faqForm.palabrasClave"
+          class="form-control"
+          placeholder="Ej: horario,atención,hora,abierto"
+        />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeFaqModal()" [disabled]="faqSaving">Cancelar</button>
+      <button type="button" class="btn-primary" (click)="saveFaq()" [disabled]="faqSaving">
+        <i class="fa-solid fa-spinner fa-spin" *ngIf="faqSaving"></i>
+        {{ faqSaving ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────── Modal: Confirmar eliminación ─────────────── -->
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
+  <div class="modal-card modal-sm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Eliminar FAQ</h2>
+      <button type="button" class="modal-close" title="Cerrar" aria-label="Cerrar" (click)="closeDeleteModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="delete-confirm-text">¿Estás seguro de que deseas eliminar esta FAQ?</p>
+      <div class="delete-preview" *ngIf="deletingFaq">
+        <i class="fa-solid fa-circle-question"></i>
+        {{ deletingFaq.pregunta }}
+      </div>
+      <p class="delete-warning">Esta acción no se puede deshacer.</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeDeleteModal()" [disabled]="deleteLoading">Cancelar</button>
+      <button type="button" class="btn-danger" (click)="confirmDeleteFaq()" [disabled]="deleteLoading">
+        <i class="fa-solid fa-spinner fa-spin" *ngIf="deleteLoading"></i>
+        {{ deleteLoading ? 'Eliminando...' : 'Sí, eliminar' }}
+      </button>
+    </div>
+  </div>
+</div>

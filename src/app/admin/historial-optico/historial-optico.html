@@ -24,15 +24,15 @@
           <div class="date-range">
             <div class="date-field">
               <span>Desde:</span>
-              <input type="date" name="desde" [(ngModel)]="filterDesde" />
+              <input type="date" name="desde" [(ngModel)]="filterDesde" title="Desde" />
             </div>
             <div class="date-field">
               <span>Hasta:</span>
-              <input type="date" name="hasta" [(ngModel)]="filterHasta" />
+              <input type="date" name="hasta" [(ngModel)]="filterHasta" title="Hasta" />
             </div>
           </div>
 
-          <button type="submit" class="btn-search">
+          <button type="submit" class="btn-search" title="Buscar" aria-label="Buscar">
             <i class="fa-solid fa-magnifying-glass"></i>
           </button>
           <button type="button" class="btn-clear" (click)="onClear()">Limpiar</button>

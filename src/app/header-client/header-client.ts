@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { SearchBarComponent } from '../search-bar-admin/search-bar-admin';
 import { DatePipe, registerLocaleData } from '@angular/common';
 import localeEsPe from '@angular/common/locales/es-PE'
-import { NotificationButtonClientComponent } from '../notification-button-client/notification-button-client';
 registerLocaleData(localeEsPe);
 @Component({
   selector: 'app-header-client',
   templateUrl: './header-client.html',
   styleUrls: ['./header-client.css'],
   standalone: true,
-  imports: [SearchBarComponent, DatePipe,NotificationButtonClientComponent] // Importa el componente SearchBarComponent
+  imports: [SearchBarComponent, DatePipe, RouterLink]
 })
 export class HeaderComponent {
   logoSrc = 'assets/Images/logo_Kadosh-2.png';

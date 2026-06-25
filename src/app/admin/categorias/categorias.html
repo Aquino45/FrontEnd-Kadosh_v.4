@@ -1,0 +1,168 @@
+<div class="categorias-page">
+
+  <div class="toolbar">
+    <div class="title-wrap">
+      <h1 class="title">Categorías y Subcategorías</h1>
+      <span class="accent"></span>
+    </div>
+  </div>
+
+  <div class="top-actions">
+    <button type="button" class="btn-primary" (click)="openCreateCategoria()">
+      <i class="fa-solid fa-plus"></i> Nueva Categoría
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="state-center">
+    <i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Cargando categorías...
+  </div>
+
+  <div *ngIf="!loading && categorias.length === 0" class="state-center empty-state">
+    <i class="fa-solid fa-inbox fa-2x"></i>
+    <p>No hay categorías registradas</p>
+  </div>
+
+  <div class="tree-wrap" *ngIf="!loading && categorias.length > 0">
+    <div class="categoria-node" *ngFor="let c of categorias">
+
+      <div class="categoria-row">
+        <button type="button" class="expand-btn" [title]="isExpanded(c) ? 'Contraer' : 'Expandir'" aria-label="Expandir o contraer categoría" (click)="toggleExpand(c)">
+          <i class="fa-solid" [class.fa-chevron-down]="isExpanded(c)" [class.fa-chevron-right]="!isExpanded(c)"></i>
+        </button>
+        <i class="fa-solid fa-folder categoria-icon"></i>
+        <span class="categoria-nombre">{{ c.nombre }}</span>
+        <span class="badge" [class.badge-active]="c.activo" [class.badge-inactive]="!c.activo">
+          {{ c.activo ? 'Activa' : 'Inactiva' }}
+        </span>
+        <div class="categoria-actions">
+          <button type="button" class="btn-action btn-add" title="Agregar subcategoría" (click)="openCreateSub(c)">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+          <button type="button" class="btn-action btn-edit" title="Editar categoría" (click)="openEditCategoria(c)">
+            <i class="fa-solid fa-pen-to-square"></i>
+          </button>
+          <button type="button" class="btn-action btn-delete" title="Eliminar categoría" (click)="openDeleteCategoria(c)">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="subcategorias-list" *ngIf="isExpanded(c)">
+        <div *ngIf="isLoadingSub(c)" class="state-center small">
+          <i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Cargando subcategorías...
+        </div>
+
+        <div *ngIf="!isLoadingSub(c) && getSubcategorias(c).length === 0" class="state-center small empty-state">
+          <p>Sin subcategorías. Usa el botón “+” para agregar una.</p>
+        </div>
+
+        <div class="subcategoria-row" *ngFor="let s of getSubcategorias(c)">
+          <i class="fa-solid fa-folder-open sub-icon"></i>
+          <span class="sub-nombre">{{ s.nombre }}</span>
+          <span class="badge" [class.badge-active]="s.activo" [class.badge-inactive]="!s.activo">
+            {{ s.activo ? 'Activa' : 'Inactiva' }}
+          </span>
+          <div class="categoria-actions">
+            <button type="button" class="btn-action btn-edit" title="Editar subcategoría" (click)="openEditSub(s)">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button type="button" class="btn-action btn-delete" title="Eliminar subcategoría" (click)="openDeleteSub(s)">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ─────────────── Modal: Crear / Editar Categoría ─────────────── -->
+<div class="modal-overlay" *ngIf="showCategoriaModal" (click)="closeCategoriaModal()">
+  <div class="modal-card modal-sm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ isEditCategoria ? 'Editar Categoría' : 'Nueva Categoría' }}</h2>
+      <button type="button" class="modal-close" title="Cerrar" aria-label="Cerrar" (click)="closeCategoriaModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="cat-nombre">Nombre <span class="required">*</span></label>
+        <input id="cat-nombre" type="text" [(ngModel)]="categoriaForm.nombre" class="form-control" placeholder="Ej: Lentes de sol" />
+      </div>
+      <div class="form-group form-check" *ngIf="isEditCategoria">
+        <label class="check-label">
+          <input type="checkbox" [(ngModel)]="categoriaForm.activo" />
+          Categoría activa
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeCategoriaModal()" [disabled]="categoriaSaving">Cancelar</button>
+      <button type="button" class="btn-primary" (click)="saveCategoria()" [disabled]="categoriaSaving">
+        <i class="fa-solid fa-spinner fa-spin" *ngIf="categoriaSaving"></i>
+        {{ categoriaSaving ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────── Modal: Crear / Editar Subcategoría ─────────────── -->
+<div class="modal-overlay" *ngIf="showSubModal" (click)="closeSubModal()">
+  <div class="modal-card modal-sm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ isEditSub ? 'Editar Subcategoría' : 'Nueva Subcategoría' }}</h2>
+      <button type="button" class="modal-close" title="Cerrar" aria-label="Cerrar" (click)="closeSubModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="sub-nombre">Nombre <span class="required">*</span></label>
+        <input id="sub-nombre" type="text" [(ngModel)]="subForm.nombre" class="form-control" placeholder="Ej: Lentes polarizados" />
+      </div>
+      <div class="form-group form-check" *ngIf="isEditSub">
+        <label class="check-label">
+          <input type="checkbox" [(ngModel)]="subForm.activo" />
+          Subcategoría activa
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeSubModal()" [disabled]="subSaving">Cancelar</button>
+      <button type="button" class="btn-primary" (click)="saveSub()" [disabled]="subSaving">
+        <i class="fa-solid fa-spinner fa-spin" *ngIf="subSaving"></i>
+        {{ subSaving ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────── Modal: Confirmar eliminación ─────────────── -->
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
+  <div class="modal-card modal-sm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ deleteTarget?.type === 'categoria' ? 'Eliminar Categoría' : 'Eliminar Subcategoría' }}</h2>
+      <button type="button" class="modal-close" title="Cerrar" aria-label="Cerrar" (click)="closeDeleteModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="delete-confirm-text">¿Estás seguro de que deseas eliminar lo siguiente?</p>
+      <div class="delete-preview" *ngIf="deleteTarget">
+        <i class="fa-solid fa-folder"></i>
+        {{ deleteTarget.nombre }}
+      </div>
+      <p class="delete-warning">Esta acción no se puede deshacer.</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeDeleteModal()" [disabled]="deleteLoading">Cancelar</button>
+      <button type="button" class="btn-danger" (click)="confirmDelete()" [disabled]="deleteLoading">
+        <i class="fa-solid fa-spinner fa-spin" *ngIf="deleteLoading"></i>
+        {{ deleteLoading ? 'Eliminando...' : 'Sí, eliminar' }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,143 @@
+<div class="inventario-page">
+
+  <div class="toolbar">
+    <div class="title-wrap">
+      <h1 class="title">Inventarios</h1>
+      <span class="accent"></span>
+    </div>
+  </div>
+
+  <!-- ── Accesos rápidos ── -->
+  <div class="quick-links">
+    <a routerLink="/home-admin/productos" class="quick-card">
+      <div class="quick-icon quick-purple"><i class="fa-solid fa-boxes-stacked"></i></div>
+      <div class="quick-info">
+        <span class="quick-title">Productos</span>
+        <span class="quick-desc">Catálogo, stock y movimientos</span>
+      </div>
+      <i class="fa-solid fa-chevron-right quick-arrow"></i>
+    </a>
+    <a routerLink="/home-admin/categorias" class="quick-card">
+      <div class="quick-icon quick-green"><i class="fa-solid fa-folder-tree"></i></div>
+      <div class="quick-info">
+        <span class="quick-title">Categorías</span>
+        <span class="quick-desc">Categorías y subcategorías</span>
+      </div>
+      <i class="fa-solid fa-chevron-right quick-arrow"></i>
+    </a>
+    <a routerLink="/home-admin/inventario-movimientos" class="quick-card">
+      <div class="quick-icon quick-blue"><i class="fa-solid fa-chart-line"></i></div>
+      <div class="quick-info">
+        <span class="quick-title">Kardex</span>
+        <span class="quick-desc">Auditoría de movimientos</span>
+      </div>
+      <i class="fa-solid fa-chevron-right quick-arrow"></i>
+    </a>
+  </div>
+
+  <div *ngIf="loading" class="state-center">
+    <i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Cargando resumen...
+  </div>
+
+  <div *ngIf="!loading">
+
+    <!-- ── Estadísticas ── -->
+    <div class="stats-section">
+      <h3 class="stats-section-title">Resumen General</h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon stat-purple"><i class="fa-solid fa-boxes-stacked"></i></div>
+          <div class="stat-info">
+            <span class="stat-value">{{ totalProductos }}</span>
+            <span class="stat-label">Total Productos</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-green"><i class="fa-solid fa-circle-check"></i></div>
+          <div class="stat-info">
+            <span class="stat-value">{{ productosActivos }}</span>
+            <span class="stat-label">Productos Activos</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-orange"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div class="stat-info">
+            <span class="stat-value">{{ totalStockBajo }}</span>
+            <span class="stat-label">Stock Bajo</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-blue"><i class="fa-solid fa-folder-tree"></i></div>
+          <div class="stat-info">
+            <span class="stat-value">{{ totalCategorias }}</span>
+            <span class="stat-label">Categorías</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-purple"><i class="fa-solid fa-chart-line"></i></div>
+          <div class="stat-info">
+            <span class="stat-value">{{ totalMovimientos }}</span>
+            <span class="stat-label">Movimientos Totales</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Paneles: stock bajo + últimos movimientos ── -->
+    <div class="two-col">
+
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title"><i class="fa-solid fa-triangle-exclamation"></i> Productos con stock bajo</h3>
+          <a routerLink="/home-admin/productos" class="panel-link">Ver todos <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
+        <div *ngIf="stockBajo.length === 0" class="state-center empty-state small">
+          <p>No hay productos con stock bajo</p>
+        </div>
+
+        <div class="table-wrap" *ngIf="stockBajo.length > 0">
+          <table class="data-table">
+            <thead>
+              <tr><th>Producto</th><th>Stock</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of stockBajo">
+                <td class="td-nombre">{{ p.nombre }}</td>
+                <td><span class="badge badge-inactive">{{ p.stock }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title"><i class="fa-solid fa-clock-rotate-left"></i> Últimos movimientos</h3>
+          <a routerLink="/home-admin/inventario-movimientos" class="panel-link">Ver historial <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
+        <div *ngIf="ultimosMovimientos.length === 0" class="state-center empty-state small">
+          <p>No hay movimientos registrados</p>
+        </div>
+
+        <div class="table-wrap" *ngIf="ultimosMovimientos.length > 0">
+          <table class="data-table">
+            <thead>
+              <tr><th>Producto</th><th>Tipo</th><th>Fecha</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let m of ultimosMovimientos">
+                <td class="td-nombre">{{ m.productoNombre || '—' }}</td>
+                <td><span class="tipo-tag" [attr.data-tipo]="m.tipo">{{ m.tipo }}</span></td>
+                <td>{{ m.fecha | date:'dd/MM HH:mm' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

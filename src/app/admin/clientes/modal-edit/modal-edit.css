@@ -19,7 +19,7 @@ input, select, textarea, button {
 
 /* Aplicamos la fuente base al Modal */
 .modal {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   /* ... resto de estilos del modal ... */
   width: min(92vw, 620px);
   background: #fff;
@@ -51,6 +51,7 @@ input, select, textarea, button {
   display: grid;
   place-items: center;
   background: rgba(16, 10, 28, .35);
+  -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
   z-index: 1000;
   animation: fadeIn .15s ease-out;
@@ -163,8 +164,17 @@ input, select, textarea, button {
    ========================================= */
 .profile-section {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 20px;
+  flex-wrap: wrap;
+}
+
+.url-foto-wrapper {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .avatar-large {
@@ -172,6 +182,8 @@ input, select, textarea, button {
   height: 80px;
   border-radius: 50%;
   overflow: hidden;
+  cursor: pointer;
+  position: relative;
   background: #e5e7eb;
   border: 3px solid #fff;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -322,11 +334,36 @@ input, select, textarea, button {
   text-decoration: underline;
 }
 
+.file-input-hidden { display: none; }
+
+.password-wrapper { position: relative; }
+
+.input-password {
+  border-color: #dad3ff;
+  background-color: #fdfbff;
+}
+
+.password-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9b87f5;
+}
+
+.info-text {
+  color: #666;
+  font-size: 0.75rem;
+  margin-top: 4px;
+  display: block;
+}
+
 .no-apoderado {
   background: #f9fafb;
   border: 1px dashed #d1d5db;
   border-radius: 10px;
   padding: 16px;
+  cursor: pointer;
   color: #6b7280;
   display: flex;
   align-items: center;
@@ -490,6 +527,7 @@ input, select, textarea, button {
   color: #9ca3af;
   font-weight: 700;
   margin: 0 4px;
+  -webkit-user-select: none;
   user-select: none;
 }
 

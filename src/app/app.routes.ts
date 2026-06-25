@@ -27,6 +27,12 @@ export const routes: Routes = [
       { path: 'cotizacion', loadComponent: () => import('./admin/cotizacion/cotizacion').then(m => m.CotizacionComponent) },
       { path: 'ajustes', loadComponent: () => import('./admin/ajustes/ajustes').then(m => m.AjustesComponent) },
       { path: 'ayuda', loadComponent: () => import('./admin/ayuda/ayuda').then(m => m.AyudaComponent) },
+      { path: 'chatbot', loadComponent: () => import('./admin/chatbot/chatbot').then(m => m.ChatbotComponent) },
+      { path: 'asistente', loadComponent: () => import('./asistente/asistente').then(m => m.AsistenteComponent) },
+      { path: 'inventario', loadComponent: () => import('./admin/inventario/inventario').then(m => m.InventarioResumenComponent) },
+      { path: 'productos', loadComponent: () => import('./admin/productos/productos').then(m => m.ProductosComponent) },
+      { path: 'categorias', loadComponent: () => import('./admin/categorias/categorias').then(m => m.CategoriasComponent) },
+      { path: 'inventario-movimientos', loadComponent: () => import('./admin/inventario-movimientos/inventario-movimientos').then(m => m.InventarioMovimientosComponent) },
       { path: '', pathMatch: 'full', redirectTo: 'inicio' }
     ]
   },
@@ -44,6 +50,7 @@ export const routes: Routes = [
       { path: 'cotizacion', loadComponent: () => import('./client/cotizaciones-usuarios/cotizaciones-usuarios').then(m => m.CotizacionesUsuariosComponent) },
       { path: 'ajustes', loadComponent: () => import('./client/ajustes/ajustes').then(m => m.AjustesComponent) },
       { path: 'ayuda', loadComponent: () => import('./client/ayuda/ayuda').then(m => m.AyudaComponent) },
+      { path: 'asistente', loadComponent: () => import('./asistente/asistente').then(m => m.AsistenteComponent) },
       { path: '', pathMatch: 'full', redirectTo: 'inicio' }
     ]
   }

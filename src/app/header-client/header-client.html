@@ -1,9 +1,8 @@
 <header class="hdr">
 
-  <div class="brand">
-    <img [src]="logoSrc" [alt]="logoAlt" />
-    <span class="brand-name">Kadosh</span>
-  </div>
+  <a class="brand" routerLink="/home-client/inicio" title="Ir al inicio">
+    <img [src]="logoSrc" [alt]="logoAlt" title="Logo Kadosh" />
+  </a>
 
   <div class="search-bar-container">
     <app-search-bar [placeholder]="'Buscar...'" (search)="onSearch($event)" (queryChange)="onQueryChange($event)">
@@ -11,14 +10,14 @@
   </div>
 
   <div class="actions">
-    <button class="date-chip" (click)="openCalendar()" title="Seleccionar fecha">
+    <button type="button" class="date-chip" (click)="openCalendar()" title="Seleccionar fecha">
       <i class="fa-solid fa-calendar-days chip-icon"></i>
       <div class="date-text">
         <span class="day">{{ today | date:'EEEE':'':'es-PE' }}</span>
         <span class="full-date">{{ today | date:'dd/MM/yyyy' }}</span>
       </div>
     </button>
-    <input type="date" class="date-input-hidden" [value]="selectedDateISO" (change)="onDateChange($event)" />
+    <input type="date" class="date-input-hidden" [value]="selectedDateISO" (change)="onDateChange($event)" title="Seleccionar fecha" placeholder="dd/mm/aaaa" />
   </div>
 
 </header>

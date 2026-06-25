@@ -13,7 +13,7 @@
             <i class="fa-solid fa-spinner fa-spin"></i> Buscando expedientes...
         </div>
 
-        <div class="grid-cards" *ngIf="!loading">
+        <div class="grid-cards" *ngIf="!loading && historiales.length > 0">
             <div class="card-item" *ngFor="let h of historiales">
                 <div class="card-header">
                     <span class="date-label">FECHA</span>
@@ -37,10 +37,10 @@
             </div>
         </div>
 
-        <div *ngIf="!loading && historiales.length === 0" class="empty-state">
-    <i class="fa-solid fa-folder-open" style="font-size: 3rem; color: #ccc;"></i>
-    <p>Aún no tienes registros en tu historial.</p>
-</div>
+        <div *ngIf="!loading && historiales.length === 0" class="state-box">
+            <i class="fa-solid fa-folder-open empty-icon"></i>
+            <p>Aún no tienes registros en tu historial.</p>
+        </div>
     </div>
 
     <app-ver-completo-historial-optico 

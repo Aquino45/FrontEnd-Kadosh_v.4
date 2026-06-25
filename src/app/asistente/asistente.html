@@ -1,0 +1,67 @@
+<div class="asistente-page">
+
+  <div class="chat-header">
+    <div class="bot-avatar">
+      <i class="fa-solid fa-robot"></i>
+    </div>
+    <div class="bot-info">
+      <h2 class="bot-name">Asistente Kadosh</h2>
+      <span class="bot-status">En línea</span>
+    </div>
+  </div>
+
+  <div class="chat-body">
+    <div class="messages-wrap">
+
+      <div *ngFor="let msg of messages"
+           class="message-row"
+           [class.user-row]="msg.from === 'user'"
+           [class.bot-row]="msg.from === 'bot'">
+
+        <div *ngIf="msg.from === 'bot'" class="msg-avatar">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+
+        <div *ngIf="msg.isLoading" class="bubble bubble-bot bubble-loading">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+
+        <div *ngIf="msg.from === 'bot' && !msg.isLoading" class="bubble bubble-bot">
+          <div *ngIf="msg.questionLabel" class="question-label">
+            <i class="fa-solid fa-circle-question"></i>
+            {{ msg.questionLabel }}
+          </div>
+          <p>{{ msg.text }}</p>
+        </div>
+
+        <div *ngIf="msg.from === 'user'" class="bubble bubble-user">
+          <p>{{ msg.text }}</p>
+        </div>
+
+      </div>
+
+      <div #chatEnd></div>
+    </div>
+  </div>
+
+  <div class="chat-input-area">
+    <div class="input-wrap">
+      <textarea
+        [(ngModel)]="inputText"
+        (keydown)="onKeyDown($event)"
+        placeholder="Escribe tu pregunta..."
+        aria-label="Escribe tu pregunta"
+        rows="1"
+        [disabled]="isSending"
+        class="chat-input"
+      ></textarea>
+      <button type="button" class="send-btn" title="Enviar" aria-label="Enviar" (click)="send()" [disabled]="isSending || !inputText.trim()">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+    <p class="input-hint">Presiona Enter para enviar · Shift+Enter para nueva línea</p>
+  </div>
+
+</div>

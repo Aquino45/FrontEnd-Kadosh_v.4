@@ -39,3 +39,8 @@ export const COTIZACIONES_API_URL = `${API_BASE}/cotizaciones`;
 // 🧾 FACTURAS
 // ==========================
 export const FACTURAS_API_URL = `${API_BASE}/facturas`;
+
+// ==========================
+// 🤖 CHATBOT
+// ==========================
+export const CHATBOT_API_URL = `${API_BASE}/chatbot`;

@@ -10,7 +10,12 @@
             <i class="fa-solid fa-spinner fa-spin"></i> Cargando...
         </div>
 
-        <div class="grid-cards" *ngIf="!loading">
+        <div *ngIf="!loading && cotizaciones.length === 0" class="state-box">
+            <i class="fa-regular fa-file-lines empty-icon"></i>
+            <p>No tienes cotizaciones registradas aún.</p>
+        </div>
+
+        <div class="grid-cards" *ngIf="!loading && cotizaciones.length > 0">
             <div class="card-item" *ngFor="let c of cotizaciones" [class.pagado]="c.estadoPago === true || c.estadoPago === 'PAGADO'">
                 <div class="card-header">
                     <span class="date-label">FECHA</span>
