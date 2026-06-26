@@ -44,3 +44,9 @@ export const FACTURAS_API_URL = `${API_BASE}/facturas`;
 // 🤖 CHATBOT
 // ==========================
 export const CHATBOT_API_URL = `${API_BASE}/chatbot`;
+
+// ==========================
+// 📊 REPORTES
+// ==========================
+export const REPORTES_API_URL = `${API_BASE}/reportes`;
+export const TIPO_REPORTES_API_URL = `${API_BASE}/tipo-reportes`;

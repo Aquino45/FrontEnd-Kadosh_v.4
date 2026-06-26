@@ -128,7 +128,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let m of ultimosMovimientos">
-                <td class="td-nombre">{{ m.productoNombre || '—' }}</td>
+                <td class="td-nombre">{{ m.nombreProducto || '—' }}</td>
                 <td><span class="tipo-tag" [attr.data-tipo]="m.tipo">{{ m.tipo }}</span></td>
                 <td>{{ m.fecha | date:'dd/MM HH:mm' }}</td>
               </tr>

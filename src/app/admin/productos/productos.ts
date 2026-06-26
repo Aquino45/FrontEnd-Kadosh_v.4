@@ -38,12 +38,11 @@ export class ProductosComponent implements OnInit {
   // ── Modal Crear/Editar producto ───────────────────────────
   showProductModal = false;
   isEditMode = false;
-  editingProductId: string | number | null = null;
+  editingProductId: string | null = null;
   productForm = {
     nombre: '',
     precioActual: 0,
     stock: 0,
-    stockMinimo: DEFAULT_STOCK_MINIMO,
     categoriaId: '',
     subCategoriaId: '',
     activo: true
@@ -83,7 +82,7 @@ export class ProductosComponent implements OnInit {
   }
 
   isLowStock(p: ProductoDTO): boolean {
-    return p.stock <= (p.stockMinimo ?? DEFAULT_STOCK_MINIMO);
+    return p.stock <= DEFAULT_STOCK_MINIMO;
   }
 
   // ── Listado / filtros ─────────────────────────────────────
@@ -142,7 +141,6 @@ export class ProductosComponent implements OnInit {
       nombre: '',
       precioActual: 0,
       stock: 0,
-      stockMinimo: DEFAULT_STOCK_MINIMO,
       categoriaId: '',
       subCategoriaId: '',
       activo: true
@@ -153,12 +151,11 @@ export class ProductosComponent implements OnInit {
 
   async openEditProduct(p: ProductoDTO) {
     this.isEditMode = true;
-    this.editingProductId = p.id;
+    this.editingProductId = p.productoId;
     this.productForm = {
       nombre: p.nombre,
       precioActual: p.precioActual ?? 0,
       stock: p.stock,
-      stockMinimo: p.stockMinimo ?? DEFAULT_STOCK_MINIMO,
       categoriaId: p.categoriaId != null ? String(p.categoriaId) : '',
       subCategoriaId: p.subCategoriaId != null ? String(p.subCategoriaId) : '',
       activo: p.activo
@@ -202,7 +199,6 @@ export class ProductosComponent implements OnInit {
       nombre: this.productForm.nombre.trim(),
       precioActual: this.productForm.precioActual,
       stock: this.productForm.stock,
-      stockMinimo: this.productForm.stockMinimo,
       categoriaId: this.productForm.categoriaId,
       subCategoriaId: this.productForm.subCategoriaId,
       activo: this.productForm.activo
@@ -251,7 +247,7 @@ export class ProductosComponent implements OnInit {
       motivo: this.stockForm.motivo.trim() || undefined
     };
     try {
-      await this.productoSvc.ajustarStock(this.stockTargetProduct.id, payload);
+      await this.productoSvc.ajustarStock(this.stockTargetProduct.productoId, payload);
       this.toast.success('Stock actualizado correctamente');
       this.closeStockModal();
       await Promise.all([this.loadProductos(), this.loadStockBajo()]);
@@ -270,7 +266,7 @@ export class ProductosComponent implements OnInit {
     this.historialLoading = true;
     this.historialList = [];
     try {
-      this.historialList = await this.productoSvc.getMovimientosByProducto(p.id);
+      this.historialList = await this.productoSvc.getMovimientosByProducto(p.productoId);
     } catch (_) {
       this.toast.error('Error al cargar el historial del producto');
     } finally {
@@ -299,7 +295,7 @@ export class ProductosComponent implements OnInit {
     if (!this.deletingProduct) return;
     this.deleteLoading = true;
     try {
-      await this.productoSvc.delete(this.deletingProduct.id);
+      await this.productoSvc.delete(this.deletingProduct.productoId);
       this.toast.success('Producto eliminado');
       this.closeDeleteModal();
       await Promise.all([this.loadProductos(), this.loadStockBajo()]);

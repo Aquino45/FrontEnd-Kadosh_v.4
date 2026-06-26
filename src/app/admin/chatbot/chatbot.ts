@@ -34,8 +34,8 @@ export class ChatbotComponent implements OnInit {
 
   showFaqModal = false;
   isEditMode = false;
-  editingFaqId: string | number | null = null;
-  faqForm = { pregunta: '', respuesta: '', categoria: '', palabrasClave: '' };
+  editingFaqId: string | null = null;
+  faqForm = { pregunta: '', respuesta: '', categoria: '', palabrasClave: '', activo: true };
   faqSaving = false;
 
   showDeleteModal = false;
@@ -106,24 +106,30 @@ export class ChatbotComponent implements OnInit {
   openCreateFaq() {
     this.isEditMode = false;
     this.editingFaqId = null;
-    this.faqForm = { pregunta: '', respuesta: '', categoria: '', palabrasClave: '' };
+    this.faqForm = { pregunta: '', respuesta: '', categoria: '', palabrasClave: '', activo: true };
     this.showFaqModal = true;
   }
 
   openEditFaq(faq: FaqItem) {
     this.isEditMode = true;
-    this.editingFaqId = faq.id;
+    this.editingFaqId = faq.preguntaId;
     this.faqForm = {
       pregunta: faq.pregunta,
       respuesta: faq.respuesta,
       categoria: faq.categoria ?? '',
-      palabrasClave: (faq.palabrasClave ?? []).join(', ')
+      palabrasClave: this.keywordsToString(faq.palabrasClave),
+      activo: faq.activo
     };
     this.showFaqModal = true;
   }
 
   closeFaqModal() {
     this.showFaqModal = false;
+  }
+
+  private keywordsToString(palabrasClave: string[] | string | undefined): string {
+    if (!palabrasClave) return '';
+    return Array.isArray(palabrasClave) ? palabrasClave.join(', ') : palabrasClave;
   }
 
   async saveFaq() {
@@ -137,8 +143,9 @@ export class ChatbotComponent implements OnInit {
       respuesta: this.faqForm.respuesta.trim(),
       categoria: this.faqForm.categoria.trim() || undefined,
       palabrasClave: this.faqForm.palabrasClave
-        ? this.faqForm.palabrasClave.split(',').map(k => k.trim()).filter(Boolean)
-        : undefined
+        ? this.faqForm.palabrasClave.split(',').map(k => k.trim()).filter(Boolean).join(',')
+        : undefined,
+      activo: this.faqForm.activo
     };
     try {
       if (this.isEditMode && this.editingFaqId != null) {
@@ -171,7 +178,7 @@ export class ChatbotComponent implements OnInit {
     if (!this.deletingFaq) return;
     this.deleteLoading = true;
     try {
-      await this.chatbotSvc.deleteFaq(this.deletingFaq.id);
+      await this.chatbotSvc.deleteFaq(this.deletingFaq.preguntaId);
       this.toast.success('FAQ eliminada');
       this.closeDeleteModal();
       await this.loadFaqs();

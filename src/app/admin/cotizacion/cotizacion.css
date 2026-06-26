@@ -92,22 +92,28 @@
 
 /* ===== Actions bar ===== */
 .actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin-top: 6px;
   animation: slideDown 0.45s 0.05s ease both;
 }
 
 .top-actions {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 14px;
-  padding: 12px 16px;
+  padding: 14px 18px;
   box-shadow: 0 2px 12px rgba(91,43,136,0.07);
   animation: slideDown 0.5s 0.08s ease both;
+}
+
+.secondary-actions {
+  display: flex;
 }
 
 /* ===== Primary button ===== */
@@ -135,12 +141,35 @@
 /* ===== Filters ===== */
 .filters-inline {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
-.filters-inline input[type="text"] {
+.filters-left {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.filter-field label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding-left: 2px;
+}
+
+.filter-field input[type="text"] {
   height: 38px;
   padding: 0 12px;
   border: 1px solid var(--line);
@@ -149,43 +178,60 @@
   font-family: "Inter", sans-serif;
   color: var(--ink);
   background: #faf9ff;
-  width: 140px;
+  width: 160px;
   outline: none;
   transition: border 0.15s, box-shadow 0.15s;
 }
 
-.filters-inline input[type="text"]:focus {
+.filter-field input[type="text"]:focus {
   border-color: var(--p600);
   box-shadow: 0 0 0 3px rgba(91,43,136,0.12);
 }
 
-.date-range {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--p100);
-  padding: 6px 14px;
-  border-radius: 10px;
-  border: 1px solid #ddd6f3;
+.filters-divider {
+  width: 1px;
+  height: 38px;
+  background: var(--line);
 }
 
-.date-field {
-  display: flex;
+.btn-date-filter {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #faf9ff;
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  font-family: "Inter", sans-serif;
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  font-weight: 700;
+  gap: 7px;
+  position: relative;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.btn-date-filter:hover { border-color: var(--p600); }
+
+.btn-date-filter.active {
+  background: var(--p100);
+  border-color: #ddd6f3;
   color: var(--p700);
 }
 
-.date-field input {
-  border: none;
-  background: transparent;
-  font-family: "Inter", sans-serif;
-  font-size: 13px;
-  color: var(--ink);
-  outline: none;
-  width: 120px;
+.btn-date-filter i { font-size: 13px; }
+
+.date-filter-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--p500);
+}
+
+.filters-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .btn-search,
@@ -314,6 +360,117 @@
 
 .btn-view:hover { background: #1e358a; transform: translateY(-1px); }
 
+/* ===== Modal: Filtrar por fecha ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn .15s ease;
+}
+
+.modal-card {
+  background: var(--surface);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 560px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  animation: slideUp .2s ease;
+  overflow: hidden;
+}
+
+.modal-sm { max-width: 380px; }
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.modal-header h2 { font-size: 17px; font-weight: 700; color: var(--ink); margin: 0; }
+
+.modal-close {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: none;
+  background: var(--p100);
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: background .2s;
+}
+
+.modal-close:hover { background: var(--line); }
+
+.modal-body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-footer {
+  padding: 16px 24px 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 13px; font-weight: 600; color: var(--ink); }
+
+.form-control {
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 13px;
+  font-size: 13.5px;
+  color: var(--ink);
+  font-family: "Inter", sans-serif;
+  outline: none;
+  transition: border-color .2s;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--surface);
+}
+
+.form-control:focus { border-color: var(--p500); }
+
+.btn-secondary {
+  padding: 10px 18px;
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: "Inter", sans-serif;
+  cursor: pointer;
+  transition: color .2s, border-color .2s;
+}
+
+.btn-secondary:hover { color: var(--ink); border-color: var(--muted); }
+
 /* ===== States ===== */
 .loading {
   text-align: center;
@@ -345,8 +502,13 @@
 
 /* ===== Responsive ===== */
 @media (max-width: 700px) {
-  .top-actions { flex-direction: column; align-items: stretch; }
-  .filters-inline { flex-direction: column; }
-  .filters-inline input[type="text"] { width: 100%; }
+  .filters-inline { flex-direction: column; align-items: stretch; }
+  .filters-left { flex-direction: column; align-items: stretch; }
+  .filter-field input[type="text"] { width: 100%; }
+  .filters-divider { display: none; }
+  .btn-date-filter { width: 100%; justify-content: center; }
+  .filters-actions { width: 100%; }
+  .filters-actions .btn-clear { flex: 1; justify-content: center; }
+  .filters-actions .btn-search { flex: 1; justify-content: center; }
   .btn-primary { justify-content: center; }
 }

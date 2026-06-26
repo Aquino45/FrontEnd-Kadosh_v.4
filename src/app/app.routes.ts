@@ -33,6 +33,7 @@ export const routes: Routes = [
       { path: 'productos', loadComponent: () => import('./admin/productos/productos').then(m => m.ProductosComponent) },
       { path: 'categorias', loadComponent: () => import('./admin/categorias/categorias').then(m => m.CategoriasComponent) },
       { path: 'inventario-movimientos', loadComponent: () => import('./admin/inventario-movimientos/inventario-movimientos').then(m => m.InventarioMovimientosComponent) },
+      { path: 'reportes', loadComponent: () => import('./admin/reportes/reportes').then(m => m.ReportesComponent) },
       { path: '', pathMatch: 'full', redirectTo: 'inicio' }
     ]
   },

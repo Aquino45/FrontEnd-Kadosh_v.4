@@ -1,0 +1,597 @@
+<div class="reportes-page">
+
+  <div class="toolbar">
+    <div class="title-wrap">
+      <h1 class="title">Reportes</h1>
+      <span class="accent"></span>
+    </div>
+  </div>
+
+  <!-- ══ TABS ══ -->
+  <div class="tabs-bar">
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'resumen'" (click)="setTab('resumen')">
+      <i class="fa-solid fa-gauge-high"></i> Resumen
+    </button>
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'ventas'" (click)="setTab('ventas')">
+      <i class="fa-solid fa-file-invoice-dollar"></i> Ventas
+    </button>
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'cotizaciones'" (click)="setTab('cotizaciones')">
+      <i class="fa-solid fa-clipboard-list"></i> Cotizaciones
+    </button>
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'historial'" (click)="setTab('historial')">
+      <i class="fa-solid fa-eye"></i> Historial Óptico
+    </button>
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'productos'" (click)="setTab('productos')">
+      <i class="fa-solid fa-boxes-stacked"></i> Productos Vendidos
+    </button>
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'tipos'" (click)="setTab('tipos')">
+      <i class="fa-solid fa-sliders"></i> Tipos de Reporte
+    </button>
+  </div>
+
+  <!-- ═══════════════ TAB: RESUMEN GENERAL ═══════════════ -->
+  <div class="tab-content" *ngIf="activeTab === 'resumen'">
+
+    <div class="filters-bar filters-inline">
+      <div class="filters-left">
+        <button type="button" class="btn-date-filter" [class.active]="globalDesde || globalHasta" (click)="openDateModal()">
+          <i class="fa-solid fa-calendar-days"></i>
+          <span>Fecha</span>
+          <span class="date-filter-dot" *ngIf="globalDesde || globalHasta"></span>
+        </button>
+      </div>
+      <div class="filters-actions">
+        <button type="button" class="btn-search" (click)="loadResumen()">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="resumen.loading" class="state-center">
+      <i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Cargando resumen...
+    </div>
+
+    <div class="stats-grid" *ngIf="!resumen.loading && resumen.data">
+      <div class="stat-card">
+        <div class="stat-icon stat-purple"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ resumen.data.totalFacturas }}</span>
+          <span class="stat-label">Facturas emitidas</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stat-green"><i class="fa-solid fa-coins"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">S/ {{ resumen.data.totalVendido | number:'1.2-2' }}</span>
+          <span class="stat-label">Total vendido</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stat-blue"><i class="fa-solid fa-clipboard-list"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ resumen.data.totalCotizaciones }}</span>
+          <span class="stat-label">Cotizaciones</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stat-green"><i class="fa-solid fa-circle-check"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ resumen.data.totalCotizacionesPagadas }}</span>
+          <span class="stat-label">Cotizaciones pagadas</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stat-orange"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ resumen.data.totalCotizacionesPendientes }}</span>
+          <span class="stat-label">Cotizaciones pendientes</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stat-blue"><i class="fa-solid fa-eye"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ resumen.data.totalHistorialesOpticos }}</span>
+          <span class="stat-label">Historiales ópticos</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stat-purple"><i class="fa-solid fa-boxes-stacked"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ resumen.data.totalProductosVendidos }}</span>
+          <span class="stat-label">Productos vendidos</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ TAB: VENTAS ═══════════════ -->
+  <div class="tab-content" *ngIf="activeTab === 'ventas'">
+
+    <div class="filters-bar">
+      <button type="button" class="filters-toggle-btn" (click)="toggleFilters()">
+        <i class="fa-solid fa-sliders"></i> Filtros
+        <i class="fa-solid fa-chevron-down toggle-chevron" [class.rotated]="filtersOpen"></i>
+      </button>
+      <div class="filters-collapsible" [class.open]="filtersOpen">
+        <div class="filters-left">
+          <div class="filter-field">
+            <label for="v-estado">Estado</label>
+            <select id="v-estado" [(ngModel)]="ventas.estado">
+              <option value="">Todos</option>
+              <option value="EMITIDA">EMITIDA</option>
+              <option value="ANULADA">ANULADA</option>
+            </select>
+          </div>
+          <span class="filters-divider"></span>
+          <button type="button" class="btn-date-filter" [class.active]="globalDesde || globalHasta" (click)="openDateModal()">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span>Fecha</span>
+            <span class="date-filter-dot" *ngIf="globalDesde || globalHasta"></span>
+          </button>
+        </div>
+        <div class="filters-actions">
+          <button type="button" class="btn-search" (click)="loadVentas()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+          <button type="button" class="btn-clear" (click)="limpiarVentas()">
+            <i class="fa-solid fa-rotate-left"></i> Limpiar
+          </button>
+          <span class="filters-divider"></span>
+          <button type="button" class="btn-export btn-export-pdf" [disabled]="ventas.exportando === 'pdf'" (click)="exportarVentas('pdf')">
+            <i class="fa-solid" [ngClass]="ventas.exportando === 'pdf' ? 'fa-spinner fa-spin' : 'fa-file-pdf'"></i> PDF
+          </button>
+          <button type="button" class="btn-export btn-export-excel" [disabled]="ventas.exportando === 'excel'" (click)="exportarVentas('excel')">
+            <i class="fa-solid" [ngClass]="ventas.exportando === 'excel' ? 'fa-spinner fa-spin' : 'fa-file-excel'"></i> Excel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="ventas.loading" class="state-center">
+      <i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Cargando reporte de ventas...
+    </div>
+    <div *ngIf="!ventas.loading && ventas.rows.length === 0" class="state-center empty-state">
+      <i class="fa-solid fa-inbox fa-2x"></i>
+      <p>No hay ventas para los filtros seleccionados.</p>
+    </div>
+    <div class="table-wrap" *ngIf="!ventas.loading && ventas.rows.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>N° Factura</th>
+            <th>Cliente</th>
+            <th>DNI</th>
+            <th>Fecha</th>
+            <th class="text-right">Subtotal</th>
+            <th class="text-right">IGV</th>
+            <th class="text-right">Total</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let v of ventas.rows">
+            <td>{{ v.numeroFactura }}</td>
+            <td>{{ v.clienteNombre }}</td>
+            <td>{{ v.clienteDni }}</td>
+            <td>{{ formatFecha(v.fechaEmision) }}</td>
+            <td class="text-right">S/ {{ v.subtotal | number:'1.2-2' }}</td>
+            <td class="text-right">S/ {{ v.igv | number:'1.2-2' }}</td>
+            <td class="text-right font-bold">S/ {{ v.total | number:'1.2-2' }}</td>
+            <td>
+              <span class="badge" [class.badge-active]="v.estado === 'EMITIDA'" [class.badge-inactive]="v.estado !== 'EMITIDA'">
+                {{ v.estado }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════ TAB: COTIZACIONES ═══════════════ -->
+  <div class="tab-content" *ngIf="activeTab === 'cotizaciones'">
+
+    <div class="filters-bar">
+      <button type="button" class="filters-toggle-btn" (click)="toggleFilters()">
+        <i class="fa-solid fa-sliders"></i> Filtros
+        <i class="fa-solid fa-chevron-down toggle-chevron" [class.rotated]="filtersOpen"></i>
+      </button>
+      <div class="filters-collapsible" [class.open]="filtersOpen">
+        <div class="filters-left">
+          <div class="filter-field">
+            <label for="c-estado-pago">Estado de pago</label>
+            <select id="c-estado-pago" [(ngModel)]="cotizaciones.estadoPago">
+              <option value="">Todos</option>
+              <option value="true">Pagada</option>
+              <option value="false">Pendiente</option>
+            </select>
+          </div>
+          <span class="filters-divider"></span>
+          <button type="button" class="btn-date-filter" [class.active]="globalDesde || globalHasta" (click)="openDateModal()">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span>Fecha</span>
+            <span class="date-filter-dot" *ngIf="globalDesde || globalHasta"></span>
+          </button>
+        </div>
+        <div class="filters-actions">
+          <button type="button" class="btn-search" (click)="loadCotizaciones()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+          <button type="button" class="btn-clear" (click)="limpiarCotizaciones()">
+            <i class="fa-solid fa-rotate-left"></i> Limpiar
+          </button>
+          <span class="filters-divider"></span>
+          <button type="button" class="btn-export btn-export-pdf" [disabled]="cotizaciones.exportando === 'pdf'" (click)="exportarCotizaciones('pdf')">
+            <i class="fa-solid" [ngClass]="cotizaciones.exportando === 'pdf' ? 'fa-spinner fa-spin' : 'fa-file-pdf'"></i> PDF
+          </button>
+          <button type="button" class="btn-export btn-export-excel" [disabled]="cotizaciones.exportando === 'excel'" (click)="exportarCotizaciones('excel')">
+            <i class="fa-solid" [ngClass]="cotizaciones.exportando === 'excel' ? 'fa-spinner fa-spin' : 'fa-file-excel'"></i> Excel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="cotizaciones.loading" class="state-center">
+      <i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Cargando reporte de cotizaciones...
+    </div>
+    <div *ngIf="!cotizaciones.loading && cotizaciones.rows.length === 0" class="state-center empty-state">
+      <i class="fa-solid fa-inbox fa-2x"></i>
+      <p>No hay cotizaciones para los filtros seleccionados.</p>
+    </div>
+    <div class="table-wrap" *ngIf="!cotizaciones.loading && cotizaciones.rows.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>DNI</th>
+            <th>Edad</th>
+            <th>Fecha creación</th>
+            <th class="text-right">Total</th>
+            <th>Estado de pago</th>
+            <th>Fecha de pago</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of cotizaciones.rows">
+            <td>{{ c.clienteNombre }}</td>
+            <td>{{ c.clienteDni }}</td>
+            <td>{{ c.edad }}</td>
+            <td>{{ formatFecha(c.fechaCreacion, true) }}</td>
+            <td class="text-right font-bold">S/ {{ c.total | number:'1.2-2' }}</td>
+            <td>
+              <span class="badge" [class.badge-active]="c.estadoPago" [class.badge-inactive]="!c.estadoPago">
+                {{ c.estadoPago ? 'Pagada' : 'Pendiente' }}
+              </span>
+            </td>
+            <td>{{ c.fechaPago ? formatFecha(c.fechaPago, true) : '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════ TAB: HISTORIAL ÓPTICO ═══════════════ -->
+  <div class="tab-content" *ngIf="activeTab === 'historial'">
+
+    <div class="filters-bar filters-inline">
+      <div class="filters-left">
+        <button type="button" class="btn-date-filter" [class.active]="globalDesde || globalHasta" (click)="openDateModal()">
+          <i class="fa-solid fa-calendar-days"></i>
+          <span>Fecha</span>
+          <span class="date-filter-dot" *ngIf="globalDesde || globalHasta"></span>
+        </button>
+      </div>
+      <div class="filters-actions">
+        <button type="button" class="btn-search" (click)="loadHistorial()">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <span class="filters-divider"></span>
+        <button type="button" class="btn-export btn-export-pdf" [disabled]="historial.exportando === 'pdf'" (click)="exportarHistorial('pdf')">
+          <i class="fa-solid" [ngClass]="historial.exportando === 'pdf' ? 'fa-spinner fa-spin' : 'fa-file-pdf'"></i> PDF
+        </button>
+        <button type="button" class="btn-export btn-export-excel" [disabled]="historial.exportando === 'excel'" (click)="exportarHistorial('excel')">
+          <i class="fa-solid" [ngClass]="historial.exportando === 'excel' ? 'fa-spinner fa-spin' : 'fa-file-excel'"></i> Excel
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="historial.loading" class="state-center">
+      <i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Cargando reporte de historial óptico...
+    </div>
+    <div *ngIf="!historial.loading && historial.rows.length === 0" class="state-center empty-state">
+      <i class="fa-solid fa-inbox fa-2x"></i>
+      <p>No hay historiales ópticos para los filtros seleccionados.</p>
+    </div>
+    <div class="table-wrap" *ngIf="!historial.loading && historial.rows.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Paciente</th>
+            <th>DNI</th>
+            <th>Teléfono</th>
+            <th>Edad</th>
+            <th>Evaluador</th>
+            <th>Fecha</th>
+            <th>Recomendaciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let h of historial.rows">
+            <td>{{ h.paciente }}</td>
+            <td>{{ h.dni }}</td>
+            <td>{{ h.telefono || '—' }}</td>
+            <td>{{ h.edad }}</td>
+            <td>{{ h.evaluador }}</td>
+            <td>{{ formatFecha(h.fecha, true) }}</td>
+            <td class="td-pregunta">{{ h.recomendaciones || '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════ TAB: PRODUCTOS VENDIDOS ═══════════════ -->
+  <div class="tab-content" *ngIf="activeTab === 'productos'">
+
+    <div class="filters-bar">
+      <button type="button" class="filters-toggle-btn" (click)="toggleFilters()">
+        <i class="fa-solid fa-sliders"></i> Filtros
+        <i class="fa-solid fa-chevron-down toggle-chevron" [class.rotated]="filtersOpen"></i>
+      </button>
+      <div class="filters-collapsible" [class.open]="filtersOpen">
+        <div class="filters-left">
+          <div class="filter-field">
+            <label for="p-categoria">Categoría</label>
+            <select id="p-categoria" [(ngModel)]="productos.categoriaId" (change)="onCategoriaChange()">
+              <option value="">Todas</option>
+              <option *ngFor="let c of categorias" [value]="c.categoriaId">{{ c.nombre }}</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="p-subcategoria">Subcategoría</label>
+            <select id="p-subcategoria" [(ngModel)]="productos.subCategoriaId" [disabled]="!productos.categoriaId">
+              <option value="">Todas</option>
+              <option *ngFor="let s of subcategorias" [value]="s.subCategoriaId">{{ s.nombre }}</option>
+            </select>
+          </div>
+          <span class="filters-divider"></span>
+          <button type="button" class="btn-date-filter" [class.active]="globalDesde || globalHasta" (click)="openDateModal()">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span>Fecha</span>
+            <span class="date-filter-dot" *ngIf="globalDesde || globalHasta"></span>
+          </button>
+        </div>
+        <div class="filters-actions">
+          <button type="button" class="btn-search" (click)="loadProductos()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+          <button type="button" class="btn-clear" (click)="limpiarProductos()">
+            <i class="fa-solid fa-rotate-left"></i> Limpiar
+          </button>
+          <span class="filters-divider"></span>
+          <button type="button" class="btn-export btn-export-pdf" [disabled]="productos.exportando === 'pdf'" (click)="exportarProductos('pdf')">
+            <i class="fa-solid" [ngClass]="productos.exportando === 'pdf' ? 'fa-spinner fa-spin' : 'fa-file-pdf'"></i> PDF
+          </button>
+          <button type="button" class="btn-export btn-export-excel" [disabled]="productos.exportando === 'excel'" (click)="exportarProductos('excel')">
+            <i class="fa-solid" [ngClass]="productos.exportando === 'excel' ? 'fa-spinner fa-spin' : 'fa-file-excel'"></i> Excel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="productos.loading" class="state-center">
+      <i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Cargando reporte de productos vendidos...
+    </div>
+    <div *ngIf="!productos.loading && productos.rows.length === 0" class="state-center empty-state">
+      <i class="fa-solid fa-inbox fa-2x"></i>
+      <p>No hay productos vendidos para los filtros seleccionados.</p>
+    </div>
+    <div class="table-wrap" *ngIf="!productos.loading && productos.rows.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Subcategoría</th>
+            <th class="text-right">Precio actual</th>
+            <th class="text-right">Cantidad vendida</th>
+            <th class="text-right">Total vendido</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of productos.rows">
+            <td>{{ p.productoNombre }}</td>
+            <td>{{ p.categoriaNombre || '—' }}</td>
+            <td>{{ p.subCategoriaNombre || '—' }}</td>
+            <td class="text-right">S/ {{ p.precioActual | number:'1.2-2' }}</td>
+            <td class="text-right">{{ p.cantidadVendida }}</td>
+            <td class="text-right font-bold">S/ {{ p.totalVendido | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════ TAB: TIPOS DE REPORTE ═══════════════ -->
+  <div class="tab-content" *ngIf="activeTab === 'tipos'">
+
+    <div class="top-actions">
+      <div></div>
+      <button type="button" class="btn-primary" (click)="openCreateTipo()">
+        <i class="fa-solid fa-plus"></i> Nuevo tipo de reporte
+      </button>
+    </div>
+
+    <div *ngIf="tipos.loading" class="state-center">
+      <i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Cargando tipos de reporte...
+    </div>
+    <div *ngIf="!tipos.loading && tipos.rows.length === 0" class="state-center empty-state">
+      <i class="fa-solid fa-inbox fa-2x"></i>
+      <p>No hay tipos de reporte registrados.</p>
+    </div>
+    <div class="table-wrap" *ngIf="!tipos.loading && tipos.rows.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>PDF</th>
+            <th>Excel</th>
+            <th>Estado</th>
+            <th class="col-actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of tipos.rows">
+            <td>{{ t.codigo }}</td>
+            <td>{{ t.nombre }}</td>
+            <td class="td-pregunta">{{ t.descripcion || '—' }}</td>
+            <td><i class="fa-solid" [ngClass]="t.permitePdf ? 'fa-check' : 'fa-xmark'"></i></td>
+            <td><i class="fa-solid" [ngClass]="t.permiteExcel ? 'fa-check' : 'fa-xmark'"></i></td>
+            <td>
+              <span class="badge" [class.badge-active]="t.activo" [class.badge-inactive]="!t.activo">
+                {{ t.activo ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td class="td-actions">
+              <button type="button" class="btn-action btn-edit" title="Editar" (click)="openEditTipo(t)">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button type="button" class="btn-action btn-deactivate" title="Desactivar" *ngIf="t.activo" (click)="desactivarTipo(t)">
+                <i class="fa-solid fa-ban"></i>
+              </button>
+              <button type="button" class="btn-action btn-delete" title="Eliminar" (click)="openDeleteTipoConfirm(t)">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ─── Modal: Filtrar por fecha ─── -->
+<div class="modal-overlay" *ngIf="showDateModal" (click)="closeDateModal()">
+  <div class="modal-card modal-sm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Filtrar por fecha</h2>
+      <button type="button" class="modal-close" title="Cerrar" (click)="closeDateModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="rep-desde">Desde</label>
+        <input id="rep-desde" type="date" class="form-control" [(ngModel)]="globalDesde" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="rep-hasta">Hasta</label>
+        <input id="rep-hasta" type="date" class="form-control" [(ngModel)]="globalHasta" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="clearDateFilter()">Limpiar fechas</button>
+      <button type="button" class="btn-primary" (click)="applyDateFilter()">Aplicar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Modal: Crear / Editar tipo de reporte ─── -->
+<div class="modal-overlay" *ngIf="showTipoModal" (click)="closeTipoModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ isEditTipo ? 'Editar tipo de reporte' : 'Nuevo tipo de reporte' }}</h2>
+      <button type="button" class="modal-close" title="Cerrar" (click)="closeTipoModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="tr-codigo">Código <span class="required">*</span></label>
+        <input id="tr-codigo" type="text" [(ngModel)]="tipoForm.codigo" class="form-control" placeholder="Ej: VENTAS_MENSUAL" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="tr-nombre">Nombre <span class="required">*</span></label>
+        <input id="tr-nombre" type="text" [(ngModel)]="tipoForm.nombre" class="form-control" placeholder="Ej: Reporte mensual de ventas" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="tr-descripcion">Descripción</label>
+        <textarea id="tr-descripcion" [(ngModel)]="tipoForm.descripcion" rows="3" class="form-control" placeholder="Descripción del tipo de reporte..."></textarea>
+      </div>
+      <div class="toggles-group">
+        <div class="form-group-toggle">
+          <label class="toggle-label" for="tr-pdf">
+            <span class="toggle-switch">
+              <input id="tr-pdf" type="checkbox" [(ngModel)]="tipoForm.permitePdf" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </span>
+            <span class="toggle-text">
+              <span class="toggle-title">Permite exportar a PDF</span>
+              <span class="toggle-hint">{{ tipoForm.permitePdf ? 'Habilitado' : 'Deshabilitado' }}</span>
+            </span>
+          </label>
+        </div>
+        <div class="form-group-toggle">
+          <label class="toggle-label" for="tr-excel">
+            <span class="toggle-switch">
+              <input id="tr-excel" type="checkbox" [(ngModel)]="tipoForm.permiteExcel" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </span>
+            <span class="toggle-text">
+              <span class="toggle-title">Permite exportar a Excel</span>
+              <span class="toggle-hint">{{ tipoForm.permiteExcel ? 'Habilitado' : 'Deshabilitado' }}</span>
+            </span>
+          </label>
+        </div>
+        <div class="form-group-toggle">
+          <label class="toggle-label" for="tr-activo">
+            <span class="toggle-switch">
+              <input id="tr-activo" type="checkbox" [(ngModel)]="tipoForm.activo" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </span>
+            <span class="toggle-text">
+              <span class="toggle-title">Tipo de reporte activo</span>
+              <span class="toggle-hint">{{ tipoForm.activo ? 'Visible y disponible' : 'Desactivado' }}</span>
+            </span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeTipoModal()" [disabled]="tipoSaving">Cancelar</button>
+      <button type="button" class="btn-primary" (click)="saveTipo()" [disabled]="tipoSaving">
+        <i class="fa-solid fa-spinner fa-spin" *ngIf="tipoSaving"></i>
+        {{ tipoSaving ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Modal: Confirmar eliminación ─── -->
+<div class="modal-overlay" *ngIf="showDeleteTipoModal" (click)="closeDeleteTipoModal()">
+  <div class="modal-card modal-sm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Eliminar tipo de reporte</h2>
+      <button type="button" class="modal-close" title="Cerrar" (click)="closeDeleteTipoModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="delete-confirm-text">¿Estás seguro de que deseas eliminar este tipo de reporte?</p>
+      <div class="delete-preview" *ngIf="deletingTipo">
+        <i class="fa-solid fa-sliders"></i> {{ deletingTipo.nombre }}
+      </div>
+      <p class="delete-warning">Esta acción no se puede deshacer.</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeDeleteTipoModal()" [disabled]="deleteTipoLoading">Cancelar</button>
+      <button type="button" class="btn-danger" (click)="confirmDeleteTipo()" [disabled]="deleteTipoLoading">
+        <i class="fa-solid fa-spinner fa-spin" *ngIf="deleteTipoLoading"></i>
+        {{ deleteTipoLoading ? 'Eliminando...' : 'Sí, eliminar' }}
+      </button>
+    </div>
+  </div>
+</div>

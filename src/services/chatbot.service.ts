@@ -3,19 +3,20 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { CHATBOT_API_URL } from '../environments/api';
 
-export type ChatbotResultado = { pregunta: string; respuesta: string };
+export type ChatbotResultado = { pregunta: string; respuesta: string; categoria?: string };
 export type ChatbotPreguntarResponse = {
+  mensajeUsuario?: string;
   encontrado: boolean;
-  resultados?: ChatbotResultado[];
+  respuestas?: ChatbotResultado[];
   mensajeFallback?: string;
 };
 
 export type FaqItem = {
-  id: string | number;
+  preguntaId: string;
   pregunta: string;
   respuesta: string;
   categoria?: string;
-  palabrasClave?: string[];
+  palabrasClave?: string[] | string;
   activo: boolean;
 };
 
@@ -23,24 +24,25 @@ export type FaqCreateRequest = {
   pregunta: string;
   respuesta: string;
   categoria?: string;
-  palabrasClave?: string[];
+  palabrasClave?: string;
+  activo?: boolean;
 };
 
 export type HistorialItem = {
-  id: string | number;
-  mensaje: string;
-  encontrado: boolean;
-  coincidencias: number;
-  fecha: string;
+  historialId: string;
+  mensajeUsuario: string;
+  respuestaEncontrada: boolean;
+  cantidadCoincidencias: number;
+  fechaConsulta: string;
 };
 
 export type ChatbotEstadisticas = {
-  totalFaqs: number;
-  faqsActivas: number;
-  faqsInactivas: number;
+  totalPreguntas: number;
+  preguntasActivas: number;
+  preguntasInactivas: number;
   totalConsultas: number;
-  conRespuesta: number;
-  sinRespuesta: number;
+  consultasConRespuesta: number;
+  consultasSinRespuesta: number;
   categorias?: string[];
 };
 
@@ -56,11 +58,11 @@ export class ChatbotService {
     });
   }
 
-  async preguntar(pregunta: string): Promise<ChatbotPreguntarResponse> {
+  async preguntar(mensaje: string): Promise<ChatbotPreguntarResponse> {
     return await firstValueFrom(
       this.http.post<ChatbotPreguntarResponse>(
         `${CHATBOT_API_URL}/preguntar`,
-        { pregunta },
+        { mensaje },
         { headers: this.authHeaders() }
       )
     );
@@ -72,7 +74,7 @@ export class ChatbotService {
     );
   }
 
-  async getFaq(id: string | number): Promise<FaqItem> {
+  async getFaq(id: string): Promise<FaqItem> {
     return await firstValueFrom(
       this.http.get<FaqItem>(`${CHATBOT_API_URL}/preguntas/${id}`, { headers: this.authHeaders() })
     );
@@ -97,13 +99,13 @@ export class ChatbotService {
     );
   }
 
-  async updateFaq(id: string | number, data: FaqCreateRequest): Promise<FaqItem> {
+  async updateFaq(id: string, data: FaqCreateRequest): Promise<FaqItem> {
     return await firstValueFrom(
       this.http.put<FaqItem>(`${CHATBOT_API_URL}/preguntas/${id}`, data, { headers: this.authHeaders() })
     );
   }
 
-  async deleteFaq(id: string | number): Promise<any> {
+  async deleteFaq(id: string): Promise<any> {
     return await firstValueFrom(
       this.http.delete(`${CHATBOT_API_URL}/preguntas/${id}`, { headers: this.authHeaders() })
     );

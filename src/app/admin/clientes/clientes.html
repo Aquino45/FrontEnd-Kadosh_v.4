@@ -9,20 +9,38 @@
       </div>
     </div>
 
-    <div class="top-actions">
-      <button type="button" class="btn-primary" (click)="newClient()">
-        <i class="fa-solid fa-user-plus"></i>
-        Nuevo cliente
-      </button>
+    <div class="actions">
+      <div class="top-actions">
+        <form class="filters-inline" (ngSubmit)="onSearch()" #filterForm="ngForm">
+          <div class="filters-left">
+            <div class="filter-field">
+              <label for="cli-dni">DNI</label>
+              <input id="cli-dni" type="text" name="dni" [(ngModel)]="filterDni" placeholder="Ej: 74156981" maxlength="8" />
+            </div>
+            <div class="filter-field">
+              <label for="cli-nombre">Nombre</label>
+              <input id="cli-nombre" type="text" name="nombre" [(ngModel)]="filterNombre" placeholder="Nombre del cliente" />
+            </div>
+          </div>
 
-      <form class="filters-inline" (ngSubmit)="onSearch()" #filterForm="ngForm">
-        <input type="text" name="dni" [(ngModel)]="filterDni" placeholder="DNI..." maxlength="8" />
-        <input type="text" name="nombre" [(ngModel)]="filterNombre" placeholder="Nombre..." />
-        <button type="submit" class="btn-search" title="Buscar">
-          <i class="fa-solid fa-magnifying-glass"></i>
+          <div class="filters-actions">
+            <button type="submit" class="btn-search" title="Buscar" aria-label="Buscar">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            <button type="button" class="btn-clear" (click)="onClear()">
+              <i class="fa-solid fa-rotate-left"></i>
+              Limpiar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="secondary-actions">
+        <button type="button" class="btn-primary" (click)="newClient()">
+          <i class="fa-solid fa-user-plus"></i>
+          Nuevo cliente
         </button>
-        <button type="button" class="btn-clear" (click)="onClear()">Limpiar</button>
-      </form>
+      </div>
     </div>
 
     <!-- Loading -->

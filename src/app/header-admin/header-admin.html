@@ -4,12 +4,24 @@
     <img [src]="logoSrc" [alt]="logoAlt" title="Logo Kadosh" />
   </a>
 
-  <div class="search-bar-container">
-    <app-search-bar [placeholder]="'Buscar...'" (search)="onSearch($event)" (queryChange)="onQueryChange($event)">
-    </app-search-bar>
-  </div>
-
   <div class="actions">
+
+    <!-- Campana de notificaciones -->
+    <button type="button" class="action-btn notif-btn" (click)="toggleNotifPanel()" title="Notificaciones">
+      <i class="fa-solid fa-bell"></i>
+      <span class="notif-badge" *ngIf="notifCount > 0">{{ notifCount }}</span>
+    </button>
+
+    <!-- Chip de perfil -->
+    <div class="profile-chip">
+      <div class="avatar">{{ userInitials }}</div>
+      <div class="profile-text">
+        <span class="profile-name">{{ userName }}</span>
+        <span class="profile-rol">{{ userRol }}</span>
+      </div>
+    </div>
+
+    <!-- Fecha -->
     <button type="button" class="date-chip" (click)="openCalendar()" title="Seleccionar fecha">
       <i class="fa-solid fa-calendar-days chip-icon"></i>
       <div class="date-text">
@@ -17,7 +29,8 @@
         <span class="full-date">{{ today | date:'dd/MM/yyyy' }}</span>
       </div>
     </button>
-    <input type="date" class="date-input-hidden" [value]="selectedDateISO" (change)="onDateChange($event)" title="Seleccionar fecha" placeholder="dd/mm/aaaa" />
+    <input type="date" class="date-input-hidden" [value]="selectedDateISO" (change)="onDateChange($event)" title="Seleccionar fecha" aria-label="Seleccionar fecha" />
+
   </div>
 
 </header>

@@ -76,6 +76,104 @@ app-search-bar {
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* ===== Notification bell ===== */
+.action-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid #e8e3f5;
+  background: #faf9ff;
+  color: var(--p600);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, border-color .15s, transform .08s, box-shadow .2s;
+  flex-shrink: 0;
+}
+
+.action-btn:hover {
+  background: var(--p100);
+  border-color: #c4aee8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(91,43,136,.12);
+}
+
+.notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: #e11d48;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  line-height: 1;
+}
+
+/* ===== Profile chip ===== */
+.profile-chip {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 14px 6px 6px;
+  border: 1px solid #e8e3f5;
+  border-radius: 12px;
+  background: #faf9ff;
+  cursor: default;
+  transition: background .15s, border-color .15s;
+}
+
+.profile-chip:hover {
+  background: var(--p100);
+  border-color: #c4aee8;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--p700), var(--p500));
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: .5px;
+}
+
+.profile-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.profile-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--p700);
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.profile-rol {
+  font-size: 11px;
+  color: #8a7aa1;
+  line-height: 1.2;
 }
 
 /* ===== Date chip (calendar + date fused into one button) ===== */

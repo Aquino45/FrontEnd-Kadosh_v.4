@@ -17,26 +17,51 @@
 
     <div class="actions">
       <div class="top-actions">
+        <form class="filters-inline" (ngSubmit)="onSearch()" #filterForm="ngForm">
+          <div class="filters-left">
+            <div class="filter-field">
+              <label for="fact-nombre">Cliente</label>
+              <input id="fact-nombre" type="text" name="nombre" [(ngModel)]="filterNombre" placeholder="Nombre del cliente" />
+            </div>
+            <div class="filter-field">
+              <label for="fact-dni">DNI</label>
+              <input id="fact-dni" type="text" name="dni" [(ngModel)]="filterDni" placeholder="Ej: 74156981" maxlength="8" />
+            </div>
+            <div class="filter-field">
+              <label for="fact-estado">Estado</label>
+              <select id="fact-estado" name="estado" [(ngModel)]="filterEstado" aria-label="Filtrar por estado">
+                <option value="">Todos los estados</option>
+                <option value="EMITIDA">EMITIDA</option>
+                <option value="ANULADA">ANULADA</option>
+              </select>
+            </div>
+
+            <span class="filters-divider"></span>
+
+            <button type="button" class="btn-date-filter" [class.active]="filterDesde || filterHasta" (click)="openDateModal()">
+              <i class="fa-solid fa-calendar-days"></i>
+              <span>Fecha</span>
+              <span class="date-filter-dot" *ngIf="filterDesde || filterHasta"></span>
+            </button>
+          </div>
+
+          <div class="filters-actions">
+            <button type="submit" class="btn-search" title="Buscar" aria-label="Buscar">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            <button type="button" class="btn-clear" (click)="onClear()">
+              <i class="fa-solid fa-rotate-left"></i>
+              Limpiar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="secondary-actions">
         <button type="button" class="btn-primary" (click)="openForm()">
           <i class="fa-solid fa-file-invoice"></i>
           <span>Nueva Factura</span>
         </button>
-
-        <form class="filters-inline" (ngSubmit)="onSearch()" #filterForm="ngForm">
-          <input type="text" name="nombre" [(ngModel)]="filterNombre" placeholder="Nombre cliente..." />
-          <input type="text" name="dni" [(ngModel)]="filterDni" placeholder="DNI..." maxlength="8" />
-          <select name="estado" [(ngModel)]="filterEstado" aria-label="Filtrar por estado">
-            <option value="">Todos los estados</option>
-            <option value="EMITIDA">EMITIDA</option>
-            <option value="ANULADA">ANULADA</option>
-          </select>
-          <input type="date" name="desde" [(ngModel)]="filterDesde" title="Desde" />
-          <input type="date" name="hasta" [(ngModel)]="filterHasta" title="Hasta" />
-          <button type="submit" class="btn-search" title="Buscar" aria-label="Buscar">
-            <i class="fa-solid fa-magnifying-glass"></i>
-          </button>
-          <button type="button" class="btn-clear" (click)="onClear()">Limpiar</button>
-        </form>
       </div>
     </div>
 
@@ -50,56 +75,58 @@
         <i class="fa-solid fa-triangle-exclamation"></i> {{ loadError }}
       </div>
 
-      <table class="fact-table" *ngIf="!loading && !loadError && facturas.length > 0">
-        <thead>
-          <tr>
-            <th>N°</th>
-            <th>N° Factura</th>
-            <th>Cliente</th>
-            <th>DNI</th>
-            <th>Fecha</th>
-            <th class="text-right">Subtotal</th>
-            <th class="text-right">IGV</th>
-            <th class="text-right">Total</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let f of facturas; let i = index">
-            <td>{{ i + 1 }}</td>
-            <td class="numero-cell">{{ f.numero }}</td>
-            <td>{{ f.clienteNombre }}</td>
-            <td>{{ f.clienteDni }}</td>
-            <td>{{ formatFecha(f.fechaEmision) }}</td>
-            <td class="text-right">S/ {{ f.subtotal | number:'1.2-2' }}</td>
-            <td class="text-right">S/ {{ f.igv | number:'1.2-2' }}</td>
-            <td class="text-right font-bold">S/ {{ f.total | number:'1.2-2' }}</td>
-            <td>
-              <span class="estado-badge" [ngClass]="f.estado === 'EMITIDA' ? 'emitida' : 'anulada'">
-                {{ f.estado }}
-              </span>
-            </td>
-            <td class="actions-cell">
-              <button type="button" class="btn-preview" (click)="openPreview(f)" title="Ver detalle">
-                <i class="fa-solid fa-eye"></i>
-              </button>
-              <button type="button" class="btn-pdf" (click)="descargarPDF(f)" title="Descargar PDF">
-                <i class="fa-solid fa-file-pdf"></i>
-              </button>
-              <button
-                type="button"
-                class="btn-anular"
-                (click)="confirmarAnular(f)"
-                [disabled]="f.estado === 'ANULADA'"
-                title="Anular factura"
-              >
-                <i class="fa-solid fa-ban"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" *ngIf="!loading && !loadError && facturas.length > 0">
+        <table class="fact-table">
+          <thead>
+            <tr>
+              <th>N°</th>
+              <th>N° Factura</th>
+              <th>Cliente</th>
+              <th>DNI</th>
+              <th>Fecha</th>
+              <th class="text-right">Subtotal</th>
+              <th class="text-right">IGV</th>
+              <th class="text-right">Total</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let f of facturas; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td class="numero-cell">{{ f.numero }}</td>
+              <td>{{ f.clienteNombre }}</td>
+              <td>{{ f.clienteDni }}</td>
+              <td>{{ formatFecha(f.fechaEmision) }}</td>
+              <td class="text-right">S/ {{ f.subtotal | number:'1.2-2' }}</td>
+              <td class="text-right">S/ {{ f.igv | number:'1.2-2' }}</td>
+              <td class="text-right font-bold">S/ {{ f.total | number:'1.2-2' }}</td>
+              <td>
+                <span class="estado-badge" [ngClass]="f.estado === 'EMITIDA' ? 'emitida' : 'anulada'">
+                  {{ f.estado }}
+                </span>
+              </td>
+              <td class="actions-cell">
+                <button type="button" class="btn-preview" (click)="openPreview(f)" title="Ver detalle">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+                <button type="button" class="btn-pdf" (click)="descargarPDF(f)" title="Descargar PDF">
+                  <i class="fa-solid fa-file-pdf"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn-anular"
+                  (click)="confirmarAnular(f)"
+                  [disabled]="f.estado === 'ANULADA'"
+                  title="Anular factura"
+                >
+                  <i class="fa-solid fa-ban"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <div class="empty" *ngIf="!loading && !loadError && facturas.length === 0">
         <i class="fa-solid fa-file-invoice"></i>
@@ -109,6 +136,32 @@
     </div>
 
   </ng-container>
+
+  <!-- ─────────────── Modal: Filtrar por fecha ─────────────── -->
+  <div class="modal-overlay" *ngIf="showDateModal" (click)="closeDateModal()">
+    <div class="modal-card modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Filtrar por fecha</h2>
+        <button type="button" class="modal-close" title="Cerrar" aria-label="Cerrar" (click)="closeDateModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="fact-desde">Desde</label>
+          <input id="fact-desde" type="date" class="form-control" [(ngModel)]="filterDesde" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="fact-hasta">Hasta</label>
+          <input id="fact-hasta" type="date" class="form-control" [(ngModel)]="filterHasta" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="clearDateFilter()">Limpiar fechas</button>
+        <button type="button" class="btn-primary" (click)="applyDateFilter()">Aplicar</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal confirmar anulación -->
   <div class="modal-overlay" *ngIf="facturaAAnular" (click)="cancelarAnulacion()">

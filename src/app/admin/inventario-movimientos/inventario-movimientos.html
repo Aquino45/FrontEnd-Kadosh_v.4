@@ -47,18 +47,16 @@
           <th>Cantidad</th>
           <th>Stock ant. → nuevo</th>
           <th>Motivo</th>
-          <th>Usuario</th>
           <th>Fecha</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let m of filtered">
-          <td class="td-producto">{{ m.productoNombre || '—' }}</td>
+          <td class="td-producto">{{ m.nombreProducto || '—' }}</td>
           <td><span class="tipo-tag" [attr.data-tipo]="m.tipo">{{ m.tipo }}</span></td>
           <td>{{ m.cantidad }}</td>
           <td>{{ m.stockAnterior }} → {{ m.stockNuevo }}</td>
           <td>{{ m.motivo || '—' }}</td>
-          <td>{{ m.usuario || '—' }}</td>
           <td>{{ m.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
         </tr>
       </tbody>

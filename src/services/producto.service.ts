@@ -6,27 +6,23 @@ import { PRODUCTOS_API_URL } from '../environments/api';
 export type TipoMovimientoStock = 'ENTRADA' | 'SALIDA' | 'AJUSTE' | 'VENTA' | 'ANULACION';
 
 export type ProductoDTO = {
-  id: string | number;
+  productoId: string;
   nombre: string;
-  descripcion?: string;
   precioActual: number | null;
   stock: number;
-  stockMinimo?: number;
   activo: boolean;
-  categoriaId?: string | number;
-  categoriaNombre?: string;
-  subCategoriaId?: string | number;
-  subCategoriaNombre?: string;
+  categoriaId?: string;
+  nombreCategoria?: string;
+  subCategoriaId?: string;
+  nombreSubCategoria?: string;
 };
 
 export type ProductoCreateRequest = {
   nombre: string;
-  descripcion?: string;
   precioActual: number;
   stock: number;
-  stockMinimo?: number;
-  categoriaId: string | number;
-  subCategoriaId: string | number;
+  categoriaId: string;
+  subCategoriaId: string;
   activo?: boolean;
 };
 
@@ -37,22 +33,22 @@ export type AjusteStockRequest = {
 };
 
 export type MovimientoStockDTO = {
-  id: string | number;
-  productoId: string | number;
-  productoNombre?: string;
+  movimientoId: string;
+  productoId: string;
+  nombreProducto?: string;
   tipo: TipoMovimientoStock;
   cantidad: number;
   stockAnterior: number;
   stockNuevo: number;
   motivo?: string;
-  usuario?: string;
+  usuarioId?: string;
   fecha: string;
 };
 
 export type ProductoBuscarParams = {
   nombre?: string;
-  categoriaId?: string | number;
-  subCategoriaId?: string | number;
+  categoriaId?: string;
+  subCategoriaId?: string;
   activo?: string;
 };
 
@@ -74,13 +70,13 @@ export class ProductoService {
     );
   }
 
-  async getById(id: string | number): Promise<ProductoDTO> {
+  async getById(id: string): Promise<ProductoDTO> {
     return await firstValueFrom(
       this.http.get<ProductoDTO>(`${PRODUCTOS_API_URL}/${id}`, { headers: this.authHeaders() })
     );
   }
 
-  async listByCategoria(categoriaId: string | number): Promise<ProductoDTO[]> {
+  async listByCategoria(categoriaId: string): Promise<ProductoDTO[]> {
     return await firstValueFrom(
       this.http.get<ProductoDTO[]>(`${PRODUCTOS_API_URL}/categoria/${categoriaId}`, { headers: this.authHeaders() })
     );
@@ -110,25 +106,25 @@ export class ProductoService {
     );
   }
 
-  async update(id: string | number, data: ProductoCreateRequest): Promise<ProductoDTO> {
+  async update(id: string, data: ProductoCreateRequest): Promise<ProductoDTO> {
     return await firstValueFrom(
       this.http.put<ProductoDTO>(`${PRODUCTOS_API_URL}/${id}`, data, { headers: this.authHeaders() })
     );
   }
 
-  async delete(id: string | number): Promise<any> {
+  async delete(id: string): Promise<any> {
     return await firstValueFrom(
       this.http.delete(`${PRODUCTOS_API_URL}/${id}`, { headers: this.authHeaders() })
     );
   }
 
-  async ajustarStock(id: string | number, data: AjusteStockRequest): Promise<ProductoDTO> {
+  async ajustarStock(id: string, data: AjusteStockRequest): Promise<ProductoDTO> {
     return await firstValueFrom(
       this.http.put<ProductoDTO>(`${PRODUCTOS_API_URL}/${id}/stock`, data, { headers: this.authHeaders() })
     );
   }
 
-  async getMovimientosByProducto(id: string | number): Promise<MovimientoStockDTO[]> {
+  async getMovimientosByProducto(id: string): Promise<MovimientoStockDTO[]> {
     return await firstValueFrom(
       this.http.get<MovimientoStockDTO[]>(`${PRODUCTOS_API_URL}/${id}/movimientos`, { headers: this.authHeaders() })
     );

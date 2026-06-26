@@ -32,7 +32,7 @@ export class SidebarAdminComponent implements OnInit {
     { icon: 'fa-solid fa-file-invoice', label: 'Cotización',   link: '/home-admin/cotizacion' },
     { icon: 'fa-solid fa-receipt',      label: 'Facturación',  link: '/home-admin/facturacion' },
     {
-      icon: 'fa-solid fa-warehouse', label: 'Inventarios', link: '',
+      icon: 'fa-solid fa-warehouse', label: 'Inventarios', link: '/home-admin/inventario',
       children: [
         { icon: 'fa-solid fa-gauge-high',    label: 'Resumen',     link: '/home-admin/inventario' },
         { icon: 'fa-solid fa-boxes-stacked', label: 'Productos',   link: '/home-admin/productos' },
@@ -40,6 +40,7 @@ export class SidebarAdminComponent implements OnInit {
         { icon: 'fa-solid fa-chart-line',    label: 'Kardex',      link: '/home-admin/inventario-movimientos' },
       ]
     },
+    { icon: 'fa-solid fa-chart-bar',     label: 'Reportes',     link: '/home-admin/reportes' },
     { icon: 'fa-solid fa-robot',        label: 'Chatbot',      link: '/home-admin/chatbot' },
     { icon: 'fa-solid fa-message',      label: 'Asistente',    link: '/home-admin/asistente' },
     //{ icon: 'fa-solid fa-gear',    label: 'Ajustes',          link: '/home-admin/ajustes' },

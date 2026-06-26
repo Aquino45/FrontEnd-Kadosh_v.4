@@ -86,7 +86,7 @@
 .sidebar-inner {
   position: relative;
   height: 100%;
-  padding: 28px 14px 16px;
+  padding: 28px 14px 20px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -102,7 +102,7 @@
   justify-items: center;
   text-align: center;
   gap: 10px;
-  padding: 34px 10px 20px;
+  padding: 34px 10px 0px;
   margin-top: -59.921px;
   z-index: 2;
   animation: fadeInUser 0.5s ease both;
@@ -115,7 +115,7 @@
   width: 70%;
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-  margin-top: 8px;
+  margin-top: 0px;
 }
 
 /* ===== Avatar ===== */
@@ -190,7 +190,6 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   overflow-y: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -378,7 +377,7 @@
 .logout-section {
   position: sticky;
   bottom: 0;
-  padding: 10px 0 14px;
+  padding: 18px 0 18px;
   z-index: 5;
 }
 

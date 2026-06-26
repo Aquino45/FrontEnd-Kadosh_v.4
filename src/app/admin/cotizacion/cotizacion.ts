@@ -42,6 +42,7 @@ export class CotizacionComponent implements OnInit {
   filterNombre: string = '';
   filterDesde: string = '';
   filterHasta: string = '';
+  showDateModal = false;
 
   ngOnInit(): void {
     this.loadCotizaciones();
@@ -113,6 +114,21 @@ export class CotizacionComponent implements OnInit {
     this.filterDesde = '';
     this.filterHasta = '';
     this.expedientes = [...this.allExpedientes];
+  }
+
+  openDateModal() { this.showDateModal = true; }
+  closeDateModal() { this.showDateModal = false; }
+
+  applyDateFilter() {
+    this.showDateModal = false;
+    this.onSearch();
+  }
+
+  clearDateFilter() {
+    this.filterDesde = '';
+    this.filterHasta = '';
+    this.showDateModal = false;
+    this.onSearch();
   }
 
   goBack() { this.location.back(); }

@@ -44,7 +44,7 @@ export class InventarioMovimientosComponent implements OnInit {
   applyFilters() {
     const text = this.searchText.trim().toLowerCase();
     this.filtered = this.movimientos.filter(m => {
-      const matchesText = !text || (m.productoNombre ?? '').toLowerCase().includes(text);
+      const matchesText = !text || (m.nombreProducto ?? '').toLowerCase().includes(text);
       const matchesTipo = !this.filterTipo || m.tipo === this.filterTipo;
       return matchesText && matchesTipo;
     });

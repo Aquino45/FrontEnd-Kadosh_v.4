@@ -84,8 +84,8 @@
               <button type="button" class="btn-action btn-edit" title="Editar" (click)="openEditFaq(faq)">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button type="button" class="btn-action btn-delete" title="Eliminar" (click)="openDeleteConfirm(faq)">
-                <i class="fa-solid fa-trash"></i>
+              <button type="button" class="btn-action btn-deactivate" title="Desactivar" (click)="openDeleteConfirm(faq)" *ngIf="faq.activo">
+                <i class="fa-solid fa-ban"></i>
               </button>
             </td>
           </tr>
@@ -127,13 +127,13 @@
         </thead>
         <tbody>
           <tr *ngFor="let h of historial">
-            <td class="td-pregunta">{{ h.mensaje }}</td>
+            <td class="td-pregunta">{{ h.mensajeUsuario }}</td>
             <td>
-              <span *ngIf="h.encontrado"  class="badge badge-active">Respondida</span>
-              <span *ngIf="!h.encontrado" class="badge badge-inactive">Sin respuesta</span>
+              <span *ngIf="h.respuestaEncontrada"  class="badge badge-active">Respondida</span>
+              <span *ngIf="!h.respuestaEncontrada" class="badge badge-inactive">Sin respuesta</span>
             </td>
-            <td>{{ h.coincidencias }}</td>
-            <td>{{ h.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ h.cantidadCoincidencias }}</td>
+            <td>{{ h.fechaConsulta | date:'dd/MM/yyyy HH:mm' }}</td>
           </tr>
         </tbody>
       </table>
@@ -157,7 +157,7 @@
               <i class="fa-solid fa-list-ul"></i>
             </div>
             <div class="stat-info">
-              <span class="stat-value">{{ estadisticas.totalFaqs }}</span>
+              <span class="stat-value">{{ estadisticas.totalPreguntas }}</span>
               <span class="stat-label">Total FAQs</span>
             </div>
           </div>
@@ -166,7 +166,7 @@
               <i class="fa-solid fa-circle-check"></i>
             </div>
             <div class="stat-info">
-              <span class="stat-value">{{ estadisticas.faqsActivas }}</span>
+              <span class="stat-value">{{ estadisticas.preguntasActivas }}</span>
               <span class="stat-label">FAQs Activas</span>
             </div>
           </div>
@@ -175,7 +175,7 @@
               <i class="fa-solid fa-circle-xmark"></i>
             </div>
             <div class="stat-info">
-              <span class="stat-value">{{ estadisticas.faqsInactivas }}</span>
+              <span class="stat-value">{{ estadisticas.preguntasInactivas }}</span>
               <span class="stat-label">FAQs Inactivas</span>
             </div>
           </div>
@@ -199,7 +199,7 @@
               <i class="fa-solid fa-check-double"></i>
             </div>
             <div class="stat-info">
-              <span class="stat-value">{{ estadisticas.conRespuesta }}</span>
+              <span class="stat-value">{{ estadisticas.consultasConRespuesta }}</span>
               <span class="stat-label">Con Respuesta</span>
             </div>
           </div>
@@ -208,7 +208,7 @@
               <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
             <div class="stat-info">
-              <span class="stat-value">{{ estadisticas.sinRespuesta }}</span>
+              <span class="stat-value">{{ estadisticas.consultasSinRespuesta }}</span>
               <span class="stat-label">Sin Respuesta</span>
             </div>
           </div>
@@ -283,6 +283,20 @@
           placeholder="Ej: horario,atención,hora,abierto"
         />
       </div>
+      <div class="form-group form-group-toggle" *ngIf="isEditMode">
+        <label class="toggle-label" for="faq-activo">
+          <span class="toggle-switch">
+            <input id="faq-activo" type="checkbox" [(ngModel)]="faqForm.activo" />
+            <span class="toggle-track">
+              <span class="toggle-thumb"></span>
+            </span>
+          </span>
+          <span class="toggle-text">
+            <span class="toggle-title">Pregunta activa</span>
+            <span class="toggle-hint">{{ faqForm.activo ? 'Visible para el chatbot' : 'No aparece en el chatbot' }}</span>
+          </span>
+        </label>
+      </div>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn-secondary" (click)="closeFaqModal()" [disabled]="faqSaving">Cancelar</button>
@@ -294,28 +308,32 @@
   </div>
 </div>
 
-<!-- ─────────────── Modal: Confirmar eliminación ─────────────── -->
+<!-- ─────────────── Modal: Confirmar desactivación ─────────────── -->
 <div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
   <div class="modal-card modal-sm" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>Eliminar FAQ</h2>
+      <h2>Desactivar FAQ</h2>
       <button type="button" class="modal-close" title="Cerrar" aria-label="Cerrar" (click)="closeDeleteModal()">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
     <div class="modal-body">
-      <p class="delete-confirm-text">¿Estás seguro de que deseas eliminar esta FAQ?</p>
+      <p class="delete-confirm-text">¿Deseas desactivar esta pregunta del chatbot?</p>
       <div class="delete-preview" *ngIf="deletingFaq">
         <i class="fa-solid fa-circle-question"></i>
         {{ deletingFaq.pregunta }}
       </div>
-      <p class="delete-warning">Esta acción no se puede deshacer.</p>
+      <p class="deactivate-hint">
+        <i class="fa-solid fa-circle-info"></i>
+        Podrás reactivarla en cualquier momento desde el modal de edición.
+      </p>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn-secondary" (click)="closeDeleteModal()" [disabled]="deleteLoading">Cancelar</button>
-      <button type="button" class="btn-danger" (click)="confirmDeleteFaq()" [disabled]="deleteLoading">
+      <button type="button" class="btn-deactivate-confirm" (click)="confirmDeleteFaq()" [disabled]="deleteLoading">
         <i class="fa-solid fa-spinner fa-spin" *ngIf="deleteLoading"></i>
-        {{ deleteLoading ? 'Eliminando...' : 'Sí, eliminar' }}
+        <i class="fa-solid fa-ban" *ngIf="!deleteLoading"></i>
+        {{ deleteLoading ? 'Desactivando...' : 'Sí, desactivar' }}
       </button>
     </div>
   </div>

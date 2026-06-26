@@ -84,8 +84,8 @@
       <tbody>
         <tr *ngFor="let p of productos">
           <td class="td-nombre">{{ p.nombre }}</td>
-          <td>{{ p.categoriaNombre || '—' }}</td>
-          <td>{{ p.subCategoriaNombre || '—' }}</td>
+          <td>{{ p.nombreCategoria || '—' }}</td>
+          <td>{{ p.nombreSubCategoria || '—' }}</td>
           <td>S/ {{ (p.precioActual ?? 0) | number:'1.2-2' }}</td>
           <td>
             <span class="badge" [class.badge-inactive]="isLowStock(p)" [class.badge-active]="!isLowStock(p)">
@@ -142,11 +142,6 @@
           <label class="form-label" for="prod-stock">Stock {{ isEditMode ? '' : 'inicial' }} <span class="required">*</span></label>
           <input id="prod-stock" type="number" min="0" [(ngModel)]="productForm.stock" class="form-control" />
         </div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="prod-stock-min">Stock mínimo <span class="form-hint">(alerta de stock bajo)</span></label>
-        <input id="prod-stock-min" type="number" min="0" [(ngModel)]="productForm.stockMinimo" class="form-control" />
       </div>
 
       <div class="form-row">
@@ -259,7 +254,6 @@
               <th>Cantidad</th>
               <th>Stock ant. → nuevo</th>
               <th>Motivo</th>
-              <th>Usuario</th>
               <th>Fecha</th>
             </tr>
           </thead>
@@ -269,7 +263,6 @@
               <td>{{ m.cantidad }}</td>
               <td>{{ m.stockAnterior }} → {{ m.stockNuevo }}</td>
               <td>{{ m.motivo || '—' }}</td>
-              <td>{{ m.usuario || '—' }}</td>
               <td>{{ m.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
             </tr>
           </tbody>

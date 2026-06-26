@@ -41,7 +41,8 @@
           <!-- Ítem con submenú -->
           <div *ngIf="item.children" class="nav-group-wrap">
             <button type="button" class="nav-item nav-item-toggle" [class.group-active]="isGroupActive(item)"
-              (click)="toggleGroup(item.label)">
+              (click)="toggleGroup(item.label)"
+              [routerLink]="item.link || null">
               <span class="icon-box">
                 <i class="{{ item.icon }}"></i>
               </span>

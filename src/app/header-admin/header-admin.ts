@@ -1,34 +1,52 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { SearchBarComponent } from '../search-bar-admin/search-bar-admin';
-import { DatePipe, registerLocaleData } from '@angular/common';
-import localeEsPe from '@angular/common/locales/es-PE'
+import { CommonModule, DatePipe, registerLocaleData } from '@angular/common';
+import localeEsPe from '@angular/common/locales/es-PE';
+import { AuthService } from '../../services/auth.service';
 registerLocaleData(localeEsPe);
+
 @Component({
   selector: 'app-header-admin',
   templateUrl: './header-admin.html',
   styleUrls: ['./header-admin.css'],
   standalone: true,
-  imports: [SearchBarComponent, DatePipe, RouterLink]
+  imports: [CommonModule, DatePipe, RouterLink]
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   logoSrc = 'assets/Images/logo_Kadosh-2.png';
   logoAlt = 'Logo';
   today = new Date();
   selectedDateISO = this.toISODate(this.today);
-  notifCount = 10;
+  notifCount = 0;
 
-  onSearch(query: string) {
-    console.log('Search triggered:', query);
-    
+  userName = 'Admin';
+  userRol = 'Administrador';
+  showNotifPanel = false;
+
+  constructor(private authService: AuthService) {}
+
+  async ngOnInit(): Promise<void> {
+    try {
+      const resp = await this.authService.me().catch(() => null);
+      if (resp?.success && resp.data) {
+        const d = resp.data;
+        this.userName = `${d.nombre ?? ''} ${d.apellido ?? ''}`.trim() || 'Admin';
+        this.userRol = d.rol ?? 'Administrador';
+      }
+    } catch (_) {}
   }
 
-  onQueryChange(query: string) {
-    console.log('Query changed:', query);
-    
+  get userInitials(): string {
+    return this.userName
+      .split(' ')
+      .slice(0, 2)
+      .map(w => w[0] ?? '')
+      .join('')
+      .toUpperCase();
   }
-  onBellClick() {
-    console.log('Abrir panel de notificaciones');
+
+  toggleNotifPanel(): void {
+    this.showNotifPanel = !this.showNotifPanel;
   }
 
   openCalendar() {

@@ -68,8 +68,8 @@ export class ChatWidgetComponent implements AfterViewChecked {
       const resp = await this.chatbotSvc.preguntar(text);
       this.messages.splice(loadingIdx, 1);
 
-      if (resp.encontrado && resp.resultados?.length) {
-        for (const r of resp.resultados) {
+      if (resp.encontrado && resp.respuestas?.length) {
+        for (const r of resp.respuestas) {
           this.messages.push({ from: 'bot', text: r.respuesta, questionLabel: r.pregunta });
         }
       } else {

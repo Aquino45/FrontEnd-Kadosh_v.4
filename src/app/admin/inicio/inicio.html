@@ -1,15 +1,310 @@
-<div class="welcome-container">
-  <div class="welcome-content">
-    <div class="text-group">
-      <span class="welcome-badge">Panel de Administración</span>
-      <h1 class="page-title">
-        Bienvenido/a de vuelta, <span class="user-highlight">{{ user.name }}</span> 👋
-      </h1>
-      <p class="page-subtitle">
-        Todo está listo para que gestiones tu óptica hoy.
-      </p>
+<div class="dashboard">
+
+  <!-- ══ BANNER DE BIENVENIDA ══ -->
+  <div class="welcome-banner">
+    <div class="banner-glow"></div>
+    <div class="banner-body">
+      <div class="banner-text">
+        <p class="banner-greeting">{{ greetingTime }}, <strong>{{ user.name }}</strong> 👋</p>
+        <p class="banner-date">{{ today }}</p>
+      </div>
+      <div class="banner-icon-wrap">
+        <i class="fa-solid fa-eye banner-icon"></i>
+      </div>
     </div>
-    
-    
   </div>
+
+  <!-- ══ LOADING ══ -->
+  <div *ngIf="loading" class="loading-row">
+    <i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Cargando datos del panel...
+  </div>
+
+  <ng-container *ngIf="!loading && resumen">
+
+    <!-- ══ KPI CARDS (6) ══ -->
+    <div class="kpi-grid">
+
+      <div class="kpi-card kpi-purple">
+        <div class="kpi-icon"><i class="fa-solid fa-receipt"></i></div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ resumen.totalFacturas }}</span>
+          <span class="kpi-label">Facturas emitidas</span>
+        </div>
+        <div class="kpi-accent"></div>
+      </div>
+
+      <div class="kpi-card kpi-green">
+        <div class="kpi-icon"><i class="fa-solid fa-coins"></i></div>
+        <div class="kpi-body">
+          <span class="kpi-value">S/ {{ resumen.totalVendido | number:'1.2-2' }}</span>
+          <span class="kpi-label">Total en ventas</span>
+        </div>
+        <div class="kpi-accent"></div>
+      </div>
+
+      <div class="kpi-card kpi-blue">
+        <div class="kpi-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ resumen.totalCotizaciones }}</span>
+          <span class="kpi-label">Cotizaciones</span>
+        </div>
+        <div class="kpi-accent"></div>
+      </div>
+
+      <div class="kpi-card kpi-teal">
+        <div class="kpi-icon"><i class="fa-solid fa-eye"></i></div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ resumen.totalHistorialesOpticos }}</span>
+          <span class="kpi-label">Historiales ópticos</span>
+        </div>
+        <div class="kpi-accent"></div>
+      </div>
+
+      <div class="kpi-card kpi-orange">
+        <div class="kpi-icon"><i class="fa-solid fa-glasses"></i></div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ resumen.totalProductosVendidos }}</span>
+          <span class="kpi-label">Productos vendidos</span>
+        </div>
+        <div class="kpi-accent"></div>
+      </div>
+
+      <div class="kpi-card kpi-rose">
+        <div class="kpi-icon"><i class="fa-solid fa-clock"></i></div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ resumen.totalCotizacionesPendientes }}</span>
+          <span class="kpi-label">Cotizaciones pendientes</span>
+        </div>
+        <div class="kpi-accent"></div>
+      </div>
+
+    </div>
+
+    <!-- ══ FILA 1: Ventas recientes + Estado cotizaciones ══ -->
+    <div class="charts-row">
+
+      <!-- Panel: Ventas recientes -->
+      <div class="chart-panel">
+        <div class="panel-head">
+          <div>
+            <h3 class="panel-title"><i class="fa-solid fa-chart-bar"></i> Ventas recientes</h3>
+            <p class="panel-subtitle">Montos registrados en facturas activas</p>
+          </div>
+          <button type="button" class="panel-action-btn" title="Exportar Excel"
+            (click)="exportarVentasExcel()" [disabled]="descargando">
+            <i class="fa-solid fa-file-excel"></i>
+          </button>
+        </div>
+
+        <div class="bars-wrap" *ngIf="ventasChart.length > 0">
+          <div class="bar-row" *ngFor="let item of ventasChart">
+            <div class="bar-body">
+              <div class="bar-header">
+                <span class="bar-name">{{ item.label }}</span>
+                <span class="bar-amount">{{ item.text }}</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" [style.width.%]="item.percent"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="ventasChart.length === 0" class="empty-panel">
+          <i class="fa-solid fa-box-open"></i>
+          <p>No hay ventas para este rango.</p>
+        </div>
+      </div>
+
+      <!-- Panel: Estado de cotizaciones (donut SVG) -->
+      <div class="chart-panel">
+        <h3 class="panel-title"><i class="fa-solid fa-circle-half-stroke"></i> Estado de cotizaciones</h3>
+        <p class="panel-subtitle">{{ resumen.totalCotizaciones }} cotizaciones en total</p>
+
+        <div class="donut-wrap">
+          <svg class="donut-svg" viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="15.91549430918954"
+              fill="none" stroke="#fee2e2" stroke-width="3.2"/>
+            <circle cx="18" cy="18" r="15.91549430918954"
+              fill="none" stroke="#fca5a5" stroke-width="3.2"
+              stroke-dasharray="100 0"
+              stroke-dashoffset="25"/>
+            <circle cx="18" cy="18" r="15.91549430918954"
+              fill="none" stroke="#059669" stroke-width="3.2"
+              [attr.stroke-dasharray]="donutPaidDash"
+              stroke-dashoffset="25"
+              stroke-linecap="round"
+              class="donut-paid"/>
+            <text x="18" y="16.5" class="donut-num" text-anchor="middle">{{ paidPct }}%</text>
+            <text x="18" y="21" class="donut-sub" text-anchor="middle">pagadas</text>
+          </svg>
+
+          <div class="donut-legend">
+            <div class="legend-item">
+              <span class="legend-dot dot-paid"></span>
+              <span>Pagadas <strong>{{ resumen.totalCotizacionesPagadas }}</strong></span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot dot-pend"></span>
+              <span>Pendientes <strong>{{ resumen.totalCotizacionesPendientes }}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-extra-row">
+          <div class="extra-badge extra-badge-green">
+            <i class="fa-solid fa-check"></i>
+            {{ resumen.totalCotizacionesPagadas }} cobradas
+          </div>
+          <div class="extra-badge extra-badge-orange">
+            <i class="fa-solid fa-clock"></i>
+            {{ resumen.totalCotizacionesPendientes }} pendientes
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ FILA 2: Top ventas + Actividad reciente ══ -->
+    <div class="charts-row">
+
+      <!-- Panel: Top ventas (productos + servicios) -->
+      <div class="chart-panel">
+        <div class="panel-head">
+          <div>
+            <h3 class="panel-title"><i class="fa-solid fa-trophy"></i> Top ventas</h3>
+            <p class="panel-subtitle">Ranking por ingresos generados</p>
+          </div>
+          <button type="button" class="panel-action-btn" title="Exportar Excel"
+            (click)="exportarProductosExcel()" [disabled]="descargando">
+            <i class="fa-solid fa-download"></i>
+          </button>
+        </div>
+
+        <div class="bars-legend" *ngIf="totalServicios > 0">
+          <span class="legend-chip chip-producto"><span class="chip-dot"></span>Producto</span>
+          <span class="legend-chip chip-servicio"><span class="chip-dot"></span>Servicio</span>
+        </div>
+
+        <div class="bars-wrap" *ngIf="topItems.length > 0">
+          <div class="bar-row" *ngFor="let p of topItems; let i = index">
+            <div class="bar-rank">{{ i + 1 }}</div>
+            <div class="bar-body">
+              <div class="bar-header">
+                <span class="bar-name">{{ p.nombre }}</span>
+                <span class="bar-amount">S/ {{ p.totalVendido | number:'1.0-0' }}</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill"
+                  [class.bar-fill-servicio]="p.tipo === 'servicio'"
+                  [style.width.%]="barPct(p.totalVendido)"></div>
+              </div>
+              <span class="bar-qty">{{ p.cantidadVendida }} uds. · {{ p.categoria }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="topItems.length === 0" class="empty-panel">
+          <i class="fa-solid fa-boxes-stacked"></i>
+          <p>Aún no hay ventas registradas.</p>
+        </div>
+
+        <div class="panel-footer">
+          <span class="panel-total" *ngIf="totalProductos > 0">
+            <i class="fa-solid fa-boxes-stacked"></i>
+            {{ totalProductos }} productos únicos
+          </span>
+          <span class="panel-total panel-total-servicio" *ngIf="totalServicios > 0">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+            {{ totalServicios }} servicios únicos
+          </span>
+        </div>
+      </div>
+
+      <!-- Panel: Actividad reciente -->
+      <div class="chart-panel">
+        <h3 class="panel-title"><i class="fa-solid fa-bolt"></i> Actividad reciente</h3>
+        <p class="panel-subtitle">Últimos registros encontrados</p>
+
+        <div class="activity-list"
+          *ngIf="ventas.length > 0 || cotizaciones.length > 0 || historiales.length > 0">
+
+          <div class="activity-item" *ngFor="let item of ventas.slice(0, 3)">
+            <div class="activity-icon act-sale">
+              <i class="fa-solid fa-receipt"></i>
+            </div>
+            <div class="activity-body">
+              <strong>{{ item.clienteNombre || 'Cliente' }}</strong>
+              <span>Factura {{ item.numeroFactura || '—' }} · {{ money(item.total) }}</span>
+            </div>
+          </div>
+
+          <div class="activity-item" *ngFor="let item of cotizaciones.slice(0, 2)">
+            <div class="activity-icon act-quote">
+              <i class="fa-solid fa-file-lines"></i>
+            </div>
+            <div class="activity-body">
+              <strong>{{ item.clienteNombre || 'Cliente' }}</strong>
+              <span>Cotización · {{ money(item.total) }}
+                <span class="act-badge" [class.act-paid]="item.estadoPago" [class.act-pend]="!item.estadoPago">
+                  {{ item.estadoPago ? 'Pagada' : 'Pendiente' }}
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <div class="activity-item" *ngFor="let item of historiales.slice(0, 2)">
+            <div class="activity-icon act-history">
+              <i class="fa-solid fa-eye"></i>
+            </div>
+            <div class="activity-body">
+              <strong>{{ item.paciente || 'Paciente' }}</strong>
+              <span>Historial óptico · {{ fecha(item.fecha) }}</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="empty-panel"
+          *ngIf="ventas.length === 0 && cotizaciones.length === 0 && historiales.length === 0">
+          <i class="fa-solid fa-inbox"></i>
+          <p>No hay actividad para mostrar.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ ACCESOS RÁPIDOS ══ -->
+    <div class="quick-section">
+      <h3 class="section-title">Accesos rápidos</h3>
+      <div class="quick-grid">
+        <a class="quick-card" routerLink="/home-admin/clientes">
+          <div class="quick-icon q-purple"><i class="fa-solid fa-users"></i></div>
+          <span>Clientes</span>
+        </a>
+        <a class="quick-card" routerLink="/home-admin/historial-optico">
+          <div class="quick-icon q-teal"><i class="fa-solid fa-eye"></i></div>
+          <span>Historial Óptico</span>
+        </a>
+        <a class="quick-card" routerLink="/home-admin/cotizacion">
+          <div class="quick-icon q-blue"><i class="fa-solid fa-clipboard-list"></i></div>
+          <span>Cotizaciones</span>
+        </a>
+        <a class="quick-card" routerLink="/home-admin/facturacion">
+          <div class="quick-icon q-green"><i class="fa-solid fa-receipt"></i></div>
+          <span>Facturación</span>
+        </a>
+        <a class="quick-card" routerLink="/home-admin/inventario">
+          <div class="quick-icon q-orange"><i class="fa-solid fa-warehouse"></i></div>
+          <span>Inventario</span>
+        </a>
+        <a class="quick-card" routerLink="/home-admin/reportes">
+          <div class="quick-icon q-rose"><i class="fa-solid fa-chart-bar"></i></div>
+          <span>Reportes</span>
+        </a>
+      </div>
+    </div>
+
+  </ng-container>
+
 </div>

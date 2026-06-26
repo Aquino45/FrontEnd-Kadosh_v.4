@@ -28,6 +28,7 @@ export class FacturacionComponent implements OnInit {
   filterEstado = '';
   filterDesde = '';
   filterHasta = '';
+  showDateModal = false;
 
   // Preview modal
   facturaPreview: FacturaResponse | null = null;
@@ -95,6 +96,21 @@ export class FacturacionComponent implements OnInit {
     this.filterDesde = '';
     this.filterHasta = '';
     this.facturas = [...this.allFacturas];
+  }
+
+  openDateModal(): void { this.showDateModal = true; }
+  closeDateModal(): void { this.showDateModal = false; }
+
+  applyDateFilter(): void {
+    this.showDateModal = false;
+    this.onSearch();
+  }
+
+  clearDateFilter(): void {
+    this.filterDesde = '';
+    this.filterHasta = '';
+    this.showDateModal = false;
+    this.onSearch();
   }
 
   openForm(): void {

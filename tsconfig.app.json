@@ -11,6 +11,9 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "src/**/*.spec.ts"
+    "src/**/*.spec.ts",
+    "src/app/notification-button-admin/notification-button-admin.ts",
+    "src/app/notification-button-client/notification-button-client.ts",
+    "src/app/search-bar-client/search-bar-client.ts"
   ]
 }
